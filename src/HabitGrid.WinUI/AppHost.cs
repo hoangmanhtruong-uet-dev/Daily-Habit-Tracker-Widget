@@ -167,6 +167,16 @@ public sealed class AppHost : IDisposable
         services.AddSingleton<IHabitRepository>(_ => new HabitRepository(database, clock, bus));
         services.AddSingleton<IDayLogRepository>(_ => new DayLogRepository(database, clock, bus));
         services.AddSingleton<IRoutineRepository>(_ => new RoutineRepository(database, clock, bus));
+        services.AddSingleton<BackupManager>(sp => new BackupManager(
+            new SnapshotBackupService(
+                database,
+                clock,
+                sp.GetRequiredService<IHabitRepository>(),
+                sp.GetRequiredService<IDayLogRepository>(),
+                sp.GetRequiredService<IRoutineRepository>(),
+                sp.GetRequiredService<IProfileRepository>(),
+                bus),
+            Path.Combine(AppPaths.DataDir, "backups")));
         services.AddSingleton<IProfileRepository>(_ => new ProfileRepository(database, clock, bus));
         services.AddSingleton<IAchievementRepository>(_ => new AchievementRepository(database, clock, bus));
         services.AddSingleton<IFocusRepository>(_ => new FocusRepository(database, clock, bus));
