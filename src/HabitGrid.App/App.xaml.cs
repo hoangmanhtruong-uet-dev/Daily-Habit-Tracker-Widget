@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 using HabitGrid.Core.Models;
 using HabitGrid.Core.Services;
@@ -44,9 +45,7 @@ public partial class App : Application
         }
 
         MessageBox.Show(
-            $"HabitGrid không thể khởi động.
-
-{ex.Message}",
+            $"HabitGrid không thể khởi động.\n\n{ex.Message}",
             "HabitGrid",
             MessageBoxButton.OK,
             MessageBoxImage.Error);

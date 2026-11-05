@@ -36,3 +36,8 @@ Ngân sách của SPEC-V2-05: 3 widget L + Today List < 60 MB, CPU nhàn rỗi <
 2. Kill Explorer trên máy test (tiêu chí 4).
 3. Đo CPU nhàn rỗi bản Release trong 2 phút sau khi ổn định.
 4. Đo RAM WidgetHost WPF với 3 widget.
+
+## Cập nhật 05/11/2026 — quyết định và đo WPF
+- **Quyết định:** WidgetHost v2.0 dùng WPF (đã ghi vào SPEC-V2-05 §1).
+- Core/Data/Platform/UI/App và 4 project test đã nâng lên **.NET 10**; 208 test pass; cảnh báo lỗ hổng SQLite (NU1903) đã xử lý bằng ghim `SQLitePCLRaw.lib.e_sqlite3` 2.1.14.
+- **Đo sơ bộ app v1 WPF (Debug, `--background`, 1 widget, cửa sổ chính dựng ẩn):** 156 MB working set / 91 MB private, CPU nhàn rỗi 0% trong 20 s. Đây là toàn bộ app, **không** đại diện cho WidgetHost. Cần đo lại khi `HabitGrid.WidgetHost` tồn tại (Release, chỉ widget, 3 widget L + Today List). Nếu vẫn > 60 MB thì cân nhắc phương án B.
