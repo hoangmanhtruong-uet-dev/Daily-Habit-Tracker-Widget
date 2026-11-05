@@ -18,7 +18,7 @@ public sealed class GradientBackdrop : UserControl
 {
     private const double BlobSize = 720;
 
-    private readonly Grid _root = new();
+    private readonly Canvas _root = new();
     private readonly List<Ellipse> _blobs = [];
     private readonly List<AnimationController?> _controllers = [];
     private bool _animated;
@@ -43,9 +43,7 @@ public sealed class GradientBackdrop : UserControl
             var blob = new Ellipse
             {
                 Width = BlobSize,
-                Height = BlobSize,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Top
+                Height = BlobSize
             };
             _blobs.Add(blob);
             _root.Children.Add(blob);
@@ -99,12 +97,12 @@ public sealed class GradientBackdrop : UserControl
         for (var i = 0; i < _blobs.Count; i++)
         {
             var (x, y, _, _) = Layout[i];
-            _blobs[i].Margin = new Thickness(
-                x * ActualWidth - BlobSize / 2,
-                y * ActualHeight - BlobSize / 2,
-                0,
-                0);
+            Canvas.SetLeft(_blobs[i], x * ActualWidth - BlobSize / 2);
+            Canvas.SetTop(_blobs[i], y * ActualHeight - BlobSize / 2);
         }
+
+        // Cắt đúng khung điều khiển để đốm màu không tràn ra ngoài (kể cả khi chụp ảnh).
+        Clip = new RectangleGeometry { Rect = new Windows.Foundation.Rect(0, 0, ActualWidth, ActualHeight) };
     }
 
     private void Start()

@@ -143,11 +143,11 @@ public static class SmokeRunner
                       ?? throw new InvalidOperationException("Không có thói quen kiểu có/không để check-in.");
 
         var doneBefore = today.DoneCount;
-        var button = FindButtons(window.Content).FirstOrDefault(b => b.Tag is HabitTodayItem item && item.Id == pending.Id)
+        var button = FindCards(window.Content).FirstOrDefault(c => c.Item?.Id == pending.Id)
                      ?? throw new InvalidOperationException("Không tìm thấy nút check trên giao diện.");
 
-        button.PerformClick();
-        await Task.Delay(800);
+        await button.PerformClickAsync();
+        await Task.Delay(900);
 
         var saved = await logs.GetAsync(pending.Id, today.Today)
                     ?? throw new InvalidOperationException("Bấm nút nhưng DB không có ghi nhận.");
@@ -161,6 +161,37 @@ public static class SmokeRunner
         await Task.Delay(500);
         Require(await logs.GetAsync(pending.Id, today.Today) is null && today.DoneCount == doneBefore, "Hoàn tác không đưa dữ liệu về trạng thái trước.");
         logger.Info("SMOKE undo OK");
+
+        // Trạng thái dở dang của thẻ số (thanh tiến độ), rồi hoàn thành cả ngày (hero ăn mừng), rồi xem ngày cũ.
+        var numeric = today.Groups.SelectMany(g => g.Items).FirstOrDefault(i => i.Kind is HabitKind.Duration or HabitKind.Count);
+        if (numeric is not null)
+        {
+            await today.SetValueAsync(numeric, Math.Max(1, numeric.Target / 3));
+            await Task.Delay(700);
+            await SnapAsync(window, "today-partial");
+            Require(numeric.Status != DayStatus.Done && numeric.Progress > 0, "Thẻ số không hiện tiến độ dở dang.");
+        }
+
+        foreach (var item in today.Groups.SelectMany(g => g.Items).Where(i => !i.IsDone && i.Kind != HabitKind.Quit).ToList())
+        {
+            var card = FindCards(window.Content).First(c => c.Item?.Id == item.Id);
+            await card.PerformClickAsync();
+            await Task.Delay(500);
+        }
+
+        await Task.Delay(700);
+        Require(today.AllDone, "Check hết mà chưa AllDone.");
+        Require(today.BuddyMood == BuddyMood.Ecstatic, "Buddy không ăn mừng khi xong hết.");
+        await SnapAsync(window, "today-all-done");
+        logger.Info("SMOKE all-done OK");
+
+        await today.SelectDayAsync(today.Today.AddDays(-1));
+        await Task.Delay(700);
+        Require(today.IsViewingPast, "Không chuyển sang xem ngày cũ.");
+        await SnapAsync(window, "today-past-day");
+        await today.SelectDayAsync(today.Today);
+        await Task.Delay(400);
+        logger.Info("SMOKE past-day OK");
     }
 
     // ------------------------------------------------------------------ tạo / sửa thói quen
@@ -281,7 +312,7 @@ public static class SmokeRunner
         }
     }
 
-    private static IEnumerable<HabitCheckButton> FindButtons(DependencyObject? parent)
+    private static IEnumerable<HabitCard> FindCards(DependencyObject? parent)
     {
         if (parent is null)
         {
@@ -293,12 +324,12 @@ public static class SmokeRunner
         {
             var child = VisualTreeHelper.GetChild(parent, i);
 
-            if (child is HabitCheckButton button)
+            if (child is HabitCard card)
             {
-                yield return button;
+                yield return card;
             }
 
-            foreach (var nested in FindButtons(child))
+            foreach (var nested in FindCards(child))
             {
                 yield return nested;
             }

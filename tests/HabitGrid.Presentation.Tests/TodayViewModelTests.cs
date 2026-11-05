@@ -71,7 +71,7 @@ public class TodayViewModelTests
         await vm.CheckInAsync(item);
 
         vm.Completed.Should().ContainSingle().Which.Name.Should().Be("Đọc sách");
-        vm.Groups.Should().BeEmpty();
+        vm.Groups.Single().Items.Should().ContainSingle();
         vm.DoneCount.Should().Be(1);
         vm.AllDone.Should().BeTrue();
         vm.Completed[0].Streak.Should().Be(3);

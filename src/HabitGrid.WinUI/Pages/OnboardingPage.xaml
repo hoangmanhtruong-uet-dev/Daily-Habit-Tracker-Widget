@@ -13,7 +13,7 @@
                 <TextBlock x:Name="WelcomeTitle" Style="{StaticResource TitleLargeTextBlockStyle}" HorizontalAlignment="Center" TextAlignment="Center" />
                 <TextBlock x:Name="WelcomeBody" TextWrapping="Wrap" TextAlignment="Center"
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                <Button x:Name="StartButton" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Center"
+                <Button x:Name="StartButton" Style="{StaticResource GradientButtonStyle}" HorizontalAlignment="Center"
                         Margin="0,12,0,0" Padding="28,10" Click="OnStartClick" />
                 <HyperlinkButton x:Name="SkipButton" HorizontalAlignment="Center" Click="OnSkipClick" />
             </StackPanel>
@@ -83,7 +83,7 @@
                 <TextBlock x:Name="StepText" Style="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Center"
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
             </StackPanel>
-            <Button Grid.Column="2" x:Name="NextButton" Style="{StaticResource AccentButtonStyle}" Padding="24,8"
+            <Button Grid.Column="2" x:Name="NextButton" Style="{StaticResource GradientButtonStyle}" Padding="24,8"
                     Click="OnNextClick" />
         </Grid>
     </Grid>

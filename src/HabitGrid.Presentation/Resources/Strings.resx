@@ -146,4 +146,23 @@
   <data name="onboarding.step" xml:space="preserve"><value>Bước {0}/{1}</value></data>
   <data name="onboarding.limit.topics" xml:space="preserve"><value>Chỉ chọn tối đa 3 chủ đề.</value></data>
   <data name="onboarding.limit.picks" xml:space="preserve"><value>Chỉ chọn tối đa 3 thói quen.</value></data>
+  <data name="today.buddy.sleepy" xml:space="preserve"><value>{0} đang ngái ngủ…</value></data>
+  <data name="today.buddy.okay" xml:space="preserve"><value>{0} đang khởi động</value></data>
+  <data name="today.buddy.happy" xml:space="preserve"><value>{0} đang vui!</value></data>
+  <data name="today.buddy.ecstatic" xml:space="preserve"><value>{0} nhảy cẫng lên! 🎉</value></data>
+  <data name="today.streakLabel" xml:space="preserve"><value>ngày liền</value></data>
+  <data name="today.freeze" xml:space="preserve"><value>❄ {0} freeze</value></data>
+  <data name="today.level" xml:space="preserve"><value>Lv {0} · {1} XP</value></data>
+  <data name="today.viewing" xml:space="preserve"><value>Đang xem {0}</value></data>
+  <data name="today.backToToday" xml:space="preserve"><value>Về hôm nay</value></data>
+  <data name="today.menu.skip" xml:space="preserve"><value>Bỏ qua hôm nay</value></data>
+  <data name="today.menu.unskip" xml:space="preserve"><value>Bỏ đánh dấu bỏ qua</value></data>
+  <data name="today.menu.minus" xml:space="preserve"><value>Giảm 1</value></data>
+  <data name="today.state.done" xml:space="preserve"><value>Xong</value></data>
+  <data name="today.state.skipped" xml:space="preserve"><value>Đã bỏ qua</value></data>
+  <data name="today.tapToCheck" xml:space="preserve"><value>Chạm để check</value></data>
+  <data name="today.tapToAdd" xml:space="preserve"><value>Chạm để +1</value></data>
+  <data name="today.relax" xml:space="preserve"><value>Hôm nay nghỉ nhé 😴</value></data>
+  <data name="skip.limit" xml:space="preserve"><value>Mỗi thói quen chỉ bỏ qua tối đa 2 lần mỗi tuần.</value></data>
+  <data name="week.today" xml:space="preserve"><value>Hôm nay</value></data>
 </root>

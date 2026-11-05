@@ -146,4 +146,23 @@
   <data name="onboarding.step" xml:space="preserve"><value>Step {0} of {1}</value></data>
   <data name="onboarding.limit.topics" xml:space="preserve"><value>You can pick up to 3 topics.</value></data>
   <data name="onboarding.limit.picks" xml:space="preserve"><value>You can pick up to 3 habits.</value></data>
+  <data name="today.buddy.sleepy" xml:space="preserve"><value>{0} is sleepy…</value></data>
+  <data name="today.buddy.okay" xml:space="preserve"><value>{0} is warming up</value></data>
+  <data name="today.buddy.happy" xml:space="preserve"><value>{0} is happy!</value></data>
+  <data name="today.buddy.ecstatic" xml:space="preserve"><value>{0} is over the moon! 🎉</value></data>
+  <data name="today.streakLabel" xml:space="preserve"><value>day streak</value></data>
+  <data name="today.freeze" xml:space="preserve"><value>❄ {0} freezes</value></data>
+  <data name="today.level" xml:space="preserve"><value>Lv {0} · {1} XP</value></data>
+  <data name="today.viewing" xml:space="preserve"><value>Viewing {0}</value></data>
+  <data name="today.backToToday" xml:space="preserve"><value>Back to today</value></data>
+  <data name="today.menu.skip" xml:space="preserve"><value>Skip this day</value></data>
+  <data name="today.menu.unskip" xml:space="preserve"><value>Undo skip</value></data>
+  <data name="today.menu.minus" xml:space="preserve"><value>Minus 1</value></data>
+  <data name="today.state.done" xml:space="preserve"><value>Done</value></data>
+  <data name="today.state.skipped" xml:space="preserve"><value>Skipped</value></data>
+  <data name="today.tapToCheck" xml:space="preserve"><value>Tap to check</value></data>
+  <data name="today.tapToAdd" xml:space="preserve"><value>Tap to add 1</value></data>
+  <data name="today.relax" xml:space="preserve"><value>Nothing due today 😴</value></data>
+  <data name="skip.limit" xml:space="preserve"><value>Each habit can be skipped at most twice a week.</value></data>
+  <data name="week.today" xml:space="preserve"><value>Today</value></data>
 </root>

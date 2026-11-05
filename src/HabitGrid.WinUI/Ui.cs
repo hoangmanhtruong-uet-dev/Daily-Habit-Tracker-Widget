@@ -168,4 +168,17 @@ public static class Ui
 
     public static string TopicTitle(Presentation.Templates.HabitTopic topic) =>
         T($"topic.{topic.ToString().ToLowerInvariant()}");
+
+    /// <summary>Gradient chéo của một thói quen; <paramref name="opacity"/> dùng cho viền/nền nhạt.</summary>
+    public static LinearGradientBrush GradientBrush(GradientStops stops, double opacity = 1)
+    {
+        var brush = new LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, 0), EndPoint = new Windows.Foundation.Point(1, 1), Opacity = opacity };
+        brush.GradientStops.Add(new GradientStop { Color = ParseColor(stops.Start), Offset = 0 });
+        brush.GradientStops.Add(new GradientStop { Color = ParseColor(stops.End), Offset = 1 });
+        return brush;
+    }
+
+    /// <summary>Văn hoá theo ngôn ngữ đang dùng (định dạng ngày).</summary>
+    public static System.Globalization.CultureInfo CurrentCulture =>
+        System.Globalization.CultureInfo.GetCultureInfo(Loc.Language == "en" ? "en" : "vi");
 }

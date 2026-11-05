@@ -196,7 +196,8 @@ public sealed class AppHost : IDisposable
             null,
             sp.GetRequiredService<IDataChangeBus>(),
             sp.GetRequiredService<IUiDispatcher>(),
-            sp.GetRequiredService<IAppLogger>()));
+            sp.GetRequiredService<IAppLogger>(),
+            sp.GetRequiredService<IProfileRepository>()));
         services.AddSingleton<HabitsViewModel>(sp => new HabitsViewModel(
             sp.GetRequiredService<IHabitRepository>(),
             sp.GetRequiredService<IDayLogRepository>(),

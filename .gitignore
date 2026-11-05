@@ -34,3 +34,6 @@ coverage*.xml
 # OS
 Thumbs.db
 .DS_Store
+
+# CI screenshots downloaded for review
+artifacts/

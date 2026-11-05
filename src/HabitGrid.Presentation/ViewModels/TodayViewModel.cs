@@ -2,12 +2,12 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HabitGrid.Core.Domain;
-using IDayProvider = HabitGrid.Core.Services.IDayProvider;
 using HabitGrid.Presentation.Services;
+using IDayProvider = HabitGrid.Core.Services.IDayProvider;
 
 namespace HabitGrid.Presentation.ViewModels;
 
-/// <summary>Một dòng thói quen trên trang Hôm nay.</summary>
+/// <summary>Một thẻ thói quen trên trang Hôm nay. Được tái sử dụng giữa các lần tải để giao diện chạy được hiệu ứng khi giá trị đổi.</summary>
 public sealed partial class HabitTodayItem : ObservableObject
 {
     public HabitTodayItem(Habit habit)
@@ -15,7 +15,7 @@ public sealed partial class HabitTodayItem : ObservableObject
         Habit = habit;
     }
 
-    public Habit Habit { get; }
+    public Habit Habit { get; private set; }
 
     public Guid Id => Habit.Id;
 
@@ -46,13 +46,15 @@ public sealed partial class HabitTodayItem : ObservableObject
     [ObservableProperty]
     private bool _atRisk;
 
-    /// <summary>Trạng thái 7 ngày gần nhất (cũ → mới, ngày cuối là hôm nay), dùng cho mini heatmap.</summary>
+    /// <summary>Trạng thái 7 ngày kết thúc ở ngày đang xem (cũ → mới), dùng cho mini heatmap.</summary>
     [ObservableProperty]
     private IReadOnlyList<DayStatus> _lastSevenDays = [];
 
     public bool IsDone => Status == DayStatus.Done;
 
-    /// <summary>0..1, dùng cho vòng tiến độ của loại đếm/thời lượng.</summary>
+    public bool IsSkipped => Status is DayStatus.Skipped or DayStatus.Frozen;
+
+    /// <summary>0..1, dùng cho thanh tiến độ của loại đếm/thời lượng.</summary>
     public double Progress => Kind switch
     {
         HabitKind.Boolean => IsDone ? 1 : 0,
@@ -60,23 +62,43 @@ public sealed partial class HabitTodayItem : ObservableObject
         _ => Math.Clamp(Value / (double)Target, 0, 1)
     };
 
+    /// <summary>Thay dữ liệu thói quen (sau khi sửa) mà vẫn giữ cùng đối tượng thẻ.</summary>
+    internal void Replace(Habit habit)
+    {
+        Habit = habit;
+        OnPropertyChanged(string.Empty);
+    }
+
     partial void OnValueChanged(int value) => OnPropertyChanged(nameof(Progress));
 
     partial void OnStatusChanged(DayStatus value)
     {
         OnPropertyChanged(nameof(IsDone));
+        OnPropertyChanged(nameof(IsSkipped));
         OnPropertyChanged(nameof(Progress));
     }
 }
 
+/// <summary>Nhóm thẻ theo khung giờ. Gồm cả thẻ đã xong: thẻ đổi màu tại chỗ chứ không nhảy sang chỗ khác.</summary>
 public sealed record TodayGroup(TimeOfDay TimeOfDay, IReadOnlyList<HabitTodayItem> Items);
+
+/// <summary>Một ngày trong dải tuần.</summary>
+public sealed record DayBubble(DateOnly Day, double? Fraction, bool IsToday, bool IsSelected, bool IsFuture);
 
 /// <summary>Thao tác gần nhất để hoàn tác.</summary>
 public sealed record UndoEntry(Guid HabitId, string HabitName, DateOnly Day, DayLog? Previous);
 
+public enum BuddyMood
+{
+    Sleepy,
+    Okay,
+    Happy,
+    Ecstatic
+}
+
 /// <summary>
-/// Trang "Hôm nay" (SPEC-V2-04 §5, 02-UX-SCREENS §3): danh sách thói quen cần làm hôm nay theo khung giờ,
-/// check-in một chạm, hoàn tác, tiến độ trong ngày.
+/// Trang "Hôm nay" (03-UI-REBUILD-GLOW2 §5.2): dải tuần, hero (Buddy + tiến độ), streak tổng, lưới thẻ thói quen
+/// theo khung giờ, check-in một chạm cho ngày đang xem (kể cả ngày cũ), bỏ qua, hoàn tác.
 /// </summary>
 public sealed partial class TodayViewModel : ObservableObject, IDisposable
 {
@@ -88,7 +110,10 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
     private readonly IDataChangeBus? _bus;
     private readonly IUiDispatcher _dispatcher;
     private readonly IAppLogger _logger;
+    private readonly IProfileRepository? _profile;
     private readonly SemaphoreSlim _loadGate = new(1, 1);
+    private readonly Dictionary<Guid, HabitTodayItem> _items = [];
+    private string _structure = string.Empty;
     private int _writes;
     private bool _disposed;
 
@@ -100,7 +125,8 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
         IScheduleCalculator? schedule = null,
         IDataChangeBus? bus = null,
         IUiDispatcher? dispatcher = null,
-        IAppLogger? logger = null)
+        IAppLogger? logger = null,
+        IProfileRepository? profile = null)
     {
         _habits = habits ?? throw new ArgumentNullException(nameof(habits));
         _logs = logs ?? throw new ArgumentNullException(nameof(logs));
@@ -110,6 +136,7 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
         _bus = bus;
         _dispatcher = dispatcher ?? new ImmediateDispatcher();
         _logger = logger ?? NullLogger.Instance;
+        _profile = profile;
 
         if (_bus is not null)
         {
@@ -117,16 +144,25 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
         }
     }
 
-    /// <summary>Thói quen chưa xong, nhóm theo khung giờ (Sáng, Chiều, Tối, Bất kỳ).</summary>
+    /// <summary>Thẻ cần làm ở ngày đang xem, nhóm theo khung giờ (gồm cả thẻ đã xong).</summary>
     public ObservableCollection<TodayGroup> Groups { get; } = [];
 
-    /// <summary>Đã xong hôm nay.</summary>
+    /// <summary>Các thẻ đã xong (tập con của <see cref="Groups"/>, tiện cho đếm và kiểm thử).</summary>
     public ObservableCollection<HabitTodayItem> Completed { get; } = [];
 
-    /// <summary>Không có lịch hôm nay.</summary>
+    /// <summary>Không có lịch ở ngày đang xem.</summary>
     public ObservableCollection<HabitTodayItem> NotToday { get; } = [];
 
+    /// <summary>Dải tuần hiện tại (Thứ Hai → Chủ Nhật).</summary>
+    public ObservableCollection<DayBubble> Week { get; } = [];
+
+    /// <summary>Hôm nay thật (theo mốc chuyển ngày).</summary>
     public DateOnly Today { get; private set; }
+
+    /// <summary>Ngày đang xem/sửa. Mặc định là hôm nay.</summary>
+    public DateOnly SelectedDay { get; private set; }
+
+    public bool IsViewingPast => SelectedDay != default && SelectedDay < Today;
 
     [ObservableProperty]
     private int _doneCount;
@@ -146,11 +182,35 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string? _errorMessage;
 
+    /// <summary>Số ngày liên tiếp có ít nhất một thói quen xong (hôm nay chưa xong thì chuỗi vẫn sống).</summary>
+    [ObservableProperty]
+    private int _overallStreak;
+
+    [ObservableProperty]
+    private int _freezeTokens;
+
+    [ObservableProperty]
+    private string _buddyName = string.Empty;
+
+    [ObservableProperty]
+    private long _xp;
+
+    [ObservableProperty]
+    private int _level = 1;
+
     public double ProgressFraction => TotalCount == 0 ? 0 : DoneCount / (double)TotalCount;
 
     public bool AllDone => TotalCount > 0 && DoneCount == TotalCount;
 
     public bool CanUndo => LastAction is not null;
+
+    public BuddyMood BuddyMood => !AllDone && TotalCount == 0
+        ? BuddyMood.Sleepy
+        : AllDone
+            ? BuddyMood.Ecstatic
+            : DoneCount == 0
+                ? BuddyMood.Sleepy
+                : ProgressFraction < 0.5 ? BuddyMood.Okay : BuddyMood.Happy;
 
     partial void OnDoneCountChanged(int value) => RaiseProgress();
 
@@ -162,6 +222,23 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
     {
         OnPropertyChanged(nameof(ProgressFraction));
         OnPropertyChanged(nameof(AllDone));
+        OnPropertyChanged(nameof(BuddyMood));
+    }
+
+    // ------------------------------------------------------------------ chọn ngày
+
+    /// <summary>Xem (và sửa) một ngày trong tuần. Ngày tương lai bị bỏ qua.</summary>
+    public async Task SelectDayAsync(DateOnly day)
+    {
+        var today = _dayProvider.GetToday();
+        if (day > today)
+        {
+            return;
+        }
+
+        SelectedDay = day;
+        OnPropertyChanged(nameof(SelectedDay));
+        await LoadAsync();
     }
 
     // ------------------------------------------------------------------ nạp dữ liệu
@@ -177,16 +254,45 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
             ErrorMessage = null;
 
             var today = _dayProvider.GetToday();
+            var rolledOver = Today != default && today != Today;
+            var selected = SelectedDay == default || rolledOver && SelectedDay == Today || SelectedDay > today ? today : SelectedDay;
+
             var habits = await _habits.GetAllActiveAsync();
-            var items = new List<HabitTodayItem>();
+            var logsByHabit = new Dictionary<Guid, IReadOnlyList<DayLog>>();
 
             foreach (var habit in habits)
             {
-                var logs = await _logs.GetAllForHabitAsync(habit.Id);
-                items.Add(BuildItem(habit, logs, today));
+                logsByHabit[habit.Id] = await _logs.GetAllForHabitAsync(habit.Id);
             }
 
-            _dispatcher.Post(() => Apply(today, items));
+            var profile = _profile is null ? null : await _profile.GetAsync();
+            var week = BuildWeek(habits, logsByHabit, today, selected);
+            var streak = ComputeOverallStreak(logsByHabit, today);
+
+            _dispatcher.Post(() =>
+            {
+                Today = today;
+                SelectedDay = selected;
+                OnPropertyChanged(nameof(SelectedDay));
+                OnPropertyChanged(nameof(IsViewingPast));
+                Apply(habits, logsByHabit, today, selected);
+
+                Week.Clear();
+                foreach (var bubble in week)
+                {
+                    Week.Add(bubble);
+                }
+
+                OverallStreak = streak;
+
+                if (profile is not null)
+                {
+                    BuddyName = profile.BuddyName;
+                    Xp = profile.Xp;
+                    Level = profile.Level;
+                    FreezeTokens = profile.FreezeTokens;
+                }
+            });
         }
         catch (Exception ex)
         {
@@ -200,79 +306,173 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
         }
     }
 
-    private HabitTodayItem BuildItem(Habit habit, IReadOnlyList<DayLog> logs, DateOnly today)
+    private void Apply(
+        IReadOnlyList<Habit> habits,
+        Dictionary<Guid, IReadOnlyList<DayLog>> logsByHabit,
+        DateOnly today,
+        DateOnly selected)
     {
-        var item = new HabitTodayItem(habit);
-        FillItem(item, logs, today);
-        return item;
-    }
-
-    private void FillItem(HabitTodayItem item, IReadOnlyList<DayLog> logs, DateOnly today)
-    {
-        var habit = item.Habit;
-        var todayLog = logs.FirstOrDefault(l => l.Day == today);
-        var streak = _streaks.Calculate(habit, logs, today);
-
-        item.Value = todayLog?.Value ?? 0;
-        item.Status = todayLog?.Status ?? DayStatus.None;
-        item.Streak = streak.Current;
-        item.StreakUnit = streak.Unit;
-        item.AtRisk = streak.AtRiskToday;
-
-        var byDay = logs.ToDictionary(l => l.Day, l => l.Status);
-        item.LastSevenDays = Enumerable.Range(-6, 7)
-            .Select(offset => byDay.GetValueOrDefault(today.AddDays(offset), DayStatus.None))
-            .ToList();
-    }
-
-    private void Apply(DateOnly today, List<HabitTodayItem> items)
-    {
-        Today = today;
-        Groups.Clear();
-        Completed.Clear();
-        NotToday.Clear();
-
         var scheduled = new List<HabitTodayItem>();
+        var unscheduled = new List<HabitTodayItem>();
+        var seen = new HashSet<Guid>();
 
-        foreach (var item in items)
+        foreach (var habit in habits)
         {
-            if (!_schedule.IsScheduled(item.Habit, today))
+            seen.Add(habit.Id);
+
+            // Tái sử dụng thẻ khi thói quen không đổi để giao diện chạy hiệu ứng thay vì dựng lại.
+            if (!_items.TryGetValue(habit.Id, out var item))
             {
-                NotToday.Add(item);
+                item = new HabitTodayItem(habit);
+                _items[habit.Id] = item;
             }
-            else
+            else if (item.Habit.Version != habit.Version)
             {
-                scheduled.Add(item);
+                item.Replace(habit);
+            }
+
+            FillItem(item, habit, logsByHabit[habit.Id], today, selected);
+            (_schedule.IsScheduled(habit, selected) ? scheduled : unscheduled).Add(item);
+        }
+
+        foreach (var gone in _items.Keys.Where(id => !seen.Contains(id)).ToList())
+        {
+            _items.Remove(gone);
+        }
+
+        // Chỉ dựng lại cấu trúc nhóm khi tập thẻ/thứ tự đổi; còn lại thẻ tự cập nhật qua PropertyChanged.
+        var groups = new List<TodayGroup>();
+        foreach (var time in new[] { TimeOfDay.Morning, TimeOfDay.Afternoon, TimeOfDay.Evening, TimeOfDay.Anytime })
+        {
+            var inGroup = scheduled.Where(i => i.Habit.TimeOfDay == time).ToList();
+            if (inGroup.Count > 0)
+            {
+                groups.Add(new TodayGroup(time, inGroup));
             }
         }
 
-        // Thói quen "cần bỏ" luôn nằm trong danh sách (để ghi nhận lần lỡ) và không tính vào tiến độ ngày.
+        var structure = string.Join(
+            ";",
+            groups.Select(g => $"{g.TimeOfDay}:{string.Join(",", g.Items.Select(i => i.Id))}"))
+            + "|" + string.Join(",", unscheduled.Select(i => i.Id));
+
+        if (structure != _structure)
+        {
+            _structure = structure;
+            Groups.Clear();
+            foreach (var group in groups)
+            {
+                Groups.Add(group);
+            }
+        }
+
+        // Thói quen "cần bỏ" luôn hiển thị (để ghi nhận lần lỡ) nhưng không tính vào tiến độ ngày.
         var trackable = scheduled.Where(i => i.Kind != HabitKind.Quit).ToList();
 
+        Completed.Clear();
         foreach (var item in trackable.Where(i => i.IsDone))
         {
             Completed.Add(item);
         }
 
-        var pending = scheduled.Where(i => i.Kind == HabitKind.Quit || !i.IsDone).ToList();
-
-        foreach (var time in new[] { TimeOfDay.Morning, TimeOfDay.Afternoon, TimeOfDay.Evening, TimeOfDay.Anytime })
+        NotToday.Clear();
+        foreach (var item in unscheduled)
         {
-            var inGroup = pending.Where(i => i.Habit.TimeOfDay == time).ToList();
-            if (inGroup.Count > 0)
-            {
-                Groups.Add(new TodayGroup(time, inGroup));
-            }
+            NotToday.Add(item);
         }
 
         TotalCount = trackable.Count;
         DoneCount = Completed.Count;
-        IsEmpty = items.Count == 0;
+        IsEmpty = habits.Count == 0;
+    }
+
+    private void FillItem(HabitTodayItem item, Habit habit, IReadOnlyList<DayLog> logs, DateOnly today, DateOnly selected)
+    {
+        var selectedLog = logs.FirstOrDefault(l => l.Day == selected);
+
+        // Streak luôn tính theo hôm nay thật; chỉ giá trị/trạng thái theo ngày đang xem.
+        var streak = _streaks.Calculate(habit, logs, today);
+
+        item.Value = selectedLog?.Value ?? 0;
+        item.Status = selectedLog?.Status ?? DayStatus.None;
+        item.Streak = streak.Current;
+        item.StreakUnit = streak.Unit;
+        item.AtRisk = streak.AtRiskToday && selected == today;
+
+        var byDay = logs.ToDictionary(l => l.Day, l => l.Status);
+        item.LastSevenDays = Enumerable.Range(-6, 7)
+            .Select(offset => byDay.GetValueOrDefault(selected.AddDays(offset), DayStatus.None))
+            .ToList();
+    }
+
+    private List<DayBubble> BuildWeek(
+        IReadOnlyList<Habit> habits,
+        Dictionary<Guid, IReadOnlyList<DayLog>> logsByHabit,
+        DateOnly today,
+        DateOnly selected)
+    {
+        var start = PeriodCalendar.StartOfWeek(today, DayOfWeek.Monday);
+        var bubbles = new List<DayBubble>();
+
+        for (var i = 0; i < 7; i++)
+        {
+            var day = start.AddDays(i);
+            var future = day > today;
+            double? fraction = null;
+
+            if (!future)
+            {
+                var total = 0;
+                var done = 0;
+
+                foreach (var habit in habits.Where(h => h.Kind != HabitKind.Quit && _schedule.IsScheduled(h, day)))
+                {
+                    total++;
+                    if (logsByHabit[habit.Id].Any(l => l.Day == day && l.Status == DayStatus.Done))
+                    {
+                        done++;
+                    }
+                }
+
+                fraction = total == 0 ? null : done / (double)total;
+            }
+
+            bubbles.Add(new DayBubble(day, fraction, day == today, day == selected, future));
+        }
+
+        return bubbles;
+    }
+
+    /// <summary>Chuỗi tổng: số ngày liên tiếp có ≥ 1 thói quen xong; ngày đóng băng nối chuỗi nhưng không được đếm.</summary>
+    private static int ComputeOverallStreak(Dictionary<Guid, IReadOnlyList<DayLog>> logsByHabit, DateOnly today)
+    {
+        var allLogs = logsByHabit.Values.SelectMany(l => l).ToList();
+        var done = allLogs.Where(l => l.Status == DayStatus.Done).Select(l => l.Day).ToHashSet();
+        var frozen = allLogs.Where(l => l.Status == DayStatus.Frozen).Select(l => l.Day).ToHashSet();
+
+        var day = done.Contains(today) ? today : today.AddDays(-1);
+        var count = 0;
+
+        for (var guard = 0; guard < 3700; guard++)
+        {
+            if (done.Contains(day))
+            {
+                count++;
+            }
+            else if (!frozen.Contains(day))
+            {
+                break;
+            }
+
+            day = day.AddDays(-1);
+        }
+
+        return count;
     }
 
     // ------------------------------------------------------------------ check-in
 
-    /// <summary>Chạm vào một dòng: có/không → đảo; đếm → +1; thời lượng → đảo giữa 0 và mục tiêu; cần bỏ → ghi một lần lỡ.</summary>
+    /// <summary>Chạm vào thẻ: có/không → đảo; đếm → +1; thời lượng → đảo giữa 0 và mục tiêu; cần bỏ → ghi một lần lỡ.</summary>
     [RelayCommand]
     public async Task CheckInAsync(HabitTodayItem? item)
     {
@@ -293,7 +493,7 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
         await SetValueAsync(item, newValue);
     }
 
-    /// <summary>Giảm một đơn vị (menu chuột phải của loại đếm, hoặc xóa một lần lỡ của loại cần bỏ).</summary>
+    /// <summary>Giảm một đơn vị (menu của loại đếm, hoặc xóa một lần lỡ của loại cần bỏ).</summary>
     [RelayCommand]
     public async Task DecrementAsync(HabitTodayItem? item)
     {
@@ -305,12 +505,12 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
         await SetValueAsync(item, item.Value - 1);
     }
 
-    /// <summary>Đặt giá trị cụ thể (nhập số từ menu).</summary>
+    /// <summary>Đặt giá trị cụ thể cho ngày đang xem.</summary>
     public async Task SetValueAsync(HabitTodayItem item, int newValue)
     {
         ArgumentNullException.ThrowIfNull(item);
 
-        var day = Today;
+        var day = SelectedDay == default ? Today : SelectedDay;
         Interlocked.Increment(ref _writes);
 
         try
@@ -352,6 +552,63 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
         catch (Exception ex)
         {
             _logger.Error($"Check-in thất bại cho {item.Name}", ex);
+            ErrorMessage = ex.Message;
+            return;
+        }
+        finally
+        {
+            Interlocked.Decrement(ref _writes);
+        }
+
+        await LoadAsync();
+    }
+
+    /// <summary>Bỏ qua (hoặc bỏ đánh dấu bỏ qua) ngày đang xem. Tối đa 2 lần/7 ngày cho mỗi thói quen.</summary>
+    [RelayCommand]
+    public async Task SkipAsync(HabitTodayItem? item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        var day = SelectedDay == default ? Today : SelectedDay;
+        Interlocked.Increment(ref _writes);
+
+        try
+        {
+            var previous = await _logs.GetAsync(item.Id, day);
+
+            if (previous is { Status: DayStatus.Skipped })
+            {
+                await _logs.DeleteAsync(item.Id, day);
+            }
+            else
+            {
+                var all = await _logs.GetAllForHabitAsync(item.Id);
+
+                if (!DayLogRules.CanSkip(all, day))
+                {
+                    ErrorMessage = "skip.limit";
+                    return;
+                }
+
+                await _logs.UpsertAsync(new DayLog
+                {
+                    HabitId = item.Id,
+                    Day = day,
+                    Value = 0,
+                    Status = DayStatus.Skipped,
+                    Note = previous?.Note,
+                    Mood = previous?.Mood
+                });
+            }
+
+            LastAction = new UndoEntry(item.Id, item.Name, day, previous);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error($"Bỏ qua thất bại cho {item.Name}", ex);
             ErrorMessage = ex.Message;
             return;
         }
@@ -412,7 +669,7 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
             return;
         }
 
-        if (change.Entity is DataEntity.Habit or DataEntity.DayLog or DataEntity.Everything)
+        if (change.Entity is DataEntity.Habit or DataEntity.DayLog or DataEntity.Profile or DataEntity.Everything)
         {
             _ = LoadAsync();
         }

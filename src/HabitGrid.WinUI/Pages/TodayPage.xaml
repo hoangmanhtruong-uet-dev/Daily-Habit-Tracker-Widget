@@ -8,107 +8,89 @@
     NavigationCacheMode="Required">
 
     <Page.Resources>
-        <DataTemplate x:Key="HabitRowTemplate" x:DataType="vm:HabitTodayItem">
-            <Border Style="{StaticResource CardBorder}" Margin="0,0,0,8">
-                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="14">
-                    <Border Width="42" Height="42" CornerRadius="12"
-                            Background="{x:Bind local:Ui.SoftBrush(ColorHue)}">
-                        <TextBlock Text="{x:Bind local:Ui.IconText(Icon)}" FontSize="21"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
+        <!-- Lưới thẻ tự co giãn 1–5 cột theo bề rộng -->
+        <UniformGridLayout x:Key="CardLayout" MinItemWidth="228" MinItemHeight="176"
+                           MinRowSpacing="14" MinColumnSpacing="14" ItemsStretch="Fill" />
 
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                        <TextBlock Text="{x:Bind Name}" Style="{StaticResource BodyStrongTextBlockStyle}"
-                                   TextTrimming="CharacterEllipsis" />
-                        <TextBlock Text="{x:Bind local:Ui.SubText(Kind, Value, Target, Unit, Streak, StreakUnit, AtRisk), Mode=OneWay}"
-                                   Style="{StaticResource CaptionTextBlockStyle}"
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                   TextTrimming="CharacterEllipsis" />
-                    </StackPanel>
-
-                    <controls:MiniWeek Grid.Column="2" ColorHue="{x:Bind ColorHue}"
-                                       Statuses="{x:Bind LastSevenDays, Mode=OneWay}" />
-
-                    <controls:HabitCheckButton Grid.Column="3" Tag="{x:Bind}" Click="OnCheckClick"
-                                               ColorHue="{x:Bind ColorHue}" IsDone="{x:Bind IsDone, Mode=OneWay}"
-                                               Progress="{x:Bind Progress, Mode=OneWay}"
-                                               Label="{x:Bind local:Ui.RingLabel(Kind, Value, Target), Mode=OneWay}" />
-                </Grid>
-            </Border>
+        <DataTemplate x:Key="CardTemplate" x:DataType="vm:HabitTodayItem">
+            <controls:HabitCard Item="{x:Bind}" />
         </DataTemplate>
 
         <DataTemplate x:Key="GroupTemplate" x:DataType="vm:TodayGroup">
             <StackPanel>
                 <TextBlock Text="{x:Bind local:Ui.GroupTitle(TimeOfDay)}" Style="{StaticResource SectionHeader}" />
-                <ItemsControl ItemsSource="{x:Bind Items}" ItemTemplate="{StaticResource HabitRowTemplate}" />
+                <ItemsRepeater ItemsSource="{x:Bind Items}" ItemTemplate="{StaticResource CardTemplate}"
+                               Layout="{StaticResource CardLayout}" />
             </StackPanel>
         </DataTemplate>
     </Page.Resources>
 
-    <Grid Padding="36,28,36,16" RowDefinitions="Auto,*,Auto">
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Padding="30,8,34,40" Spacing="0">
 
-        <!-- Đầu trang: lời chào, ngày, tiến độ trong ngày -->
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="16">
-            <StackPanel Spacing="2">
-                <TextBlock x:Name="GreetingText" Style="{StaticResource TitleLargeTextBlockStyle}" />
-                <TextBlock x:Name="DateText" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-            </StackPanel>
-
-            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Right">
-                    <TextBlock x:Name="ProgressText" Style="{StaticResource BodyStrongTextBlockStyle}" HorizontalAlignment="Right" />
-                    <TextBlock x:Name="AllDoneText" Foreground="{ThemeResource SuccessBrush}" HorizontalAlignment="Right"
-                               Visibility="Collapsed" />
-                </StackPanel>
-                <Grid Width="52" Height="52">
-                    <ProgressRing x:Name="Ring" Minimum="0" Maximum="1" IsIndeterminate="False" Width="52" Height="52"
-                                  Foreground="{ThemeResource AccentBrandBrush}" Value="0" />
-                </Grid>
-                <Button x:Name="AddButton" Click="OnAddClick" Style="{StaticResource AccentButtonStyle}">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <FontIcon Glyph="&#xE710;" FontSize="14" />
-                        <TextBlock x:Name="AddButtonText" />
+                <!-- Đầu trang -->
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" Margin="0,4,0,0">
+                    <StackPanel Spacing="2">
+                        <TextBlock x:Name="GreetingText" Style="{StaticResource DisplayTextStyle}" />
+                        <TextBlock x:Name="DateText" Style="{StaticResource BodySecondaryTextStyle}" />
                     </StackPanel>
-                </Button>
-            </StackPanel>
-        </Grid>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <Button x:Name="BackToTodayButton" Style="{StaticResource GhostButtonStyle}" Visibility="Collapsed"
+                                Click="OnBackToToday" />
+                        <Button x:Name="AddButton" Style="{StaticResource GradientButtonStyle}" Click="OnAddClick">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE710;" FontSize="14" />
+                                <TextBlock x:Name="AddButtonText" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
 
-        <!-- Danh sách -->
-        <ScrollViewer Grid.Row="1" Margin="0,8,0,0" VerticalScrollBarVisibility="Auto">
-            <StackPanel Spacing="0" Padding="0,0,12,24">
+                <!-- Dải tuần -->
+                <controls:WeekStrip x:Name="Strip" Margin="0,18,0,14" />
+
+                <!-- Bento: hero + streak -->
+                <Grid ColumnDefinitions="2*,*" ColumnSpacing="14">
+                    <controls:HeroTile x:Name="Hero" />
+                    <controls:StreakTile x:Name="StreakBox" Grid.Column="1" />
+                </Grid>
+
+                <!-- Thẻ thói quen theo khung giờ -->
                 <ItemsControl ItemsSource="{x:Bind ViewModel.Groups}" ItemTemplate="{StaticResource GroupTemplate}" />
 
-                <StackPanel x:Name="CompletedPanel" Visibility="Collapsed">
-                    <TextBlock x:Name="CompletedHeader" Style="{StaticResource SectionHeader}" />
-                    <ItemsControl ItemsSource="{x:Bind ViewModel.Completed}" ItemTemplate="{StaticResource HabitRowTemplate}" />
-                </StackPanel>
-
-                <StackPanel x:Name="NotTodayPanel" Visibility="Collapsed" Opacity="0.65">
-                    <TextBlock x:Name="NotTodayHeader" Style="{StaticResource SectionHeader}" />
-                    <ItemsControl ItemsSource="{x:Bind ViewModel.NotToday}" ItemTemplate="{StaticResource HabitRowTemplate}" />
+                <!-- Không cần hôm nay -->
+                <StackPanel x:Name="NotTodayPanel" Visibility="Collapsed">
+                    <ToggleButton x:Name="NotTodayToggle" Style="{StaticResource ChipStyle}" HorizontalAlignment="Left"
+                                  Margin="0,24,0,12" Click="OnNotTodayToggle" />
+                    <ItemsRepeater x:Name="NotTodayRepeater" ItemsSource="{x:Bind ViewModel.NotToday}"
+                                   ItemTemplate="{StaticResource CardTemplate}" Layout="{StaticResource CardLayout}"
+                                   Visibility="Collapsed" Opacity="0.55" />
                 </StackPanel>
 
                 <!-- Trạng thái trống -->
                 <StackPanel x:Name="EmptyPanel" Visibility="Collapsed" HorizontalAlignment="Center"
-                            Margin="0,72,0,0" Spacing="10" MaxWidth="420">
-                    <TextBlock Text="🌱" FontSize="64" HorizontalAlignment="Center" />
-                    <TextBlock x:Name="EmptyTitle" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" />
+                            Margin="0,48,0,0" Spacing="10" MaxWidth="440">
+                    <TextBlock Text="🐣" FontSize="72" HorizontalAlignment="Center" />
+                    <TextBlock x:Name="EmptyTitle" Style="{StaticResource TitleDisplayTextStyle}" HorizontalAlignment="Center" />
                     <TextBlock x:Name="EmptyBody" TextWrapping="Wrap" TextAlignment="Center"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                    <Button x:Name="EmptyAddButton" Click="OnAddClick" Style="{StaticResource AccentButtonStyle}"
-                            HorizontalAlignment="Center" Margin="0,8,0,0" />
+                               Style="{StaticResource BodySecondaryTextStyle}" />
+                    <Button x:Name="EmptyAddButton" Style="{StaticResource GradientButtonStyle}" Click="OnAddClick"
+                            HorizontalAlignment="Center" Margin="0,10,0,0" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
 
-        <!-- Hoàn tác + lỗi -->
-        <StackPanel Grid.Row="2" Spacing="8">
+        <!-- Hoàn tác + lỗi nổi ở đáy -->
+        <StackPanel VerticalAlignment="Bottom" Margin="30,0,34,16" Spacing="8">
             <InfoBar x:Name="UndoBar" Severity="Success" IsClosable="True" IsOpen="False">
                 <InfoBar.ActionButton>
                     <Button x:Name="UndoButton" Click="OnUndoClick" />
                 </InfoBar.ActionButton>
             </InfoBar>
-            <InfoBar x:Name="ErrorBar" Severity="Error" IsClosable="True" IsOpen="False" />
+            <InfoBar x:Name="ErrorBar" Severity="Warning" IsClosable="True" IsOpen="False" />
         </StackPanel>
+
+        <controls:ConfettiOverlay x:Name="Confetti" />
     </Grid>
 </Page>
