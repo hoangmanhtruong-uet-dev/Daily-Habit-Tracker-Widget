@@ -124,6 +124,12 @@ public sealed partial class HabitListItem : ObservableObject
     /// <summary>Tỷ lệ 30 ngày, 0–100; null khi chưa có dữ liệu.</summary>
     [ObservableProperty]
     private int? _rate30;
+
+    /// <summary>Heatmap 12 tuần cho thẻ sưu tầm.</summary>
+    [ObservableProperty]
+    private HeatmapData? _heatmap;
+
+    public bool IsArchived => Habit.ArchivedAt is not null;
 }
 
 /// <summary>Trang "Thói quen": danh sách, lưu trữ, xóa có hoàn tác, đổi vị trí.</summary>
@@ -157,6 +163,18 @@ public sealed partial class HabitsViewModel : ObservableObject
 
     public ObservableCollection<HabitListItem> Items { get; } = [];
 
+    /// <summary>Bộ lọc đang chọn: tất cả / đã lưu trữ.</summary>
+    [ObservableProperty]
+    private bool _showArchived;
+
+    /// <summary>Số thói quen đã lưu trữ (hiện trên chip bộ lọc).</summary>
+    [ObservableProperty]
+    private int _archivedCount;
+
+    public const int HeatmapWeeks = 12;
+
+    partial void OnShowArchivedChanged(bool value) => _ = LoadAsync();
+
     [ObservableProperty]
     private bool _isEmpty = true;
 
@@ -174,7 +192,12 @@ public sealed partial class HabitsViewModel : ObservableObject
         {
             ErrorMessage = null;
             var today = _dayProvider.GetToday();
-            var habits = await _habits.GetAllActiveAsync();
+            var all = await _habits.GetAllAsync();
+            var archivedCount = all.Count(h => h.ArchivedAt is not null && h.DeletedAt is null);
+            var habits = all
+                .Where(h => h.DeletedAt is null && (h.ArchivedAt is not null) == ShowArchived)
+                .OrderBy(h => h.SortKey, StringComparer.Ordinal)
+                .ToList();
             var items = new List<HabitListItem>();
 
             foreach (var habit in habits)
@@ -185,6 +208,7 @@ public sealed partial class HabitsViewModel : ObservableObject
 
                 items.Add(new HabitListItem(habit)
                 {
+                    Heatmap = HeatmapBuilder.Build(habit, logs, today, HeatmapWeeks),
                     Streak = streak.Current,
                     StreakUnit = streak.Unit,
                     Rate30 = rate is { } r ? (int)Math.Round(r * 100) : null
@@ -200,6 +224,7 @@ public sealed partial class HabitsViewModel : ObservableObject
                 }
 
                 IsEmpty = Items.Count == 0;
+                ArchivedCount = archivedCount;
             });
         }
         catch (Exception ex)
@@ -219,6 +244,25 @@ public sealed partial class HabitsViewModel : ObservableObject
 
         await _habits.ArchiveAsync(item.Id);
         await LoadAsync();
+    }
+
+    [RelayCommand]
+    public async Task UnarchiveAsync(HabitListItem? item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        await _habits.UnarchiveAsync(item.Id);
+        await LoadAsync();
+    }
+
+    /// <summary>Dịch lên/xuống một vị trí (thay thế kéo-thả cho bàn phím và trình đọc màn hình).</summary>
+    public Task MoveByAsync(HabitListItem item, int delta)
+    {
+        var index = Items.IndexOf(item);
+        return index < 0 ? Task.CompletedTask : MoveAsync(item, Math.Clamp(index + delta, 0, Items.Count - 1));
     }
 
     [RelayCommand]
