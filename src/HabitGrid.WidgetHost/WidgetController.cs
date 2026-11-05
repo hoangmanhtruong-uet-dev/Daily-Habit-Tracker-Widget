@@ -59,14 +59,14 @@ public sealed class WidgetController : IDisposable
         _habits = new HabitRepository(database, clock, bus);
         _logs = new DayLogRepository(database, clock, bus);
         _settings = new SettingsStore(database);
-        _checkIn = new CheckInService(_habits, _logs);
-        _quick = new QuickCheckInModel(_habits, _logs);
+        _checkIn = new CheckInService(_habits, _logs, _settings);
+        _quick = new QuickCheckInModel(_habits, _logs, settings: _settings);
         _desktop = new DesktopHostService(_screen);
         _watch = database.OpenConnection();
         _timer.Tick += async (_, _) => await PollAsync();
 
         Toasts = new ToastScheduler(_habits, _logs, _settings);
-        var focusService = new FocusService(_habits, _logs, new FocusRepository(database, clock, bus), new DayProvider(TimeSpan.Zero));
+        var focusService = new FocusService(_habits, _logs, new FocusRepository(database, clock, bus), new DayProvider(TimeSpan.Zero), _settings);
         FocusService = focusService;
         Focus = new FocusController(focusService, _settings);
         Focus.Completed += async (_, _) => await RefreshAsync();

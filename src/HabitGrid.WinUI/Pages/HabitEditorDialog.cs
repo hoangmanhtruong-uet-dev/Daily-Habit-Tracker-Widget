@@ -42,7 +42,8 @@ public static class HabitEditorDialog
             try
             {
                 // Giữ hộp thoại mở và nói rõ lỗi khi chưa hợp lệ.
-                if (!await view.TrySaveAsync())
+                // Chạm giới hạn Free thì đóng để mở paywall (không thể mở hai hộp thoại cùng lúc).
+                if (!await view.TrySaveAsync() && !view.HitLimit)
                 {
                     args.Cancel = true;
                 }
@@ -54,6 +55,13 @@ public static class HabitEditorDialog
         };
 
         await dialog.ShowAsync();
+
+        // Paywall chỉ mở vì người dùng vừa bấm Lưu và chạm giới hạn (02-UX-SCREENS §12).
+        if (view.Saved is null && view.HitLimit && await Plus.PaywallDialog.ShowAsync(xamlRoot, HabitGrid.Presentation.ViewModels.PaywallSource.HabitLimit))
+        {
+            await view.TrySaveAsync();
+        }
+
         return view.Saved;
     }
 }

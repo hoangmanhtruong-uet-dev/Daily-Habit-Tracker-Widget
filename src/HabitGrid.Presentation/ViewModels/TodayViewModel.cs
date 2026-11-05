@@ -46,6 +46,10 @@ public sealed partial class HabitTodayItem : ObservableObject
     [ObservableProperty]
     private bool _atRisk;
 
+    /// <summary>Thói quen vượt giới hạn gói Free sau khi hạ cấp: xem được, không check-in được (SPEC-V2-10 §5).</summary>
+    [ObservableProperty]
+    private bool _isReadOnly;
+
     /// <summary>Trạng thái 7 ngày kết thúc ở ngày đang xem (cũ → mới), dùng cho mini heatmap.</summary>
     [ObservableProperty]
     private IReadOnlyList<DayStatus> _lastSevenDays = [];
@@ -112,6 +116,10 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
     private readonly IAppLogger _logger;
     private readonly IProfileRepository? _profile;
     private readonly SemaphoreSlim _loadGate = new(1, 1);
+    private IReadOnlySet<Guid> _readOnly = new HashSet<Guid>();
+
+    /// <summary>Nguồn danh sách thói quen chỉ đọc (settings dùng chung); null = không giới hạn.</summary>
+    public ISettingsStore? Settings { get; init; }
     private readonly Dictionary<Guid, HabitTodayItem> _items = [];
     private string _structure = string.Empty;
     private int _writes;
@@ -250,6 +258,7 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
 
         try
         {
+            _readOnly = Settings is null ? new HashSet<Guid>() : await ReadOnlyHabits.LoadAsync(Settings);
             IsLoading = true;
             ErrorMessage = null;
 
@@ -332,6 +341,7 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
             }
 
             FillItem(item, habit, logsByHabit[habit.Id], today, selected);
+            item.IsReadOnly = _readOnly.Contains(habit.Id);
             (_schedule.IsScheduled(habit, selected) ? scheduled : unscheduled).Add(item);
         }
 
@@ -510,6 +520,12 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
     {
         ArgumentNullException.ThrowIfNull(item);
 
+        if (item.IsReadOnly)
+        {
+            ErrorMessage = "plan.readonly";
+            return;
+        }
+
         var day = SelectedDay == default ? Today : SelectedDay;
         Interlocked.Increment(ref _writes);
 
@@ -569,6 +585,12 @@ public sealed partial class TodayViewModel : ObservableObject, IDisposable
     {
         if (item is null)
         {
+            return;
+        }
+
+        if (item.IsReadOnly)
+        {
+            ErrorMessage = "plan.readonly";
             return;
         }
 

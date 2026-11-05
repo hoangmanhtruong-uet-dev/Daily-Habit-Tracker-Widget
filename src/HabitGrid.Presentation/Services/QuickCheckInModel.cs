@@ -32,11 +32,14 @@ public sealed class QuickCheckInModel
     private readonly IScheduleCalculator _schedule;
     private List<QuickItem> _items = [];
 
-    public QuickCheckInModel(IHabitRepository habits, IDayLogRepository logs, IScheduleCalculator? schedule = null)
+    private readonly ISettingsStore? _settings;
+
+    public QuickCheckInModel(IHabitRepository habits, IDayLogRepository logs, IScheduleCalculator? schedule = null, ISettingsStore? settings = null)
     {
         _habits = habits ?? throw new ArgumentNullException(nameof(habits));
         _logs = logs ?? throw new ArgumentNullException(nameof(logs));
-        _checkIn = new CheckInService(habits, logs);
+        _settings = settings;
+        _checkIn = new CheckInService(habits, logs, settings);
         _schedule = schedule ?? new ScheduleCalculator();
     }
 
@@ -55,8 +58,10 @@ public sealed class QuickCheckInModel
     public async Task LoadAsync(DateOnly today, CancellationToken ct = default)
     {
         Today = today;
+        // Thói quen chỉ đọc (vượt giới hạn Free) không hiện trong danh sách check nhanh.
+        var readOnly = _settings is null ? new HashSet<Guid>() : await ReadOnlyHabits.LoadAsync(_settings, ct);
         var habits = (await _habits.GetAllActiveAsync(ct))
-            .Where(h => h.Kind != HabitKind.Quit && today >= h.StartDate && _schedule.IsScheduled(h, today))
+            .Where(h => h.Kind != HabitKind.Quit && today >= h.StartDate && _schedule.IsScheduled(h, today) && !readOnly.Contains(h.Id))
             .OrderBy(h => h.SortKey, StringComparer.Ordinal)
             .ToList();
 

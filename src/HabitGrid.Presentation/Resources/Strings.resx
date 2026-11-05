@@ -318,4 +318,52 @@
   <data name="settings.hotkey.registered" xml:space="preserve"><value>Đang dùng: {0}</value></data>
   <data name="settings.hotkey.none" xml:space="preserve"><value>Chưa đăng ký (widget chưa chạy hoặc phím bị chiếm)</value></data>
   <data name="settings.shortcuts.inapp" xml:space="preserve"><value>Trong app: Ctrl+K lệnh nhanh · Ctrl+N thói quen mới · Ctrl+Z hoàn tác · Ctrl+, cài đặt · 1–9 check trên trang Hôm nay</value></data>
+  <data name="plus.name" xml:space="preserve"><value>HabitGrid Plus</value></data>
+  <data name="plus.tagline" xml:space="preserve"><value>Nhiều thói quen hơn, đẹp hơn, Buddy xịn hơn.</value></data>
+  <data name="plus.benefit.habits" xml:space="preserve"><value>Không giới hạn số thói quen (Free: 5)</value></data>
+  <data name="plus.benefit.themes" xml:space="preserve"><value>Mọi chủ đề màu, kể cả theme mùa</value></data>
+  <data name="plus.benefit.freeze" xml:space="preserve"><value>Giữ tối đa 5 freeze (Free: 3)</value></data>
+  <data name="plus.benefit.insights" xml:space="preserve"><value>Thống kê toàn bộ lịch sử, xuất CSV</value></data>
+  <data name="plus.benefit.sounds" xml:space="preserve"><value>Âm thanh nền khi Focus</value></data>
+  <data name="plus.benefit.support" xml:space="preserve"><value>Ủng hộ một nhà phát triển độc lập ❤</value></data>
+  <data name="plus.plan.monthly" xml:space="preserve"><value>Tháng</value></data>
+  <data name="plus.plan.yearly" xml:space="preserve"><value>Năm</value></data>
+  <data name="plus.plan.lifetime" xml:space="preserve"><value>Trọn đời</value></data>
+  <data name="plus.per.month" xml:space="preserve"><value>mỗi tháng</value></data>
+  <data name="plus.per.year" xml:space="preserve"><value>mỗi năm</value></data>
+  <data name="plus.once" xml:space="preserve"><value>trả một lần</value></data>
+  <data name="plus.save" xml:space="preserve"><value>Tiết kiệm {0}%</value></data>
+  <data name="plus.trial" xml:space="preserve"><value>Dùng thử 7 ngày</value></data>
+  <data name="plus.buy" xml:space="preserve"><value>Chọn gói này</value></data>
+  <data name="plus.restore" xml:space="preserve"><value>Khôi phục mua hàng</value></data>
+  <data name="plus.close" xml:space="preserve"><value>Để sau</value></data>
+  <data name="plus.terms" xml:space="preserve"><value>Gói tháng và năm tự gia hạn cho tới khi bạn hủy trong tài khoản Microsoft (account.microsoft.com → Dịch vụ &amp; gói đăng ký). Dùng thử 7 ngày chỉ có ở gói năm; hủy trước khi hết thử thì không bị tính tiền.</value></data>
+  <data name="plus.reference" xml:space="preserve"><value>Giá tham khảo; giá thật theo tiền tệ của bạn hiện trong cửa sổ Microsoft Store.</value></data>
+  <data name="plus.nostore" xml:space="preserve"><value>Mua hàng chỉ có ở bản cài từ Microsoft Store. Bản bạn đang dùng không gắn với Store nên không mua được ở đây.</value></data>
+  <data name="plus.msg.thanks" xml:space="preserve"><value>Cảm ơn bạn! Plus đã được mở 🎉</value></data>
+  <data name="plus.msg.network" xml:space="preserve"><value>Không kết nối được Microsoft Store. Thử lại sau nhé.</value></data>
+  <data name="plus.msg.nostore" xml:space="preserve"><value>Bản này không gắn với Microsoft Store nên không mua được.</value></data>
+  <data name="plus.msg.failed" xml:space="preserve"><value>Không hoàn tất được giao dịch.</value></data>
+  <data name="plus.msg.restored" xml:space="preserve"><value>Đã khôi phục Plus.</value></data>
+  <data name="plus.msg.nothing" xml:space="preserve"><value>Không tìm thấy gói Plus nào trong tài khoản Microsoft này.</value></data>
+  <data name="plus.reason.limit" xml:space="preserve"><value>Gói Free có tối đa 5 thói quen đang chạy.</value></data>
+  <data name="plus.reason.theme" xml:space="preserve"><value>Chủ đề này thuộc Plus (hoặc mở khi đạt cấp {0}).</value></data>
+  <data name="settings.plus" xml:space="preserve"><value>HabitGrid Plus</value></data>
+  <data name="settings.plus.free" xml:space="preserve"><value>Bạn đang dùng gói Free.</value></data>
+  <data name="settings.plus.active" xml:space="preserve"><value>Đang dùng Plus · {0}</value></data>
+  <data name="settings.plus.tier.Monthly" xml:space="preserve"><value>gói tháng</value></data>
+  <data name="settings.plus.tier.Yearly" xml:space="preserve"><value>gói năm</value></data>
+  <data name="settings.plus.tier.Lifetime" xml:space="preserve"><value>trọn đời</value></data>
+  <data name="settings.plus.tier.LegacyPro" xml:space="preserve"><value>trọn đời (từ Pro v1)</value></data>
+  <data name="settings.plus.recheck" xml:space="preserve"><value>Đã lâu chưa xác minh với Microsoft Store. Kết nối mạng rồi bấm Khôi phục mua hàng.</value></data>
+  <data name="settings.plus.upgrade" xml:space="preserve"><value>Nâng cấp</value></data>
+  <data name="settings.plus.choose" xml:space="preserve"><value>Chọn thói quen đang chạy</value></data>
+  <data name="theme.locked" xml:space="preserve"><value>🔒 Plus</value></data>
+  <data name="theme.locked.level" xml:space="preserve"><value>🔒 Plus · hoặc cấp {0}</value></data>
+  <data name="plan.readonly" xml:space="preserve"><value>Thói quen này đang chỉ đọc (vượt giới hạn gói Free). Chọn lại thói quen đang chạy trong Cài đặt hoặc nâng cấp Plus.</value></data>
+  <data name="plan.choose.title" xml:space="preserve"><value>Chọn {0} thói quen tiếp tục chạy</value></data>
+  <data name="plan.choose.body" xml:space="preserve"><value>Gói Free có tối đa {0} thói quen đang chạy. Những thói quen không chọn vẫn giữ nguyên dữ liệu, chỉ tạm thời không check-in được. Nâng cấp lại là dùng tiếp như cũ.</value></data>
+  <data name="plan.choose.save" xml:space="preserve"><value>Lưu lựa chọn</value></data>
+  <data name="plan.choose.count" xml:space="preserve"><value>Đã chọn {0}/{1}</value></data>
+  <data name="today.state.readonly" xml:space="preserve"><value>🔒 Chỉ đọc</value></data>
 </root>

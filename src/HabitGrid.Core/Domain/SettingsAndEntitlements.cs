@@ -36,8 +36,8 @@ public sealed class FreeEntitlements : IEntitlements
 
     public bool CanUseAiCoach => false;
 
-    public bool CanUseTheme(string themeId) =>
-        themeId is "classic-glow" or "midnight";
+    /// <summary>Theme miễn phí; theme mở bằng level xét riêng ở <see cref="Monetization.ThemeAccess"/>.</summary>
+    public bool CanUseTheme(string themeId) => Monetization.ThemeAccess.FreeThemes.Contains(themeId);
 }
 
 /// <summary>Không giới hạn (dùng trong test và cho gói Plus khi đã có Platform).</summary>

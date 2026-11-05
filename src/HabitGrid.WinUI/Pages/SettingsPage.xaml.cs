@@ -1,4 +1,7 @@
 using HabitGrid.Core.Domain;
+using HabitGrid.Core.Domain.Monetization;
+using HabitGrid.Presentation.ViewModels;
+using HabitGrid.WinUI.Plus;
 using HabitGrid.Presentation.Services;
 using HabitGrid.Presentation.Theming;
 using HabitGrid.WinUI.Controls;
@@ -22,6 +25,8 @@ public sealed partial class SettingsPage : Page
     private static readonly ThemeMode[] ModeOrder = [ThemeMode.System, ThemeMode.Light, ThemeMode.Dark];
     private TextBlock? _lightOnlyNote;
     private bool _building;
+    private readonly Dictionary<string, TextBlock> _lockLabels = [];
+    private int _level = 1;
 
     public SettingsPage()
     {
@@ -42,6 +47,7 @@ public sealed partial class SettingsPage : Page
         _tiles.Clear();
 
         _root.Children.Add(new TextBlock { Text = Ui.T("settings.title"), Style = Res("TitleDisplayTextStyle") });
+        BuildPlusCard();
 
         // Chủ đề màu
         var themeCard = Card(Ui.T("settings.theme"));
@@ -160,6 +166,66 @@ public sealed partial class SettingsPage : Page
     }
 
     private static Style Res(string key) => (Style)Application.Current.Resources[key];
+
+    /// <summary>Thẻ Plus: trạng thái gói, nâng cấp (mở paywall), khôi phục mua hàng, chọn thói quen đang chạy khi vượt giới hạn.</summary>
+    private void BuildPlusCard()
+    {
+        var plus = App.Host.Get<PlusService>();
+        var card = Card(Ui.T("settings.plus"));
+        var status = new TextBlock { TextWrapping = TextWrapping.Wrap };
+        var recheck = new TextBlock { Text = Ui.T("settings.plus.recheck"), TextWrapping = TextWrapping.Wrap, Foreground = (Brush)Application.Current.Resources["WarningBrush"] };
+        var result = new TextBlock { TextWrapping = TextWrapping.Wrap, Style = Res("BodySecondaryTextStyle"), Visibility = Visibility.Collapsed };
+        var upgrade = new Button { Content = Ui.T("settings.plus.upgrade"), Style = Res("GradientButtonStyle") };
+        var restore = new Button { Content = Ui.T("plus.restore"), Style = Res("GhostButtonStyle") };
+        var choose = new Button { Content = Ui.T("settings.plus.choose"), Style = Res("GhostButtonStyle"), Visibility = Visibility.Collapsed };
+
+        void Render()
+        {
+            var s = plus.Status;
+            status.Text = s.IsPlus ? Ui.Loc.Format("settings.plus.active", Ui.T("settings.plus.tier." + s.Tier)) : Ui.T("settings.plus.free");
+            recheck.Visibility = s.NeedsRecheck ? Visibility.Visible : Visibility.Collapsed;
+            upgrade.Visibility = s.IsPlus ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        upgrade.Click += async (_, _) =>
+        {
+            await PaywallDialog.ShowAsync(XamlRoot, PaywallSource.Settings);
+            Render();
+            UpdateTiles();
+        };
+        restore.Click += async (_, _) =>
+        {
+            var vm = new PaywallViewModel(plus, PaywallSource.Settings);
+            await vm.RestoreAsync();
+            result.Text = vm.MessageKey is { } key ? Ui.T(key) : string.Empty;
+            result.Visibility = Visibility.Visible;
+            Render();
+            UpdateTiles();
+        };
+        choose.Click += async (_, _) => await ChooseRunningDialog.ShowAsync(XamlRoot);
+
+        _ = LoadAsync();
+
+        async Task LoadAsync()
+        {
+            _level = (await App.Host.Get<IProfileRepository>().GetAsync()).Level;
+            var allowance = await plus.GetAllowanceAsync();
+            choose.Visibility = allowance.ReadOnly.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            UpdateTiles();
+        }
+
+        var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        buttons.Children.Add(upgrade);
+        buttons.Children.Add(restore);
+        buttons.Children.Add(choose);
+
+        card.Children.Add(status);
+        card.Children.Add(recheck);
+        card.Children.Add(buttons);
+        card.Children.Add(result);
+        Render();
+        Wrap(card);
+    }
 
     /// <summary>Nhắc nhở: bật/tắt, giờ yên lặng, cứu streak, tổng kết sáng. WidgetHost đọc lại và lập lịch toast trong vài giây.</summary>
     private void BuildRemindersCard()
@@ -315,10 +381,13 @@ public sealed partial class SettingsPage : Page
         };
 
         var label = new TextBlock { Text = name, Style = Res("CardTitleTextStyle"), HorizontalAlignment = HorizontalAlignment.Center };
+        var lockLabel = new TextBlock { FontSize = 12, HorizontalAlignment = HorizontalAlignment.Center, Foreground = (Brush)Application.Current.Resources["TextMutedBrush"] };
+        _lockLabels[theme.Id] = lockLabel;
         var content = new StackPanel { Spacing = 8, Width = 150 };
         content.Children.Add(swatch);
         content.Children.Add(canvas);
         content.Children.Add(label);
+        content.Children.Add(lockLabel);
 
         var tile = new Border
         {
@@ -340,6 +409,14 @@ public sealed partial class SettingsPage : Page
                 return;
             }
 
+            // Theme khóa (Plus / chưa đủ level): mở paywall vì người dùng vừa chọn nó; chỉ đổi theme nếu đã có quyền.
+            if (!ThemeAccess.IsUnlocked(theme.Id, App.Host.Get<PlusService>().Status.IsPlus, _level)
+                && !await PaywallDialog.ShowAsync(XamlRoot, PaywallSource.Theme, ThemeAccess.UnlockLevel(theme.Id)))
+            {
+                return;
+            }
+
+            _theme.Override = null;
             await _theme.SetAsync(theme, _theme.Mode, XamlRoot.Content as FrameworkElement);
             UpdateTiles();
         }
@@ -360,6 +437,16 @@ public sealed partial class SettingsPage : Page
 
     private void UpdateTiles()
     {
+        var isPlus = App.Host.Get<PlusService>().Status.IsPlus;
+
+        foreach (var (id, lockLabel) in _lockLabels)
+        {
+            var unlocked = ThemeAccess.IsUnlocked(id, isPlus, _level);
+            lockLabel.Text = unlocked ? string.Empty
+                : ThemeAccess.UnlockLevel(id) is { } level ? Ui.Loc.Format("theme.locked.level", level) : Ui.T("theme.locked");
+            lockLabel.Visibility = unlocked ? Visibility.Collapsed : Visibility.Visible;
+        }
+
         if (_lightOnlyNote is not null)
         {
             _lightOnlyNote.Visibility = _theme.Theme.Dark is null ? Visibility.Visible : Visibility.Collapsed;
