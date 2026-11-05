@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HabitGrid.Presentation", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HabitGrid.Presentation.Tests", "tests\HabitGrid.Presentation.Tests\HabitGrid.Presentation.Tests.csproj", "{957A7669-54FB-43DF-ACD2-7B788A3E992C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HabitGrid.WinUI", "src\HabitGrid.WinUI\HabitGrid.WinUI.csproj", "{8B6CEA26-F013-47E2-8B74-2D8B99304BD1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -171,6 +173,18 @@ Global
 		{957A7669-54FB-43DF-ACD2-7B788A3E992C}.Release|x64.Build.0 = Release|Any CPU
 		{957A7669-54FB-43DF-ACD2-7B788A3E992C}.Release|x86.ActiveCfg = Release|Any CPU
 		{957A7669-54FB-43DF-ACD2-7B788A3E992C}.Release|x86.Build.0 = Release|Any CPU
+		{8B6CEA26-F013-47E2-8B74-2D8B99304BD1}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{8B6CEA26-F013-47E2-8B74-2D8B99304BD1}.Debug|Any CPU.Build.0 = Debug|x64
+		{8B6CEA26-F013-47E2-8B74-2D8B99304BD1}.Debug|x64.ActiveCfg = Debug|x64
+		{8B6CEA26-F013-47E2-8B74-2D8B99304BD1}.Debug|x64.Build.0 = Debug|x64
+		{8B6CEA26-F013-47E2-8B74-2D8B99304BD1}.Debug|x86.ActiveCfg = Debug|x64
+		{8B6CEA26-F013-47E2-8B74-2D8B99304BD1}.Debug|x86.Build.0 = Debug|x64
+		{8B6CEA26-F013-47E2-8B74-2D8B99304BD1}.Release|Any CPU.ActiveCfg = Release|x64
+		{8B6CEA26-F013-47E2-8B74-2D8B99304BD1}.Release|Any CPU.Build.0 = Release|x64
+		{8B6CEA26-F013-47E2-8B74-2D8B99304BD1}.Release|x64.ActiveCfg = Release|x64
+		{8B6CEA26-F013-47E2-8B74-2D8B99304BD1}.Release|x64.Build.0 = Release|x64
+		{8B6CEA26-F013-47E2-8B74-2D8B99304BD1}.Release|x86.ActiveCfg = Release|x64
+		{8B6CEA26-F013-47E2-8B74-2D8B99304BD1}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -187,5 +201,6 @@ Global
 		{CB705917-ED4B-48DE-994F-CCD85A0B0452} = {6F7AC870-AC0C-41D6-BCB4-60DB91A1B6EB}
 		{E0D40A78-A8E2-476B-B0CE-FBE83AE9EB92} = {6F7AC870-AC0C-41D6-BCB4-60DB91A1B6EB}
 		{957A7669-54FB-43DF-ACD2-7B788A3E992C} = {A08460E0-3FDF-40AA-A1B2-5DB1A27D2E9C}
+		{8B6CEA26-F013-47E2-8B74-2D8B99304BD1} = {6F7AC870-AC0C-41D6-BCB4-60DB91A1B6EB}
 	EndGlobalSection
 EndGlobal

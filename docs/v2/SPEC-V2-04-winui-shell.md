@@ -77,3 +77,19 @@ Project WPF cũ (`HabitGrid.UI`, `HabitGrid.App` v1) chuyển vào `legacy/` t�
 4. Ném exception giả lập ở mọi ViewModel → app không thoát, hiện lỗi thân thiện, có log.
 5. Ngân sách hiệu năng §7 đo bằng script trong CI (máy runner Windows) hoặc thủ công có ghi số.
 6. Accessibility Insights for Windows: 0 lỗi nghiêm trọng trên các trang chính.
+
+## 9. Tiến độ triển khai (cập nhật 05/11/2026)
+
+**Đã làm (lát cắt dọc đầu tiên):**
+- `HabitGrid.Presentation` (net10, không tham chiếu UI): `TodayViewModel`, `HabitsViewModel`, `ShellViewModel`, `HabitCreationService`, `Localizer` (VI/EN `.resx`), `IUiDispatcher`. 30 test chạy trên SQLite v3 thật.
+- `HabitGrid.WinUI` (WinUI 3, Windows App SDK 2.6.5, unpackaged): shell Mica + NavigationView, trang **Hôm nay** (nhóm theo khung giờ, check-in một chạm, hoàn tác, tiến độ ngày, mini heatmap 7 ngày), trang **Thói quen** (lưu trữ, xóa có hoàn tác, kéo-thả đổi thứ tự), hộp thoại thêm thói quen, các trang giữ chỗ (Insights, Buddy, Cài đặt).
+- Khởi động: single instance (`AppInstance`) kiểm tra **trước** khi mở CSDL; import v1→v3 ở lần chạy đầu; log file xoay vòng; mọi handler async có try/catch; bắt lỗi toàn cục.
+- Chế độ `--smoke`: dựng mọi trang, bấm nút check-in qua cây XAML, kiểm tra DB, hoàn tác, mở hộp thoại; thoát 0/2. Từ chối chạy (mã 3) nếu không đặt `HABITGRID_DATA_DIR`. Có bước CI (chưa bắt buộc).
+
+**Khác với spec:**
+- Project WinUI tên `HabitGrid.WinUI` (không đè `HabitGrid.App` của v1); WPF cũ chưa chuyển vào `legacy/`.
+- DI dùng `Microsoft.Extensions.DependencyInjection` thuần, chưa dùng Generic Host (chưa cần cấu hình/hosted service).
+- Smoke test tự viết trong app thay vì FlaUI để chạy được ngay không cần driver; FlaUI vẫn là hướng cho kiểm tra từ bên ngoài.
+
+**Chưa làm:** onboarding, trang chi tiết thói quen, trình tạo đầy đủ (tần suất/nhắc nhở), Insights, Buddy, Cài đặt (đổi ngôn ngữ/theme), command palette, tray, title bar tìm kiếm, MSIX, đo ngân sách hiệu năng (§7), kiểm tra Accessibility Insights, Narrator cho heatmap. Chưa kiểm tra hiển thị ở DPI khác và Windows 10.
+
