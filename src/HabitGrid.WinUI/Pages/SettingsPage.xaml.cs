@@ -18,6 +18,8 @@ public sealed partial class SettingsPage : Page
     private readonly StackPanel _root = new() { Spacing = 16, Padding = new Thickness(36, 28, 36, 32), MaxWidth = 860, HorizontalAlignment = HorizontalAlignment.Left };
     private readonly Dictionary<string, Border> _tiles = [];
     private ChipGroup? _modeChips;
+    private static readonly ThemeMode[] ModeOrder = [ThemeMode.System, ThemeMode.Light, ThemeMode.Dark];
+    private TextBlock? _lightOnlyNote;
     private bool _building;
 
     public SettingsPage()
@@ -50,7 +52,8 @@ public sealed partial class SettingsPage : Page
         }
 
         themeCard.Children.Add(tiles);
-        themeCard.Children.Add(new TextBlock { Text = Ui.T("settings.pastel.note"), Style = Res("BodySecondaryTextStyle") });
+        _lightOnlyNote = new TextBlock { Text = Ui.T("settings.pastel.note"), Style = Res("BodySecondaryTextStyle") };
+        themeCard.Children.Add(_lightOnlyNote);
         Wrap(themeCard);
 
         // Chế độ
@@ -62,12 +65,12 @@ public sealed partial class SettingsPage : Page
             _modeChips.Add(Ui.T(key));
         }
 
-        _modeChips.SelectedIndex = (int)_theme.Mode;
+        _modeChips.SelectedIndex = Array.IndexOf(ModeOrder, _theme.Mode);
         _modeChips.SelectionChanged += async (_, _) =>
         {
             if (!_building)
             {
-                await _theme.SetAsync(_theme.Theme, (ThemeMode)_modeChips.SelectedIndex, XamlRoot.Content as FrameworkElement);
+                await _theme.SetAsync(_theme.Theme, ModeOrder[Math.Max(0, _modeChips.SelectedIndex)], XamlRoot.Content as FrameworkElement);
             }
         };
         modeCard.Children.Add(_modeChips);
@@ -187,6 +190,11 @@ public sealed partial class SettingsPage : Page
 
     private void UpdateTiles()
     {
+        if (_lightOnlyNote is not null)
+        {
+            _lightOnlyNote.Visibility = _theme.Theme.Dark is null ? Visibility.Visible : Visibility.Collapsed;
+        }
+
         foreach (var (id, tile) in _tiles)
         {
             var selected = id == _theme.Theme.Id;

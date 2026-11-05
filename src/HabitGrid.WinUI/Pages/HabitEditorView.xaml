@@ -59,7 +59,7 @@
             <!-- Tần suất -->
             <StackPanel Spacing="8">
                 <TextBlock x:Name="FrequencyHeader" Style="{StaticResource BodyStrongTextBlockStyle}" />
-                <controls:ChipGroup x:Name="FrequencyBox" MinChipWidth="110" SelectionChanged="OnFrequencyChanged" />
+                <controls:ChipGroup x:Name="FrequencyBox" MinChipWidth="170" SelectionChanged="OnFrequencyChanged" />
 
                 <StackPanel x:Name="WeekDaysPanel" Orientation="Horizontal" Spacing="6" Visibility="Collapsed" />
                 <NumberBox x:Name="TimesWeekBox" Minimum="1" Maximum="6" SpinButtonPlacementMode="Compact" Width="160"

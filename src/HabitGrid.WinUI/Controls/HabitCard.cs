@@ -35,7 +35,7 @@ public sealed class HabitCard : UserControl
     private readonly TextBlock _emoji = new() { FontSize = 38, HorizontalAlignment = HorizontalAlignment.Left };
     private readonly TextBlock _name = new();
     private readonly TextBlock _sub = new();
-    private readonly Border _badge = new() { CornerRadius = new CornerRadius(999), Padding = new Thickness(10, 4, 10, 4), HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Top };
+    private readonly Border _badge = new() { CornerRadius = new CornerRadius(12), Padding = new Thickness(10, 4, 10, 4), HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Top };
     private readonly TextBlock _badgeText = new() { FontFamily = (FontFamily)Application.Current.Resources["DisplayBoldFont"], FontSize = 13, FontWeight = Microsoft.UI.Text.FontWeights.Bold };
     private readonly Grid _bar = new() { Height = 8, CornerRadius = new CornerRadius(4), Visibility = Visibility.Collapsed };
     private readonly Border _barFill = new() { CornerRadius = new CornerRadius(4) };

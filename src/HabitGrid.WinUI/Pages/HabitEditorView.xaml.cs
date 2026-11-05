@@ -97,7 +97,7 @@ public sealed partial class HabitEditorView : UserControl
 
         foreach (var (day, key) in days)
         {
-            var toggle = new ToggleButton { Content = Ui.T(key), Tag = day, MinWidth = 48 };
+            var toggle = new ToggleButton { Content = Ui.T(key), Tag = day, MinWidth = 52, Padding = new Thickness(10, 6, 10, 6), Style = (Style)Application.Current.Resources["ChipStyle"] };
             toggle.Click += (_, _) =>
             {
                 if (!_syncing)

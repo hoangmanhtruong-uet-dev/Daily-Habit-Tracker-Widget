@@ -35,18 +35,21 @@ public sealed class ThemeService
     {
         Theme = Themes.Find(await _settings.GetAsync(SettingKeys.Theme));
         Mode = Enum.TryParse<ThemeMode>(await _settings.GetAsync(SettingKeys.ThemeMode), out var mode) ? mode : ThemeMode.System;
-        AnimationsEnabled = _uiSettings.AnimationsEnabled && await _settings.GetAsync(SettingKeys.ReduceMotion) != "1";
+        ReduceMotionSetting = await _settings.GetAsync(SettingKeys.ReduceMotion) == "1";
+        AnimationsEnabled = _uiSettings.AnimationsEnabled && !ReduceMotionSetting;
     }
 
     /// <summary>Bật/tắt giảm chuyển động ngay lập tức và nhớ lựa chọn.</summary>
     public async Task SetReduceMotionAsync(bool reduce)
     {
         await _settings.SetAsync(SettingKeys.ReduceMotion, reduce ? "1" : "0");
+        ReduceMotionSetting = reduce;
         AnimationsEnabled = _uiSettings.AnimationsEnabled && !reduce;
         Changed?.Invoke(this, Palette);
     }
 
-    public bool ReduceMotionSetting => !AnimationsEnabled;
+    /// <summary>Lựa chọn của người dùng (độc lập với cài đặt hệ thống).</summary>
+    public bool ReduceMotionSetting { get; private set; }
 
     public async Task SetAsync(ThemeDefinition theme, ThemeMode mode, FrameworkElement? root)
     {

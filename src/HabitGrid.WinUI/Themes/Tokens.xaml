@@ -78,7 +78,7 @@
     <CornerRadius x:Key="RadiusMd">16</CornerRadius>
     <CornerRadius x:Key="RadiusLg">28</CornerRadius>
     <CornerRadius x:Key="RadiusXl">32</CornerRadius>
-    <CornerRadius x:Key="RadiusPill">999</CornerRadius>
+    <CornerRadius x:Key="RadiusPill">19</CornerRadius>
 
     <!-- Thẻ / tile -->
     <Style x:Key="CardBorder" TargetType="Border">
