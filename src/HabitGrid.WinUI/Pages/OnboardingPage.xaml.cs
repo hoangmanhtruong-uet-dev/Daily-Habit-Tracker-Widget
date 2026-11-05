@@ -215,6 +215,7 @@ public sealed partial class OnboardingPage : Page
             }
 
             var remove = new Button { Content = new FontIcon { Glyph = "", FontSize = 12 }, Padding = new Thickness(8, 6, 8, 6) };
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(remove, $"{Ui.T("editor.reminder.remove")}: {pick.Name}");
             remove.Click += (_, _) =>
             {
                 ViewModel.RemovePicked(pick);

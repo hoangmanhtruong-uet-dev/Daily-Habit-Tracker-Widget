@@ -284,6 +284,7 @@ public sealed partial class HabitEditorView : UserControl
 
             var remove = new Button { Content = new FontIcon { Glyph = "", FontSize = 14 }, VerticalAlignment = VerticalAlignment.Center };
             ToolTipService.SetToolTip(remove, Ui.T("editor.reminder.remove"));
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(remove, Ui.T("editor.reminder.remove"));
             remove.Click += (_, _) =>
             {
                 ViewModel.RemoveReminder(reminder);

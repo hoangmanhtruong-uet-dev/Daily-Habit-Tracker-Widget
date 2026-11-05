@@ -59,6 +59,8 @@ public sealed partial class TodayPage : Page
         DateText.Text = ViewModel.IsViewingPast ? string.Empty : Ui.LongDate(day);
         DateText.Visibility = ViewModel.IsViewingPast ? Visibility.Collapsed : Visibility.Visible;
         AddButtonText.Text = Ui.T("habits.add");
+        // Nút có icon + chữ trong StackPanel: trình đọc màn hình không tự lấy tên, phải đặt.
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(AddButton, AddButtonText.Text);
         BackToTodayButton.Content = Ui.T("today.backToToday");
         BackToTodayButton.Visibility = ViewModel.IsViewingPast ? Visibility.Visible : Visibility.Collapsed;
         EmptyTitle.Text = Ui.T("today.empty.title");
