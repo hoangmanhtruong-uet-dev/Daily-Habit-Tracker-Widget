@@ -37,3 +37,13 @@
 3. **Đợt 3:** F2 Thử thách 30 ngày, F6 Tổng kết tuần, P1 Wrapped tháng (lớn nhất, nên để khi đã có dữ liệu thật của người dùng beta), P4, P6.
 
 Mỗi tính năng làm như các đợt trước: lõi thuần có test → giao diện → smoke test + ảnh CI → cập nhật paywall chỉ khi tính năng Plus đã thật sự có.
+
+## Tiến độ đợt 1 (06/11/2026)
+| # | Tính năng | Trạng thái |
+|---|---|---|
+| F5 | Sao lưu & khôi phục | **Xong.** Tự sao lưu mỗi ngày (giữ 14 bản tự động; bản tay không bị dọn), sao lưu ngay, khôi phục từ file hoặc danh sách; trước khi khôi phục luôn tự lưu hiện trạng nên quay lại được; file hỏng không đụng vào dữ liệu. Cài đặt → Sao lưu. |
+| F3 | Tạm nghỉ | **Xong.** Đánh dấu trước các ngày nghỉ bằng trạng thái "đóng băng" nên chuỗi, nhắc nhở, XP, Insights tự đúng. Free 14 ngày/lần, Plus 60 ngày. Cho mọi thói quen (Cài đặt) hoặc một thói quen (trang chi tiết); dải thông báo + nút kết thúc sớm trên trang Hôm nay. |
+| F4 | Check-in cảm xúc | **Xong.** 5 emoji một chạm + ghi chú ≤ 140 ký tự trên trang Hôm nay (cả ngày đang xem); Insights ưu tiên tâm trạng cả ngày. Lưu trong settings nên **chưa đồng bộ** — cần chuyển sang bảng riêng khi làm sync v2.1. |
+| F1 | Routine | **Xong.** Free 2 routine, Plus không giới hạn; mỗi routine 2–12 bước, mỗi thói quen thuộc một routine; dải routine trên Hôm nay (bấm từng bước, "Xong cả routine" không đè lên ngày đóng băng); quản lý/soạn routine ở trang Thói quen. Thẻ thói quen bên dưới giữ nguyên (routine là lối tắt, chưa ẩn thẻ gốc). |
+
+Chưa làm trong đợt 1: hẹn giờ từng bước của routine (P4, Plus), nhắc theo routine, kéo-thả đổi thứ tự bước (đang dùng nút ↑↓).

@@ -33,7 +33,7 @@ public sealed class MoodBar : UserControl
         for (var i = 0; i < Faces.Length; i++)
         {
             var value = i + 1;
-            var button = new ToggleButton { Content = Faces[i], FontSize = 22, Padding = new Thickness(10, 4, 10, 4), CornerRadius = new CornerRadius(14) };
+            var button = new ToggleButton { Content = Faces[i], FontSize = 22, Padding = new Thickness(14, 2, 14, 2), Style = (Style)Application.Current.Resources["ChipStyle"] };
             AutomationProperties.SetName(button, Faces[i]);
             button.Click += async (_, _) => await OnPickedAsync(value);
             _buttons.Add(button);
