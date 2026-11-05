@@ -143,6 +143,34 @@ public sealed partial class SettingsPage : Page
         };
         widgetsCard.Children.Add(new TextBlock { Text = Ui.T("settings.autostart.hint"), Style = Res("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap });
         widgetsCard.Children.Add(autostart);
+
+        // Widget khoảnh khắc (Plus): WidgetHost bật khi có Plus và công tắc này đang bật.
+        var momentToggle = new ToggleSwitch { OnContent = Ui.T("settings.momentWidget"), OffContent = Ui.T("settings.momentWidget") };
+        AutomationProperties.SetName(momentToggle, Ui.T("settings.momentWidget"));
+        _ = LoadMomentAsync();
+        async Task LoadMomentAsync()
+        {
+            momentToggle.IsOn = await settingsStore.GetAsync("widgets.moment.enabled") != "0";
+        }
+
+        momentToggle.Toggled += async (_, _) =>
+        {
+            if (_building)
+            {
+                return;
+            }
+
+            if (momentToggle.IsOn && !App.Host.Get<PlusService>().Status.IsPlus && !await PaywallDialog.ShowAsync(XamlRoot, PaywallSource.Settings))
+            {
+                momentToggle.IsOn = false;
+                return;
+            }
+
+            await settingsStore.SetAsync("widgets.moment.enabled", momentToggle.IsOn ? "1" : "0");
+            HostLink.EnsureRunning();
+        };
+        widgetsCard.Children.Add(new TextBlock { Text = Ui.T("settings.momentWidget.hint"), Style = Res("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap });
+        widgetsCard.Children.Add(momentToggle);
         Wrap(widgetsCard);
 
         // Hỗ trợ: phiên bản, thư mục log và báo lỗi (người dùng tự gửi, app không tải gì lên).

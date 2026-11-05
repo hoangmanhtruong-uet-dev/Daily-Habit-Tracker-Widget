@@ -194,6 +194,18 @@ public sealed class AppHost : IDisposable
             sp.GetRequiredService<IDayProvider>(),
             sp.GetRequiredService<IEntitlements>(),
             sp.GetRequiredService<IFocusRepository>()));
+        services.AddSingleton(_ => new MomentStore(Path.Combine(AppPaths.DataDir, "moments")));
+        services.AddSingleton<MomentService>(sp => new MomentService(
+            sp.GetRequiredService<MomentStore>(),
+            sp.GetRequiredService<IEntitlements>(),
+            sp.GetRequiredService<IDayProvider>()));
+        services.AddSingleton<ShareCardService>(sp => new ShareCardService(
+            sp.GetRequiredService<IHabitRepository>(),
+            sp.GetRequiredService<IDayLogRepository>(),
+            sp.GetRequiredService<IProfileRepository>(),
+            sp.GetRequiredService<IEntitlements>(),
+            sp.GetRequiredService<IDayProvider>(),
+            sp.GetRequiredService<MomentStore>()));
         services.AddTransient<InsightsViewModel>(sp => new InsightsViewModel(
             sp.GetRequiredService<IHabitRepository>(),
             sp.GetRequiredService<IDayLogRepository>(),

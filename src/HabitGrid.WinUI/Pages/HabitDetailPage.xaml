@@ -82,6 +82,9 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Khoảnh khắc (ảnh) -->
+                <StackPanel x:Name="MomentsHost" />
+
                 <!-- Theo tháng + theo thứ -->
                 <Grid ColumnSpacing="12" ColumnDefinitions="*,*">
                     <Border Style="{StaticResource CardBorder}">

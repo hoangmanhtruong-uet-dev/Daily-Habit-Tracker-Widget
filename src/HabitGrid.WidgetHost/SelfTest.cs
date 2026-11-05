@@ -108,6 +108,11 @@ public static class SelfTest
                 "Đã xong nhưng toast nhắc hôm nay vẫn còn trong lịch.");
             Require(controller.Toasts.ScheduledCount() == controller.Toasts.LastPlan.Count, "Lịch của Windows không khớp kế hoạch sau khi check-in.");
 
+            // 6b) Widget khoảnh khắc (Plus tặng + smoke đã thêm ảnh): phải hiện.
+            await controller.SyncMomentWidgetAsync();
+            Require(controller.MomentWidget is { IsVisible: true }, "Widget khoảnh khắc không hiện dù đang Plus và có ảnh.");
+            Note(dbPath, "moment widget visible");
+
             // 7) Focus: phiên đếm ngược 1 phút tự kết thúc và được ghi vào nhật ký.
             var before2 = (await controller.FocusService.HistoryAsync()).Count;
             await controller.Focus.StartAsync(HabitGrid.Core.Domain.Focus.FocusMode.Countdown, 1, null, keepHabit: false);
