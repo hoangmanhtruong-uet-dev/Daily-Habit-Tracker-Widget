@@ -1,0 +1,139 @@
+namespace HabitGrid.Core.Domain;
+
+/// <summary>Một ô của heatmap.</summary>
+/// <param name="Level">Độ đậm 0–4 (0 = trống). Xem <see cref="HeatmapBuilder"/> để biết cách tính.</param>
+public sealed record HeatCell(
+    DateOnly Day,
+    int Level,
+    DayStatus Status,
+    int Value,
+    bool IsFuture,
+    bool IsBeforeStart,
+    bool IsToday,
+    bool IsScheduled);
+
+/// <summary>Lưới heatmap: <see cref="Weeks"/>[cột = tuần][hàng = thứ, bắt đầu từ ngày đầu tuần].</summary>
+public sealed record HeatmapData(IReadOnlyList<IReadOnlyList<HeatCell>> Weeks, DateOnly From, DateOnly To, DayOfWeek WeekStart)
+{
+    public IEnumerable<HeatCell> Cells => Weeks.SelectMany(w => w);
+
+    public int FilledCount => Cells.Count(c => c.Level > 0);
+}
+
+/// <summary>
+/// Dựng dữ liệu heatmap cho một thói quen (03-UI-REBUILD-GLOW2 §5.3). Hàm thuần, không phụ thuộc giao diện.
+/// Quy tắc độ đậm: có/không → Done = 4; đếm/thời lượng → theo tỷ lệ giá trị/mục tiêu (&gt;0 = 1, ≥ 34% = 2, ≥ 67% = 3, ≥ 100% = 4);
+/// cần bỏ → ngày sạch = 4, ngày lỡ = 0; Skipped/Frozen = 0 nhưng giữ trạng thái để giao diện vẽ riêng.
+/// </summary>
+public static class HeatmapBuilder
+{
+    public static HeatmapData Build(
+        Habit habit,
+        IReadOnlyList<DayLog> logs,
+        DateOnly today,
+        int weeks,
+        DayOfWeek weekStart = DayOfWeek.Monday,
+        IScheduleCalculator? schedule = null)
+    {
+        ArgumentNullException.ThrowIfNull(habit);
+        ArgumentNullException.ThrowIfNull(logs);
+        ArgumentOutOfRangeException.ThrowIfLessThan(weeks, 1);
+
+        schedule ??= new ScheduleCalculator();
+
+        var byDay = new Dictionary<DateOnly, DayLog>();
+        foreach (var log in logs)
+        {
+            if (!byDay.TryGetValue(log.Day, out var existing) || log.UpdatedAt >= existing.UpdatedAt)
+            {
+                byDay[log.Day] = log;
+            }
+        }
+
+        var lastWeekStart = PeriodCalendar.StartOfWeek(today, weekStart);
+        var firstWeekStart = lastWeekStart.AddDays(-7 * (weeks - 1));
+        var columns = new List<IReadOnlyList<HeatCell>>(weeks);
+
+        for (var w = 0; w < weeks; w++)
+        {
+            var cells = new List<HeatCell>(7);
+
+            for (var d = 0; d < 7; d++)
+            {
+                var day = firstWeekStart.AddDays(w * 7 + d);
+                byDay.TryGetValue(day, out var log);
+                cells.Add(BuildCell(habit, day, log, today, schedule));
+            }
+
+            columns.Add(cells);
+        }
+
+        return new HeatmapData(columns, firstWeekStart, lastWeekStart.AddDays(6), weekStart);
+    }
+
+    private static HeatCell BuildCell(Habit habit, DateOnly day, DayLog? log, DateOnly today, IScheduleCalculator schedule)
+    {
+        var future = day > today;
+        var beforeStart = day < habit.StartDate;
+        var scheduled = schedule.IsScheduled(habit, day);
+        var status = log?.Status ?? DayStatus.None;
+        var value = log?.Value ?? 0;
+
+        var level = 0;
+
+        if (!future && !beforeStart)
+        {
+            level = LevelFor(habit, status, value);
+        }
+
+        return new HeatCell(day, level, status, value, future, beforeStart, day == today, scheduled);
+    }
+
+    private static int LevelFor(Habit habit, DayStatus status, int value)
+    {
+        if (status is DayStatus.Skipped or DayStatus.Frozen)
+        {
+            return 0;
+        }
+
+        if (habit.Kind == HabitKind.Quit)
+        {
+            return status == DayStatus.Failed || value > 0 ? 0 : 4;
+        }
+
+        if (habit.Kind == HabitKind.Boolean)
+        {
+            return status == DayStatus.Done ? 4 : 0;
+        }
+
+        if (value <= 0)
+        {
+            return 0;
+        }
+
+        var ratio = value / (double)habit.EffectiveTarget;
+        return ratio >= 1.0 ? 4 : ratio >= 0.67 ? 3 : ratio >= 0.34 ? 2 : 1;
+    }
+
+    /// <summary>Nhãn tháng cho trục ngang: (chỉ số cột, tháng) ở tuần đầu tiên của mỗi tháng.</summary>
+    public static IReadOnlyList<(int Column, int Month, int Year)> MonthLabels(HeatmapData data)
+    {
+        var labels = new List<(int, int, int)>();
+        var lastMonth = -1;
+
+        for (var column = 0; column < data.Weeks.Count; column++)
+        {
+            // Dùng ngày đầu tuần để quyết định tháng; chỉ gắn nhãn khi đổi tháng.
+            var day = data.Weeks[column][0].Day;
+
+            if (day.Month != lastMonth)
+            {
+                // Bỏ nhãn của cột cuối nếu chỉ còn 1 cột trong tháng đó (không đủ chỗ hiển thị).
+                labels.Add((column, day.Month, day.Year));
+                lastMonth = day.Month;
+            }
+        }
+
+        return labels;
+    }
+}
