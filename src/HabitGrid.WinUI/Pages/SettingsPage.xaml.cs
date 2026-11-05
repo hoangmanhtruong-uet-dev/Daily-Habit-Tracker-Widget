@@ -12,7 +12,7 @@ using Microsoft.UI.Xaml.Navigation;
 namespace HabitGrid.WinUI.Pages;
 
 /// <summary>Cài đặt: chủ đề màu, chế độ sáng/tối, giảm chuyển động, ngôn ngữ. Áp dụng ngay, không cần khởi động lại.</summary>
-public sealed class SettingsPage : Page
+public sealed partial class SettingsPage : Page
 {
     private readonly ThemeService _theme = App.Host.Get<ThemeService>();
     private readonly StackPanel _root = new() { Spacing = 16, Padding = new Thickness(36, 28, 36, 32), MaxWidth = 860, HorizontalAlignment = HorizontalAlignment.Left };
@@ -22,8 +22,8 @@ public sealed class SettingsPage : Page
 
     public SettingsPage()
     {
-        NavigationCacheMode = NavigationCacheMode.Disabled;
-        Content = new ScrollViewer { Content = _root, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
+        InitializeComponent();
+        Scroll.Content = _root;
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -38,7 +38,7 @@ public sealed class SettingsPage : Page
         _root.Children.Clear();
         _tiles.Clear();
 
-        _root.Children.Add(new TextBlock { Text = Ui.T("settings.title"), Style = Style("TitleDisplayTextStyle") });
+        _root.Children.Add(new TextBlock { Text = Ui.T("settings.title"), Style = Res("TitleDisplayTextStyle") });
 
         // Chủ đề màu
         var themeCard = Card(Ui.T("settings.theme"));
@@ -50,7 +50,7 @@ public sealed class SettingsPage : Page
         }
 
         themeCard.Children.Add(tiles);
-        themeCard.Children.Add(new TextBlock { Text = Ui.T("settings.pastel.note"), Style = Style("BodySecondaryTextStyle") });
+        themeCard.Children.Add(new TextBlock { Text = Ui.T("settings.pastel.note"), Style = Res("BodySecondaryTextStyle") });
         Wrap(themeCard);
 
         // Chế độ
@@ -84,7 +84,7 @@ public sealed class SettingsPage : Page
                 await _theme.SetReduceMotionAsync(motion.IsOn);
             }
         };
-        motionCard.Children.Add(new TextBlock { Text = Ui.T("settings.motion.hint"), Style = Style("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap });
+        motionCard.Children.Add(new TextBlock { Text = Ui.T("settings.motion.hint"), Style = Res("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap });
         motionCard.Children.Add(motion);
         Wrap(motionCard);
 
@@ -108,17 +108,17 @@ public sealed class SettingsPage : Page
         _building = false;
     }
 
-    private static Style Style(string key) => (Style)Application.Current.Resources[key];
+    private static Style Res(string key) => (Style)Application.Current.Resources[key];
 
     private static StackPanel Card(string title)
     {
         var panel = new StackPanel { Spacing = 12 };
-        panel.Children.Add(new TextBlock { Text = title.ToUpperInvariant(), Style = Style("SectionHeader"), Margin = new Thickness(0) });
+        panel.Children.Add(new TextBlock { Text = title.ToUpperInvariant(), Style = Res("SectionHeader"), Margin = new Thickness(0) });
         return panel;
     }
 
     private void Wrap(StackPanel content) =>
-        _root.Children.Add(new Border { Style = Style("CardBorder"), Child = content });
+        _root.Children.Add(new Border { Style = Res("CardBorder"), Child = content });
 
     private UIElement CreateTile(ThemeDefinition theme)
     {
@@ -141,7 +141,7 @@ public sealed class SettingsPage : Page
             BorderThickness = new Thickness(1)
         };
 
-        var label = new TextBlock { Text = name, Style = Style("CardTitleTextStyle"), HorizontalAlignment = HorizontalAlignment.Center };
+        var label = new TextBlock { Text = name, Style = Res("CardTitleTextStyle"), HorizontalAlignment = HorizontalAlignment.Center };
         var content = new StackPanel { Spacing = 8, Width = 150 };
         content.Children.Add(swatch);
         content.Children.Add(canvas);
