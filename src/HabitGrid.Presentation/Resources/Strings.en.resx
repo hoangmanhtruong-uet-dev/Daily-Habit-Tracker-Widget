@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="app.name" xml:space="preserve"><value>HabitGrid</value></data>
+  <data name="nav.today" xml:space="preserve"><value>Today</value></data>
+  <data name="nav.habits" xml:space="preserve"><value>Habits</value></data>
+  <data name="nav.insights" xml:space="preserve"><value>Insights</value></data>
+  <data name="nav.buddy" xml:space="preserve"><value>Buddy</value></data>
+  <data name="nav.settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="today.title" xml:space="preserve"><value>Today</value></data>
+  <data name="today.greeting.morning" xml:space="preserve"><value>Good morning</value></data>
+  <data name="today.greeting.afternoon" xml:space="preserve"><value>Good afternoon</value></data>
+  <data name="today.greeting.evening" xml:space="preserve"><value>Good evening</value></data>
+  <data name="today.progress" xml:space="preserve"><value>{0}/{1} done today</value></data>
+  <data name="today.allDone" xml:space="preserve"><value>All done! 🎉</value></data>
+  <data name="today.completed" xml:space="preserve"><value>Completed</value></data>
+  <data name="today.notToday" xml:space="preserve"><value>Not needed today</value></data>
+  <data name="today.empty.title" xml:space="preserve"><value>No habits yet</value></data>
+  <data name="today.empty.body" xml:space="preserve"><value>Add your first habit to start a glowing streak.</value></data>
+  <data name="today.undo" xml:space="preserve"><value>Undo</value></data>
+  <data name="today.checked" xml:space="preserve"><value>Checked {0}</value></data>
+  <data name="today.progressUnit" xml:space="preserve"><value>{0}/{1} {2}</value></data>
+  <data name="group.morning" xml:space="preserve"><value>Morning</value></data>
+  <data name="group.afternoon" xml:space="preserve"><value>Afternoon</value></data>
+  <data name="group.evening" xml:space="preserve"><value>Evening</value></data>
+  <data name="group.anytime" xml:space="preserve"><value>Anytime</value></data>
+  <data name="habits.title" xml:space="preserve"><value>Habits</value></data>
+  <data name="habits.add" xml:space="preserve"><value>Add habit</value></data>
+  <data name="habits.archive" xml:space="preserve"><value>Archive</value></data>
+  <data name="habits.delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="habits.empty" xml:space="preserve"><value>Nothing here yet</value></data>
+  <data name="habits.rate30" xml:space="preserve"><value>{0}% in 30 days</value></data>
+  <data name="add.title" xml:space="preserve"><value>New habit</value></data>
+  <data name="add.name" xml:space="preserve"><value>Habit name</value></data>
+  <data name="add.kind" xml:space="preserve"><value>Type</value></data>
+  <data name="add.target" xml:space="preserve"><value>Daily target</value></data>
+  <data name="add.kind.boolean" xml:space="preserve"><value>Yes / no</value></data>
+  <data name="add.kind.count" xml:space="preserve"><value>Count</value></data>
+  <data name="add.kind.duration" xml:space="preserve"><value>Duration (min)</value></data>
+  <data name="add.kind.quit" xml:space="preserve"><value>Quit</value></data>
+  <data name="add.save" xml:space="preserve"><value>Save</value></data>
+  <data name="add.cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="streak.days" xml:space="preserve"><value>{0} days</value></data>
+  <data name="streak.weeks" xml:space="preserve"><value>{0} weeks</value></data>
+  <data name="streak.months" xml:space="preserve"><value>{0} months</value></data>
+  <data name="streak.windows" xml:space="preserve"><value>{0} rounds</value></data>
+  <data name="streak.atRisk" xml:space="preserve"><value>Streak at risk</value></data>
+  <data name="quit.clean" xml:space="preserve"><value>{0} days clean</value></data>
+  <data name="quit.slip" xml:space="preserve"><value>I slipped</value></data>
+  <data name="placeholder.soon" xml:space="preserve"><value>Coming soon</value></data>
+  <data name="placeholder.insights" xml:space="preserve"><value>Stats and automatic insights are coming soon.</value></data>
+  <data name="placeholder.buddy" xml:space="preserve"><value>Your Buddy and badges are coming soon.</value></data>
+  <data name="placeholder.settings" xml:space="preserve"><value>Settings are coming soon.</value></data>
+  <data name="error.generic" xml:space="preserve"><value>Something went wrong. Your data is safe.</value></data>
+  <data name="error.openDataFolder" xml:space="preserve"><value>Open data folder</value></data>
+  <data name="validation.name.required" xml:space="preserve"><value>Please give your habit a name.</value></data>
+  <data name="validation.name.too_long" xml:space="preserve"><value>Name can be at most 40 characters.</value></data>
+  <data name="validation.target.range" xml:space="preserve"><value>Target must be greater than 0.</value></data>
+  <data name="validation.generic" xml:space="preserve"><value>Some details are not valid.</value></data>
+</root>

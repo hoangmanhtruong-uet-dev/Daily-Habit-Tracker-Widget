@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="app.name" xml:space="preserve"><value>HabitGrid</value></data>
+  <data name="nav.today" xml:space="preserve"><value>Hôm nay</value></data>
+  <data name="nav.habits" xml:space="preserve"><value>Thói quen</value></data>
+  <data name="nav.insights" xml:space="preserve"><value>Insights</value></data>
+  <data name="nav.buddy" xml:space="preserve"><value>Buddy</value></data>
+  <data name="nav.settings" xml:space="preserve"><value>Cài đặt</value></data>
+  <data name="today.title" xml:space="preserve"><value>Hôm nay</value></data>
+  <data name="today.greeting.morning" xml:space="preserve"><value>Chào buổi sáng</value></data>
+  <data name="today.greeting.afternoon" xml:space="preserve"><value>Chào buổi chiều</value></data>
+  <data name="today.greeting.evening" xml:space="preserve"><value>Chào buổi tối</value></data>
+  <data name="today.progress" xml:space="preserve"><value>{0}/{1} xong hôm nay</value></data>
+  <data name="today.allDone" xml:space="preserve"><value>Xong hết rồi! 🎉</value></data>
+  <data name="today.completed" xml:space="preserve"><value>Đã xong</value></data>
+  <data name="today.notToday" xml:space="preserve"><value>Không cần hôm nay</value></data>
+  <data name="today.empty.title" xml:space="preserve"><value>Chưa có thói quen nào</value></data>
+  <data name="today.empty.body" xml:space="preserve"><value>Thêm thói quen đầu tiên để bắt đầu một chuỗi ngày sáng.</value></data>
+  <data name="today.undo" xml:space="preserve"><value>Hoàn tác</value></data>
+  <data name="today.checked" xml:space="preserve"><value>Đã xong {0}</value></data>
+  <data name="today.progressUnit" xml:space="preserve"><value>{0}/{1} {2}</value></data>
+  <data name="group.morning" xml:space="preserve"><value>Buổi sáng</value></data>
+  <data name="group.afternoon" xml:space="preserve"><value>Buổi chiều</value></data>
+  <data name="group.evening" xml:space="preserve"><value>Buổi tối</value></data>
+  <data name="group.anytime" xml:space="preserve"><value>Bất kỳ lúc nào</value></data>
+  <data name="habits.title" xml:space="preserve"><value>Thói quen</value></data>
+  <data name="habits.add" xml:space="preserve"><value>Thêm thói quen</value></data>
+  <data name="habits.archive" xml:space="preserve"><value>Lưu trữ</value></data>
+  <data name="habits.delete" xml:space="preserve"><value>Xóa</value></data>
+  <data name="habits.empty" xml:space="preserve"><value>Danh sách trống</value></data>
+  <data name="habits.rate30" xml:space="preserve"><value>{0}% trong 30 ngày</value></data>
+  <data name="add.title" xml:space="preserve"><value>Thói quen mới</value></data>
+  <data name="add.name" xml:space="preserve"><value>Tên thói quen</value></data>
+  <data name="add.kind" xml:space="preserve"><value>Loại</value></data>
+  <data name="add.target" xml:space="preserve"><value>Mục tiêu mỗi ngày</value></data>
+  <data name="add.kind.boolean" xml:space="preserve"><value>Có / không</value></data>
+  <data name="add.kind.count" xml:space="preserve"><value>Đếm số lần</value></data>
+  <data name="add.kind.duration" xml:space="preserve"><value>Thời lượng (phút)</value></data>
+  <data name="add.kind.quit" xml:space="preserve"><value>Cần bỏ</value></data>
+  <data name="add.save" xml:space="preserve"><value>Lưu</value></data>
+  <data name="add.cancel" xml:space="preserve"><value>Hủy</value></data>
+  <data name="streak.days" xml:space="preserve"><value>{0} ngày</value></data>
+  <data name="streak.weeks" xml:space="preserve"><value>{0} tuần</value></data>
+  <data name="streak.months" xml:space="preserve"><value>{0} tháng</value></data>
+  <data name="streak.windows" xml:space="preserve"><value>{0} lượt</value></data>
+  <data name="streak.atRisk" xml:space="preserve"><value>Sắp mất chuỗi</value></data>
+  <data name="quit.clean" xml:space="preserve"><value>Giữ được {0} ngày</value></data>
+  <data name="quit.slip" xml:space="preserve"><value>Tôi đã lỡ</value></data>
+  <data name="placeholder.soon" xml:space="preserve"><value>Sắp có</value></data>
+  <data name="placeholder.insights" xml:space="preserve"><value>Thống kê và insight tự động sẽ có ở bản tới.</value></data>
+  <data name="placeholder.buddy" xml:space="preserve"><value>Buddy và huy hiệu sẽ có ở bản tới.</value></data>
+  <data name="placeholder.settings" xml:space="preserve"><value>Cài đặt sẽ có ở bản tới.</value></data>
+  <data name="error.generic" xml:space="preserve"><value>Có lỗi xảy ra. Dữ liệu của bạn vẫn an toàn.</value></data>
+  <data name="error.openDataFolder" xml:space="preserve"><value>Mở thư mục dữ liệu</value></data>
+  <data name="validation.name.required" xml:space="preserve"><value>Hãy đặt tên cho thói quen.</value></data>
+  <data name="validation.name.too_long" xml:space="preserve"><value>Tên tối đa 40 ký tự.</value></data>
+  <data name="validation.target.range" xml:space="preserve"><value>Mục tiêu phải lớn hơn 0.</value></data>
+  <data name="validation.generic" xml:space="preserve"><value>Thông tin chưa hợp lệ.</value></data>
+</root>
