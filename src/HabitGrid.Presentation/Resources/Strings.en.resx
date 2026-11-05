@@ -456,4 +456,27 @@
   <data name="backup.restored" xml:space="preserve"><value>Restored {0} habits and {1} days of records.</value></data>
   <data name="backup.confirm.title" xml:space="preserve"><value>Restore from backup?</value></data>
   <data name="backup.confirm.body" xml:space="preserve"><value>Your current data will be replaced by this backup. The app saves your current state first, so you can always go back.</value></data>
+  <data name="vacation.title" xml:space="preserve"><value>Vacation mode</value></data>
+  <data name="vacation.start" xml:space="preserve"><value>Start break</value></data>
+  <data name="vacation.end" xml:space="preserve"><value>End early</value></data>
+  <data name="vacation.until" xml:space="preserve"><value>Break until the end of</value></data>
+  <data name="vacation.days" xml:space="preserve"><value>{0} days</value></data>
+  <data name="vacation.limit" xml:space="preserve"><value>Up to {0} days at a time. Plus allows longer breaks.</value></data>
+  <data name="vacation.body.all" xml:space="preserve"><value>Pause every habit (sick, traveling, exams…): your streaks are kept, there are no reminders and nothing counts as missed. You can still check in if you like.</value></data>
+  <data name="vacation.body.one" xml:space="preserve"><value>Pause "{0}" only: its streak is kept, with no reminders and nothing counted as missed.</value></data>
+  <data name="vacation.banner.all" xml:space="preserve"><value>🏖 On a break until the end of {0}. Your streaks are safe.</value></data>
+  <data name="vacation.banner.some" xml:space="preserve"><value>🏖 Some habits are on a break until the end of {0}.</value></data>
+  <data name="vacation.pause.habit" xml:space="preserve"><value>Pause</value></data>
+  <data name="vacation.err.InPast" xml:space="preserve"><value>A break can't start in the past.</value></data>
+  <data name="vacation.err.EndBeforeStart" xml:space="preserve"><value>The end date must be today or later.</value></data>
+  <data name="vacation.err.TooLong" xml:space="preserve"><value>A break can be at most {0} days.</value></data>
+  <data name="vacation.err.AlreadyActive" xml:space="preserve"><value>You already have a break running. End it before starting a new one.</value></data>
+  <data name="vacation.err.NothingToPause" xml:space="preserve"><value>There's nothing to pause (quit habits don't need a break).</value></data>
+  <data name="settings.vacation" xml:space="preserve"><value>Vacation mode</value></data>
+  <data name="settings.vacation.hint" xml:space="preserve"><value>Traveling or sick? Take a break to keep your streaks without spending a freeze.</value></data>
+  <data name="settings.vacation.active" xml:space="preserve"><value>On a break until the end of {0}.</value></data>
+  <data name="settings.vacation.none" xml:space="preserve"><value>Not on a break right now.</value></data>
+  <data name="mood.title.today" xml:space="preserve"><value>How are you feeling today?</value></data>
+  <data name="mood.title.past" xml:space="preserve"><value>How did you feel that day?</value></data>
+  <data name="mood.note" xml:space="preserve"><value>One line about the day (optional)</value></data>
 </root>

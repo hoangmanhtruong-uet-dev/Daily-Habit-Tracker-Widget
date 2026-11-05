@@ -47,8 +47,18 @@
                     </StackPanel>
                 </Grid>
 
+                <!-- Đang tạm nghỉ -->
+                <InfoBar x:Name="VacationBar" Severity="Success" IsOpen="False" IsClosable="False" Margin="0,12,0,0">
+                    <InfoBar.ActionButton>
+                        <Button x:Name="VacationEndButton" Click="OnVacationEndClick" />
+                    </InfoBar.ActionButton>
+                </InfoBar>
+
                 <!-- Dải tuần -->
                 <controls:WeekStrip x:Name="Strip" Margin="0,18,0,14" />
+
+                <!-- Cảm xúc trong ngày -->
+                <controls:MoodBar x:Name="Mood" Margin="0,0,0,14" />
 
                 <!-- Bento: hero + streak -->
                 <Grid ColumnDefinitions="2*,*" ColumnSpacing="14">

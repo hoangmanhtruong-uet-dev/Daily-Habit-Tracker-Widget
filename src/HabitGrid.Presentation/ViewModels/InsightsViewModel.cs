@@ -28,9 +28,11 @@ public sealed partial class InsightsViewModel : ObservableObject
     private readonly IDayProvider _days;
     private readonly IEntitlements _entitlements;
     private readonly ISettingsStore _settings;
+    private readonly DailyMoodService _moods;
 
     public InsightsViewModel(IHabitRepository habits, IDayLogRepository logs, IDayProvider days, IEntitlements entitlements, ISettingsStore settings)
     {
+        _moods = new DailyMoodService(settings ?? throw new ArgumentNullException(nameof(settings)), days ?? throw new ArgumentNullException(nameof(days)));
         _habits = habits ?? throw new ArgumentNullException(nameof(habits));
         _logs = logs ?? throw new ArgumentNullException(nameof(logs));
         _days = days ?? throw new ArgumentNullException(nameof(days));
@@ -89,7 +91,8 @@ public sealed partial class InsightsViewModel : ObservableObject
                 _ => today.AddDays(-29)
             };
 
-            Report = InsightsCalculator.Build(habits, logs, today, from > today ? today : from);
+            var dayMoods = (await _moods.AllAsync()).ToDictionary(p => p.Key, p => p.Value.Mood);
+            Report = InsightsCalculator.Build(habits, logs, today, from > today ? today : from, dayMoods: dayMoods);
 
             var shown = await LoadShownAsync();
             var ranked = InsightEngine.Evaluate(habits, logs, today);

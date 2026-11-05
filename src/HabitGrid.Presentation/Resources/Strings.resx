@@ -456,4 +456,27 @@
   <data name="backup.restored" xml:space="preserve"><value>Đã khôi phục {0} thói quen và {1} ngày ghi nhận.</value></data>
   <data name="backup.confirm.title" xml:space="preserve"><value>Khôi phục từ bản sao lưu?</value></data>
   <data name="backup.confirm.body" xml:space="preserve"><value>Dữ liệu hiện tại sẽ được thay bằng bản sao lưu này. App tự lưu lại hiện trạng trước khi khôi phục, nên bạn vẫn quay lại được.</value></data>
+  <data name="vacation.title" xml:space="preserve"><value>Tạm nghỉ</value></data>
+  <data name="vacation.start" xml:space="preserve"><value>Bắt đầu tạm nghỉ</value></data>
+  <data name="vacation.end" xml:space="preserve"><value>Kết thúc sớm</value></data>
+  <data name="vacation.until" xml:space="preserve"><value>Nghỉ đến hết ngày</value></data>
+  <data name="vacation.days" xml:space="preserve"><value>{0} ngày</value></data>
+  <data name="vacation.limit" xml:space="preserve"><value>Tối đa {0} ngày mỗi lần. Plus nghỉ được lâu hơn.</value></data>
+  <data name="vacation.body.all" xml:space="preserve"><value>Tạm nghỉ mọi thói quen (ốm, du lịch, thi cử…): chuỗi của bạn được giữ, không nhắc nhở, không tính là lỡ. Bạn vẫn check-in được nếu muốn.</value></data>
+  <data name="vacation.body.one" xml:space="preserve"><value>Tạm nghỉ riêng "{0}": chuỗi của thói quen này được giữ, không nhắc nhở, không tính là lỡ.</value></data>
+  <data name="vacation.banner.all" xml:space="preserve"><value>🏖 Đang tạm nghỉ tới hết {0}. Chuỗi của bạn được giữ nguyên.</value></data>
+  <data name="vacation.banner.some" xml:space="preserve"><value>🏖 Một số thói quen đang tạm nghỉ tới hết {0}.</value></data>
+  <data name="vacation.pause.habit" xml:space="preserve"><value>Tạm nghỉ</value></data>
+  <data name="vacation.err.InPast" xml:space="preserve"><value>Không thể bắt đầu tạm nghỉ trong quá khứ.</value></data>
+  <data name="vacation.err.EndBeforeStart" xml:space="preserve"><value>Ngày kết thúc phải từ hôm nay trở đi.</value></data>
+  <data name="vacation.err.TooLong" xml:space="preserve"><value>Mỗi lần tạm nghỉ tối đa {0} ngày.</value></data>
+  <data name="vacation.err.AlreadyActive" xml:space="preserve"><value>Bạn đang có một kỳ tạm nghỉ. Kết thúc nó trước khi tạo kỳ mới.</value></data>
+  <data name="vacation.err.NothingToPause" xml:space="preserve"><value>Không có thói quen nào để tạm nghỉ (thói quen cần bỏ không cần tạm nghỉ).</value></data>
+  <data name="settings.vacation" xml:space="preserve"><value>Tạm nghỉ</value></data>
+  <data name="settings.vacation.hint" xml:space="preserve"><value>Sắp đi xa hay đang ốm? Tạm nghỉ để giữ chuỗi mà không tốn freeze.</value></data>
+  <data name="settings.vacation.active" xml:space="preserve"><value>Đang tạm nghỉ tới hết {0}.</value></data>
+  <data name="settings.vacation.none" xml:space="preserve"><value>Hiện không tạm nghỉ.</value></data>
+  <data name="mood.title.today" xml:space="preserve"><value>Hôm nay bạn thấy sao?</value></data>
+  <data name="mood.title.past" xml:space="preserve"><value>Hôm đó bạn thấy sao?</value></data>
+  <data name="mood.note" xml:space="preserve"><value>Một câu về ngày hôm nay (tùy chọn)</value></data>
 </root>
