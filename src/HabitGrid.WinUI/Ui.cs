@@ -22,12 +22,17 @@ public static class Ui
         }
 
         var s = hex.TrimStart('#');
-        if (s.Length == 6 && int.TryParse(s, System.Globalization.NumberStyles.HexNumber, null, out var rgb))
+        if (!uint.TryParse(s, System.Globalization.NumberStyles.HexNumber, null, out var v))
         {
-            return Color.FromArgb(255, (byte)(rgb >> 16), (byte)(rgb >> 8), (byte)rgb);
+            return fallback;
         }
 
-        return fallback;
+        return s.Length switch
+        {
+            6 => Color.FromArgb(255, (byte)(v >> 16), (byte)(v >> 8), (byte)v),
+            8 => Color.FromArgb((byte)(v >> 24), (byte)(v >> 16), (byte)(v >> 8), (byte)v),
+            _ => fallback
+        };
     }
 
     public static SolidColorBrush Brush(string? hex) => new(ParseColor(hex, Colors.Gray));

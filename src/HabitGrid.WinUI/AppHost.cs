@@ -168,6 +168,7 @@ public sealed class AppHost : IDisposable
         services.AddSingleton<IRoutineRepository>(_ => new RoutineRepository(database, clock, bus));
         services.AddSingleton<IProfileRepository>(_ => new ProfileRepository(database, clock, bus));
         services.AddSingleton<ISettingsStore>(settings);
+        services.AddSingleton(new ThemeService(settings));
         services.AddSingleton<IEntitlements>(entitlements);
         services.AddSingleton<IDayProvider>(_ => new DayProvider(TimeSpan.FromHours(dayStartHour)));
         services.AddSingleton<IStreakCalculator>(new StreakCalculator());

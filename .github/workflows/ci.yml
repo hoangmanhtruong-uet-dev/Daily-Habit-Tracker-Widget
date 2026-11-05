@@ -3,7 +3,8 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: ['**']
+  workflow_dispatch:
 
 jobs:
   build-test:
@@ -30,6 +31,15 @@ jobs:
           if (-not $p.WaitForExit(90000)) { $p.Kill(); Write-Error 'smoke timed out'; exit 1 }
           Get-Content "$env:HABITGRID_DATA_DIR/logs/*.log" -ErrorAction SilentlyContinue
           exit $p.ExitCode
+      - name: Upload smoke screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-screenshots
+          path: |
+            ${{ runner.temp }}/hg-smoke/shots/*.png
+            ${{ runner.temp }}/hg-smoke/logs/*.log
+          if-no-files-found: ignore
       - name: Vulnerable packages
         shell: bash
         run: |

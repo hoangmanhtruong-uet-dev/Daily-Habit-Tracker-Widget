@@ -17,6 +17,9 @@ public static class SettingKeys
     public const string OnboardingState = "onboarding.state";
     public const string Language = "language";
     public const string DayStartHour = "dayStartHour";
+    public const string Theme = "theme";
+    public const string ThemeMode = "themeMode";
+    public const string ReduceMotion = "reduceMotion";
 }
 
 /// <summary>Giới hạn của gói Free (SPEC-V2-10 §1). Plus có hiện thực riêng ở tầng Platform.</summary>

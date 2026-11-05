@@ -22,6 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Assets\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\HabitGrid.Core\HabitGrid.Core.csproj" />
     <ProjectReference Include="..\HabitGrid.Data\HabitGrid.Data.csproj" />
     <ProjectReference Include="..\HabitGrid.Presentation\HabitGrid.Presentation.csproj" />

@@ -1,6 +1,7 @@
 using HabitGrid.Core.Domain;
 using HabitGrid.Presentation.Services;
 using HabitGrid.Presentation.Templates;
+using HabitGrid.Presentation.Theming;
 using HabitGrid.Presentation.ViewModels;
 using HabitGrid.WinUI.Controls;
 using HabitGrid.WinUI.Pages;
@@ -44,6 +45,26 @@ public static class SmokeRunner
                 await SnapAsync(window, $"page-{key}");
                 logger.Info($"SMOKE page {key} OK");
             }
+
+            // Mọi theme × sáng/tối phải dựng được (ảnh để duyệt giao diện).
+            var variants = new (ThemeDefinition Theme, ThemeMode Mode, string Name)[]
+            {
+                (Themes.CandyBento, ThemeMode.Dark, "candy-dark"),
+                (Themes.CandyBento, ThemeMode.Light, "candy-light"),
+                (Themes.NeonNight, ThemeMode.Dark, "neon"),
+                (Themes.SoftPastel, ThemeMode.Light, "pastel")
+            };
+
+            foreach (var (theme, mode, name) in variants)
+            {
+                await window.SetThemeAsync(theme, mode);
+                await GoToAsync(window, PageKeys.Today);
+                await Task.Delay(500);
+                await SnapAsync(window, $"theme-{name}");
+            }
+
+            await window.SetThemeAsync(Themes.CandyBento, ThemeMode.System);
+            logger.Info("SMOKE themes OK");
 
             logger.Info("SMOKE OK");
             Environment.Exit(0);

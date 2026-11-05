@@ -1,12 +1,12 @@
 using System.Runtime.InteropServices;
 using HabitGrid.Core.Domain;
 using HabitGrid.Presentation.Services;
+using HabitGrid.Presentation.Theming;
 using HabitGrid.Presentation.ViewModels;
 using HabitGrid.WinUI.Pages;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Animation;
 using WinRT.Interop;
 
 namespace HabitGrid.WinUI;
@@ -14,7 +14,7 @@ namespace HabitGrid.WinUI;
 public sealed partial class MainWindow : Window
 {
     private readonly ShellViewModel _shell = App.Host.Get<ShellViewModel>();
-    private readonly Dictionary<string, NavigationViewItem> _items = [];
+    private readonly ThemeService _theme = App.Host.Get<ThemeService>();
 
     public MainWindow()
     {
@@ -23,14 +23,17 @@ public sealed partial class MainWindow : Window
         Title = Ui.T("app.name");
         TitleText.Text = Ui.T("app.name");
 
-        // Mica (Windows 11) tự lùi về nền thường trên máy không hỗ trợ.
-        SystemBackdrop = new MicaBackdrop();
-
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(TitleBar);
-        AppWindow.Resize(new Windows.Graphics.SizeInt32(1240, 800));
+        AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
+        AppWindow.Resize(new Windows.Graphics.SizeInt32(1280, 820));
 
-        BuildNavigation();
+        Rail.Build(_shell.MainItems, _shell.SettingsItem);
+        Rail.Navigated += (_, key) => Navigate(key);
+        Rail.AddRequested += async (_, _) => await AddHabitAsync();
+
+        _theme.Changed += (_, palette) => ApplyPalette(palette);
+        Activated += (_, e) => Backdrop.SetAnimated(_theme.AnimationsEnabled && e.WindowActivationState != WindowActivationState.Deactivated);
         Closed += (_, _) => Closing?.Invoke(this, EventArgs.Empty);
     }
 
@@ -38,14 +41,17 @@ public sealed partial class MainWindow : Window
 
     public string CurrentPageKey => _shell.SelectedKey;
 
-    /// <summary>Đang ở luồng làm quen (ẩn thanh điều hướng).</summary>
+    /// <summary>Đang ở luồng làm quen (ẩn dock điều hướng).</summary>
     public bool IsOnboarding { get; private set; }
 
     public OnboardingPage? CurrentOnboardingPage => ContentFrame.Content as OnboardingPage;
 
-    /// <summary>Quyết định hiện onboarding hay vào thẳng trang Hôm nay.</summary>
+    /// <summary>Áp theme, rồi quyết định hiện onboarding hay vào thẳng trang Hôm nay.</summary>
     public async Task InitializeAsync()
     {
+        await _theme.LoadAsync();
+        _theme.Apply(Root);
+
         var needed = await OnboardingViewModel.IsNeededAsync(
             App.Host.Get<ISettingsStore>(),
             App.Host.Get<IHabitRepository>());
@@ -56,16 +62,78 @@ public sealed partial class MainWindow : Window
         }
         else
         {
-            Nav.SelectedItem = _items[PageKeys.Today];
+            Navigate(PageKeys.Today);
         }
+    }
+
+    /// <summary>Đổi theme lúc chạy (cài đặt, smoke test).</summary>
+    public Task SetThemeAsync(ThemeDefinition theme, ThemeMode mode) => _theme.SetAsync(theme, mode, Root);
+
+    /// <summary>Chuyển tới trang theo khóa (dùng cho dock và smoke test).</summary>
+    public void NavigateTo(string key) => Navigate(key);
+
+    private void Navigate(string key)
+    {
+        if (IsOnboarding)
+        {
+            return;
+        }
+
+        _shell.SelectedKey = key;
+        Rail.Select(key);
+
+        var transition = new SlideNavigationTransitionInfo { Effect = SlideNavigationTransitionEffect.FromBottom };
+
+        switch (key)
+        {
+            case PageKeys.Today:
+                ContentFrame.Navigate(typeof(TodayPage), null, transition);
+                break;
+            case PageKeys.Habits:
+                ContentFrame.Navigate(typeof(HabitsPage), null, transition);
+                break;
+            default:
+                ContentFrame.Navigate(typeof(PlaceholderPage), key, transition);
+                break;
+        }
+    }
+
+    private async Task AddHabitAsync()
+    {
+        try
+        {
+            if (await HabitEditorDialog.ShowAsync(Root.XamlRoot) is not null)
+            {
+                await App.Host.Get<TodayViewModel>().LoadAsync();
+                await App.Host.Get<HabitsViewModel>().LoadAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            App.Host.Get<IAppLogger>().Error("Thêm thói quen từ dock lỗi", ex);
+        }
+    }
+
+    private void ApplyPalette(ThemePalette palette)
+    {
+        Backdrop.Apply(palette);
+
+        // Nút hệ thống (thu nhỏ/phóng to/đóng) theo màu chữ của theme, nền trong suốt.
+        var titleBar = AppWindow.TitleBar;
+        var text = Ui.ParseColor(palette.TextPrimary);
+        titleBar.ButtonBackgroundColor = Microsoft.UI.Colors.Transparent;
+        titleBar.ButtonInactiveBackgroundColor = Microsoft.UI.Colors.Transparent;
+        titleBar.ButtonForegroundColor = text;
+        titleBar.ButtonHoverForegroundColor = text;
+        titleBar.ButtonHoverBackgroundColor = Windows.UI.Color.FromArgb(28, text.R, text.G, text.B);
+        titleBar.ButtonInactiveForegroundColor = Ui.ParseColor(palette.TextMuted);
     }
 
     private void ShowOnboarding()
     {
         IsOnboarding = true;
-        Nav.IsPaneVisible = false;
-        Nav.IsPaneToggleButtonVisible = false;
-        ContentFrame.Navigate(typeof(OnboardingPage), null, new Microsoft.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
+        Rail.Visibility = Visibility.Collapsed;
+        ContentFrame.Navigate(typeof(OnboardingPage), null, new SuppressNavigationTransitionInfo());
 
         if (ContentFrame.Content is OnboardingPage page)
         {
@@ -76,63 +144,8 @@ public sealed partial class MainWindow : Window
     private void OnOnboardingCompleted(object? sender, OnboardingResult? result)
     {
         IsOnboarding = false;
-        Nav.IsPaneVisible = true;
-        Nav.IsPaneToggleButtonVisible = true;
-        Nav.SelectedItem = _items[PageKeys.Today];
-    }
-
-    private void BuildNavigation()
-    {
-        foreach (var item in _shell.MainItems)
-        {
-            var nav = CreateItem(item);
-            _items[item.Key] = nav;
-            Nav.MenuItems.Add(nav);
-        }
-
-        var settings = CreateItem(_shell.SettingsItem);
-        _items[PageKeys.Settings] = settings;
-        Nav.FooterMenuItems.Add(settings);
-
-    }
-
-    private NavigationViewItem CreateItem(NavItem item) => new()
-    {
-        Content = Ui.T(item.TitleKey),
-        Tag = item.Key,
-        Icon = new FontIcon { Glyph = item.Glyph }
-    };
-
-    /// <summary>Chuyển tới trang theo khóa (dùng cho điều hướng và smoke test).</summary>
-    public void NavigateTo(string key)
-    {
-        if (_items.TryGetValue(key, out var item))
-        {
-            Nav.SelectedItem = item;
-        }
-    }
-
-    private void OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
-    {
-        if (IsOnboarding || args.SelectedItem is not NavigationViewItem { Tag: string key })
-        {
-            return;
-        }
-
-        _shell.SelectedKey = key;
-
-        switch (key)
-        {
-            case PageKeys.Today:
-                ContentFrame.Navigate(typeof(TodayPage), null, new Microsoft.UI.Xaml.Media.Animation.EntranceNavigationTransitionInfo());
-                break;
-            case PageKeys.Habits:
-                ContentFrame.Navigate(typeof(HabitsPage), null, new Microsoft.UI.Xaml.Media.Animation.EntranceNavigationTransitionInfo());
-                break;
-            default:
-                ContentFrame.Navigate(typeof(PlaceholderPage), key, new Microsoft.UI.Xaml.Media.Animation.EntranceNavigationTransitionInfo());
-                break;
-        }
+        Rail.Visibility = Visibility.Visible;
+        Navigate(PageKeys.Today);
     }
 
     /// <summary>Đưa cửa sổ lên trước (khi mở lần hai hoặc kích hoạt từ nơi khác).</summary>
