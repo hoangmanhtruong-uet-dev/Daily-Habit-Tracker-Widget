@@ -367,7 +367,8 @@ public static class SmokeRunner
 
         // F3 Tạm nghỉ: đánh dấu rồi kết thúc sớm phải trả dữ liệu về như cũ.
         var vacation = App.Host.Get<VacationService>();
-        var habits = (await App.Host.Get<IHabitRepository>().GetAllActiveAsync()).Where(h => h.Kind == HabitKind.Boolean).ToList();
+        var habits = (await App.Host.Get<IHabitRepository>().GetAllActiveAsync()).Where(h => h.Kind != HabitKind.Quit).ToList();
+        Require(habits.Count >= 3, $"Cần ít nhất 3 thói quen để thử routine và tạm nghỉ, có {habits.Count}.");
         var paused = habits.Last();
         var today = App.Host.Get<IDayProvider>().GetToday();
         var logs = App.Host.Get<IDayLogRepository>();
