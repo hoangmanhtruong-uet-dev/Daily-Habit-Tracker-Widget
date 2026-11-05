@@ -214,4 +214,79 @@
   <data name="settings.widgets" xml:space="preserve"><value>Widget trên desktop</value></data>
   <data name="settings.autostart" xml:space="preserve"><value>Chạy widget cùng Windows</value></data>
   <data name="settings.autostart.hint" xml:space="preserve"><value>Widget tự hiện khi đăng nhập, không cần mở app chính. Tắt đi thì widget chỉ chạy khi bạn mở.</value></data>
+  <data name="buddy.title" xml:space="preserve"><value>Buddy</value></data>
+  <data name="buddy.level" xml:space="preserve"><value>Cấp {0}</value></data>
+  <data name="buddy.xp" xml:space="preserve"><value>{0}/{1} XP</value></data>
+  <data name="buddy.maxlevel" xml:space="preserve"><value>Cấp tối đa</value></data>
+  <data name="buddy.freeze" xml:space="preserve"><value>Freeze: {0}</value></data>
+  <data name="buddy.streak" xml:space="preserve"><value>Chuỗi tổng {0} ngày</value></data>
+  <data name="buddy.badges" xml:space="preserve"><value>Huy hiệu</value></data>
+  <data name="buddy.badges.count" xml:space="preserve"><value>{0}/{1} đã mở</value></data>
+  <data name="badge.secret.name" xml:space="preserve"><value>???</value></data>
+  <data name="badge.secret.desc" xml:space="preserve"><value>Huy hiệu bí mật.</value></data>
+  <data name="badge.progress" xml:space="preserve"><value>{0}/{1}</value></data>
+  <data name="badge.tier.1" xml:space="preserve"><value>Đồng</value></data>
+  <data name="badge.tier.2" xml:space="preserve"><value>Bạc</value></data>
+  <data name="badge.tier.3" xml:space="preserve"><value>Vàng</value></data>
+  <data name="stage.egg" xml:space="preserve"><value>Trứng</value></data>
+  <data name="stage.baby" xml:space="preserve"><value>Bé</value></data>
+  <data name="stage.teen" xml:space="preserve"><value>Thiếu niên</value></data>
+  <data name="stage.adult" xml:space="preserve"><value>Trưởng thành</value></data>
+  <data name="stage.legend" xml:space="preserve"><value>Huyền thoại</value></data>
+  <data name="celebrate.level.title" xml:space="preserve"><value>Lên cấp {0}!</value></data>
+  <data name="celebrate.level.body" xml:space="preserve"><value>Buddy của bạn đã lớn thêm. Bạn nhận 1 freeze.</value></data>
+  <data name="celebrate.badge.title" xml:space="preserve"><value>Huy hiệu mới</value></data>
+  <data name="celebrate.close" xml:space="preserve"><value>Tuyệt!</value></data>
+  <data name="freeze.ask.title" xml:space="preserve"><value>Dùng freeze để giữ chuỗi?</value></data>
+  <data name="freeze.ask.body" xml:space="preserve"><value>Bạn lỡ {0} ngày. Dùng {0} freeze để giữ chuỗi tổng?</value></data>
+  <data name="freeze.use" xml:space="preserve"><value>Dùng freeze</value></data>
+  <data name="freeze.skip" xml:space="preserve"><value>Để chuỗi đứt</value></data>
+  <data name="settings.freeze.auto" xml:space="preserve"><value>Tự dùng freeze khi lỡ ngày</value></data>
+  <data name="settings.freeze.hint" xml:space="preserve"><value>Tự giữ chuỗi bằng freeze nếu đủ token; tắt thì app sẽ hỏi bạn.</value></data>
+  <data name="badge.first_checkin.name" xml:space="preserve"><value>Bước đầu tiên</value></data>
+  <data name="badge.first_checkin.desc" xml:space="preserve"><value>Check-in lần đầu tiên.</value></data>
+  <data name="badge.first_perfect_day.name" xml:space="preserve"><value>Ngày hoàn hảo đầu tiên</value></data>
+  <data name="badge.first_perfect_day.desc" xml:space="preserve"><value>Hoàn thành mọi thói quen có lịch trong một ngày.</value></data>
+  <data name="badge.three_habits.name" xml:space="preserve"><value>Bộ ba</value></data>
+  <data name="badge.three_habits.desc" xml:space="preserve"><value>Đang theo dõi 3 thói quen cùng lúc.</value></data>
+  <data name="badge.first_note.name" xml:space="preserve"><value>Người ghi chép</value></data>
+  <data name="badge.first_note.desc" xml:space="preserve"><value>Viết ghi chú đầu tiên.</value></data>
+  <data name="badge.streak_7.name" xml:space="preserve"><value>Một tuần liền</value></data>
+  <data name="badge.streak_7.desc" xml:space="preserve"><value>Giữ chuỗi 7 ngày.</value></data>
+  <data name="badge.streak_30.name" xml:space="preserve"><value>Một tháng kiên trì</value></data>
+  <data name="badge.streak_30.desc" xml:space="preserve"><value>Giữ chuỗi 30 ngày.</value></data>
+  <data name="badge.streak_100.name" xml:space="preserve"><value>Trăm ngày</value></data>
+  <data name="badge.streak_100.desc" xml:space="preserve"><value>Giữ chuỗi 100 ngày.</value></data>
+  <data name="badge.streak_365.name" xml:space="preserve"><value>Cả năm không nghỉ</value></data>
+  <data name="badge.streak_365.desc" xml:space="preserve"><value>Giữ chuỗi 365 ngày.</value></data>
+  <data name="badge.comeback.name" xml:space="preserve"><value>Trở lại mạnh mẽ</value></data>
+  <data name="badge.comeback.desc" xml:space="preserve"><value>Mất chuỗi 7 ngày rồi lại giữ được 7 ngày nữa.</value></data>
+  <data name="badge.checkins_100.name" xml:space="preserve"><value>100 lần check</value></data>
+  <data name="badge.checkins_100.desc" xml:space="preserve"><value>Hoàn thành 100 lần check-in.</value></data>
+  <data name="badge.checkins_1000.name" xml:space="preserve"><value>1000 lần check</value></data>
+  <data name="badge.checkins_1000.desc" xml:space="preserve"><value>Hoàn thành 1000 lần check-in.</value></data>
+  <data name="badge.focus_10h.name" xml:space="preserve"><value>10 giờ tập trung</value></data>
+  <data name="badge.focus_10h.desc" xml:space="preserve"><value>Tập trung tổng cộng 10 giờ.</value></data>
+  <data name="badge.water_100_glasses.name" xml:space="preserve"><value>100 ly nước</value></data>
+  <data name="badge.water_100_glasses.desc" xml:space="preserve"><value>Uống 100 ly nước (thói quen gắn thẻ water).</value></data>
+  <data name="badge.early_bird.name" xml:space="preserve"><value>Chim sớm</value></data>
+  <data name="badge.early_bird.desc" xml:space="preserve"><value>Check-in trước 7 giờ sáng 10 lần.</value></data>
+  <data name="badge.night_owl.name" xml:space="preserve"><value>Cú đêm</value></data>
+  <data name="badge.night_owl.desc" xml:space="preserve"><value>Check-in sau 11 giờ đêm 10 lần.</value></data>
+  <data name="badge.weekend_warrior.name" xml:space="preserve"><value>Chiến binh cuối tuần</value></data>
+  <data name="badge.weekend_warrior.desc" xml:space="preserve"><value>Hoàn hảo cả thứ Bảy và Chủ nhật.</value></data>
+  <data name="badge.widget_pinned.name" xml:space="preserve"><value>Ghim lên desktop</value></data>
+  <data name="badge.widget_pinned.desc" xml:space="preserve"><value>Ghim widget lên màn hình nền.</value></data>
+  <data name="badge.quick_checkin_used.name" xml:space="preserve"><value>Tay nhanh</value></data>
+  <data name="badge.quick_checkin_used.desc" xml:space="preserve"><value>Dùng Quick check-in bằng phím tắt.</value></data>
+  <data name="badge.theme_changed.name" xml:space="preserve"><value>Phong cách riêng</value></data>
+  <data name="badge.theme_changed.desc" xml:space="preserve"><value>Đổi chủ đề màu của app.</value></data>
+  <data name="badge.shared_card.name" xml:space="preserve"><value>Khoe thành tích</value></data>
+  <data name="badge.shared_card.desc" xml:space="preserve"><value>Chia sẻ một thẻ thành tích.</value></data>
+  <data name="badge.midnight_checkin.name" xml:space="preserve"><value>Đúng nửa đêm</value></data>
+  <data name="badge.midnight_checkin.desc" xml:space="preserve"><value>Check-in đúng 00:00.</value></data>
+  <data name="badge.perfect_week.name" xml:space="preserve"><value>Tuần hoàn hảo</value></data>
+  <data name="badge.perfect_week.desc" xml:space="preserve"><value>7 ngày hoàn hảo liên tiếp.</value></data>
+  <data name="badge.marathon_day.name" xml:space="preserve"><value>Ngày marathon</value></data>
+  <data name="badge.marathon_day.desc" xml:space="preserve"><value>Hoàn thành 10 check-in trong một ngày.</value></data>
 </root>

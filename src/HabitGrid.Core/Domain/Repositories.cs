@@ -95,6 +95,14 @@ public interface IRoutineRepository
     Task DeleteAsync(Guid id, CancellationToken ct = default);
 }
 
+public interface IAchievementRepository
+{
+    Task<IReadOnlyList<Achievement>> GetAllAsync(CancellationToken ct = default);
+
+    /// <summary>Ghi huy hiệu đã mở khóa; trả về true nếu là lần đầu (đã mở thì giữ ngày cũ, không ghi lại).</summary>
+    Task<bool> UnlockAsync(string id, DateTime unlockedAtUtc, CancellationToken ct = default);
+}
+
 public interface IProfileRepository
 {
     Task<UserProfile> GetAsync(CancellationToken ct = default);
