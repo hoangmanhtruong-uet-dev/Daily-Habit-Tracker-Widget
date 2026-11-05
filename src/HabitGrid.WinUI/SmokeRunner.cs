@@ -354,8 +354,10 @@ public static class SmokeRunner
     {
         var plus = App.Host.Get<PlusService>();
         Require(!plus.StoreAvailable, "Bản không đóng gói không được coi là có Microsoft Store.");
-        Require(!plus.Status.IsPlus, "Bản không có Store không được tự có Plus.");
-        Require(App.Host.Get<IEntitlements>().MaxActiveHabits == FreeEntitlements.FreeMaxActiveHabits, "Gói Free phải giới hạn 5 thói quen.");
+        // Chưa mở bán trên Store: người dùng mới được tặng Plus 30 ngày (quyền cục bộ, không phải mua).
+        Require(plus.Status.Tier == HabitGrid.Core.Domain.Monetization.PlusTier.Promo, $"Người dùng mới phải được tặng Plus, đang là {plus.Status.Tier}.");
+        Require(plus.PromoDaysLeft is 29 or 30, $"Thời gian tặng phải còn 30 ngày, đang còn {plus.PromoDaysLeft}.");
+        Require(App.Host.Get<IEntitlements>().MaxActiveHabits == int.MaxValue, "Đang Plus tặng thì không giới hạn thói quen.");
 
         var root = window.Content.XamlRoot;
         var showing = HabitGrid.WinUI.Plus.PaywallDialog.ShowAsync(root, PaywallSource.Settings);
@@ -368,8 +370,8 @@ public static class SmokeRunner
         Require(buyButtons.All(b => !b.IsEnabled), "Không có Store mà nút Mua vẫn bấm được.");
 
         dialog.Hide();
-        Require(!await showing, "Đóng paywall mà lại có Plus.");
-        logger.Info("SMOKE plus OK (free, no store, paywall builds, buy disabled)");
+        await showing;
+        logger.Info($"SMOKE plus OK (promo {plus.PromoDaysLeft} days left, no store, paywall builds, buy disabled)");
     }
 
     private static async Task ShortcutsJourneyAsync(MainWindow window, IAppLogger logger)

@@ -50,7 +50,7 @@ public class PlusServiceTests
         var store = new FakePlusStore();
         var live = new LiveEntitlements();
         var cache = new MemoryLicenseCache();
-        return (new PlusService(store, cache, live, f.Settings, f.Habits, now), store, live, cache);
+        return (new PlusService(store, cache, live, f.Settings, f.Habits, now) { PromoEnabled = false }, store, live, cache);
     }
 
     [Fact]
@@ -132,12 +132,12 @@ public class PlusServiceTests
         store.ThrowOnOwned = true;
 
         clock = clock.AddDays(6);
-        var day6 = new PlusService(store, cache, live, f.Settings, f.Habits, () => clock);
+        var day6 = new PlusService(store, cache, live, f.Settings, f.Habits, () => clock) { PromoEnabled = false };
         await day6.InitializeAsync();
         day6.Status.Should().Match<LicenseStatus>(s => s.IsPlus && !s.NeedsRecheck);
 
         clock = clock.AddDays(2);
-        var day8 = new PlusService(store, cache, live, f.Settings, f.Habits, () => clock);
+        var day8 = new PlusService(store, cache, live, f.Settings, f.Habits, () => clock) { PromoEnabled = false };
         await day8.InitializeAsync();
         day8.Status.Should().Match<LicenseStatus>(s => s.IsPlus && s.NeedsRecheck);
     }
@@ -217,7 +217,7 @@ public class PaywallTests
     {
         using var f = new AppFixture();
         var store = new FakePlusStore();
-        var service = new PlusService(store, new MemoryLicenseCache(), new LiveEntitlements(), f.Settings, f.Habits);
+        var service = new PlusService(store, new MemoryLicenseCache(), new LiveEntitlements(), f.Settings, f.Habits) { PromoEnabled = false };
         var vm = new PaywallViewModel(service, PaywallSource.HabitLimit);
 
         await service.InitializeAsync();
@@ -236,7 +236,7 @@ public class PaywallTests
     {
         using var f = new AppFixture();
         var store = new FakePlusStore();
-        var service = new PlusService(store, new MemoryLicenseCache(), new LiveEntitlements(), f.Settings, f.Habits);
+        var service = new PlusService(store, new MemoryLicenseCache(), new LiveEntitlements(), f.Settings, f.Habits) { PromoEnabled = false };
         var vm = new PaywallViewModel(service, PaywallSource.Settings);
         await vm.LoadAsync();
 
@@ -253,7 +253,7 @@ public class PaywallTests
     {
         using var f = new AppFixture();
         var store = new FakePlusStore { IsAvailable = false };
-        var service = new PlusService(store, new MemoryLicenseCache(), new LiveEntitlements(), f.Settings, f.Habits);
+        var service = new PlusService(store, new MemoryLicenseCache(), new LiveEntitlements(), f.Settings, f.Habits) { PromoEnabled = false };
         var vm = new PaywallViewModel(service, PaywallSource.Theme);
 
         await vm.LoadAsync();
@@ -294,5 +294,89 @@ public class PaywallTests
 
         var buyCalls = files.Where(p => File.ReadAllText(p).Contains(".BuyAsync(")).Select(Name).ToList();
         buyCalls.Should().BeEquivalentTo(["PaywallDialog.cs"], "chỉ nút Mua trên paywall gọi BuyAsync");
+    }
+}
+
+public class PlusPromoTests
+{
+    private static PlusService Create(AppFixture f, FakePlusStore store, Func<DateTime> now, LiveEntitlements? live = null) =>
+        new(store, new MemoryLicenseCache(), live ?? new LiveEntitlements(), f.Settings, f.Habits, now) { PromoEnabled = true };
+
+    [Fact]
+    public async Task NewUser_Gets30DaysOfPlus_FromFirstLaunch()
+    {
+        using var f = new AppFixture();
+        var now = new DateTime(2026, 11, 6, 8, 0, 0, DateTimeKind.Utc);
+        var live = new LiveEntitlements();
+        var service = Create(f, new FakePlusStore { IsAvailable = false }, () => now, live);
+
+        await service.InitializeAsync();
+
+        service.Status.Tier.Should().Be(PlusTier.Promo);
+        live.IsPlus.Should().BeTrue();
+        service.PromoDaysLeft.Should().Be(30);
+    }
+
+    [Fact]
+    public async Task Promo_DoesNotRestart_OnLaterLaunches_AndEndsAfter30Days_WithoutLosingData()
+    {
+        using var f = new AppFixture();
+        for (var i = 0; i < 7; i++) await f.AddAsync($"H{i}", startDaysAgo: 3);
+        var now = new DateTime(2026, 11, 6, 8, 0, 0, DateTimeKind.Utc);
+        var store = new FakePlusStore { IsAvailable = false };
+
+        await Create(f, store, () => now).InitializeAsync();
+        (await ReadOnlyHabits.LoadAsync(f.Settings)).Should().BeEmpty("đang Plus tặng thì không giới hạn");
+
+        now = now.AddDays(20);
+        var day20 = Create(f, store, () => now);
+        await day20.InitializeAsync();
+        day20.PromoDaysLeft.Should().Be(10);
+        day20.Status.IsPlus.Should().BeTrue();
+
+        now = now.AddDays(11);
+        var day31 = Create(f, store, () => now);
+        await day31.InitializeAsync();
+        day31.Status.IsPlus.Should().BeFalse();
+        (await ReadOnlyHabits.LoadAsync(f.Settings)).Should().HaveCount(2, "hết tặng: 7 thói quen → 2 chỉ đọc, không xóa gì");
+        (await f.Habits.GetAllActiveAsync()).Should().HaveCount(7);
+    }
+
+    [Fact]
+    public async Task RealStorePurchase_TakesPrecedenceOverThePromo()
+    {
+        using var f = new AppFixture();
+        var now = new DateTime(2026, 11, 6, 8, 0, 0, DateTimeKind.Utc);
+        var store = new FakePlusStore();
+        store.Owned.Add(new OwnedAddOn(PlusProducts.Lifetime, true));
+
+        var service = Create(f, store, () => now);
+        await service.InitializeAsync();
+
+        service.Status.Tier.Should().Be(PlusTier.Lifetime);
+    }
+
+    [Fact]
+    public async Task Restore_WithNothingOnTheStore_KeepsThePromo()
+    {
+        using var f = new AppFixture();
+        var now = new DateTime(2026, 11, 6, 8, 0, 0, DateTimeKind.Utc);
+        var service = Create(f, new FakePlusStore(), () => now);
+        await service.InitializeAsync();
+
+        await service.RestoreAsync();
+
+        service.Status.Tier.Should().Be(PlusTier.Promo);
+    }
+
+    [Fact]
+    public void Policy_PromoEndsExactlyAtItsExpiry()
+    {
+        var start = new DateTime(2026, 11, 6, 8, 0, 0, DateTimeKind.Utc);
+        var state = PlusPromo.StateFor(start);
+
+        LicensePolicy.Evaluate(state, start.AddDays(30)).IsPlus.Should().BeTrue();
+        LicensePolicy.Evaluate(state, start.AddDays(30).AddSeconds(1)).IsPlus.Should().BeFalse();
+        LicensePolicy.Evaluate(state, start.AddDays(29)).NeedsRecheck.Should().BeFalse();
     }
 }

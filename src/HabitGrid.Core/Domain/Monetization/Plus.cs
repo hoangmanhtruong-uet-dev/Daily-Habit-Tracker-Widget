@@ -7,7 +7,29 @@ public enum PlusTier
     Monthly,
     Yearly,
     Lifetime,
-    LegacyPro
+    LegacyPro,
+
+    /// <summary>Plus miễn phí có thời hạn do app tặng (chưa bán trên Store). Hết hạn thì về Free, dữ liệu giữ nguyên.</summary>
+    Promo
+}
+
+/// <summary>
+/// Chương trình tặng Plus miễn phí khi chưa mở bán trên Store. Tắt bằng cách đặt <see cref="Enabled"/> = false
+/// khi các gói trả phí đã sẵn sàng; người đang trong thời gian tặng vẫn dùng hết số ngày còn lại.
+/// </summary>
+public static class PlusPromo
+{
+    public const bool Enabled = true;
+    public const int Days = 30;
+
+    /// <summary>Quyền tặng tính từ lần đầu mở app (hoặc lần đầu có chương trình).</summary>
+    public static LicenseState StateFor(DateTime startedAtUtc) =>
+        new(PlusTier.Promo, startedAtUtc, startedAtUtc.AddDays(Days), IsTrial: true);
+
+    public static int DaysLeft(LicenseState state, DateTime nowUtc) =>
+        state.Tier == PlusTier.Promo && state.ExpiresAtUtc is { } end
+            ? Math.Max(0, (int)Math.Ceiling((end - nowUtc).TotalDays))
+            : 0;
 }
 
 /// <summary>Ba gói bán trên Store (SPEC-V2-10 §2–§3).</summary>
@@ -74,6 +96,14 @@ public static class LicensePolicy
         if (state is null || state.Tier == PlusTier.None)
         {
             return new LicenseStatus(false, PlusTier.None, false, "free");
+        }
+
+        if (state.Tier == PlusTier.Promo)
+        {
+            // Quyền tặng cục bộ: chỉ phụ thuộc ngày hết hạn, không cần xác minh Store.
+            return state.ExpiresAtUtc is { } end && nowUtc <= end
+                ? new LicenseStatus(true, PlusTier.Promo, false, "promo")
+                : new LicenseStatus(false, PlusTier.None, false, "promo-ended");
         }
 
         var age = nowUtc - state.VerifiedAtUtc;
