@@ -1,3 +1,5 @@
+using HabitGrid.Core.Domain.Focus;
+
 namespace HabitGrid.Core.Domain.Gamification;
 
 /// <summary>Một khoản XP đã tính được (trước khi áp trần theo ngày).</summary>
@@ -57,6 +59,8 @@ public static class XpEngine
     public const int NoteDailyCap = 10;
     public const int DailyCap = 200;
     public const int MaxBackfillDays = 2;
+    public const int FocusPoints = 5;
+    public const int FocusMinMinutes = 25;
 
     private static readonly (int Streak, int Bonus)[] Milestones = [(7, 50), (30, 150), (100, 500), (365, 2000)];
 
@@ -65,7 +69,8 @@ public static class XpEngine
         IReadOnlyList<DayLog> logs,
         DateOnly today,
         IScheduleCalculator? schedule = null,
-        IStreakCalculator? streaks = null)
+        IStreakCalculator? streaks = null,
+        IReadOnlyList<FocusRecord>? focus = null)
     {
         ArgumentNullException.ThrowIfNull(habits);
         ArgumentNullException.ThrowIfNull(logs);
@@ -107,6 +112,15 @@ public static class XpEngine
             if (points > 0)
             {
                 awards.Add(new XpAward(group.Key, "note", points, null));
+            }
+        }
+
+        // Phiên Focus từ 25 phút: +5 mỗi phiên.
+        foreach (var session in focus ?? [])
+        {
+            if (session.Minutes >= FocusMinMinutes && session.Day <= today)
+            {
+                awards.Add(new XpAward(session.Day, "focus", FocusPoints, session.HabitId));
             }
         }
 

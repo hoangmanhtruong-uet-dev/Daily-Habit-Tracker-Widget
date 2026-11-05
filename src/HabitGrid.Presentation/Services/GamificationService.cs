@@ -33,6 +33,7 @@ public sealed class GamificationService
     private readonly ISettingsStore _settings;
     private readonly IDayProvider _days;
     private readonly IEntitlements _entitlements;
+    private readonly IFocusRepository? _focus;
     private readonly SemaphoreSlim _gate = new(1, 1);
 
     public GamificationService(
@@ -42,7 +43,8 @@ public sealed class GamificationService
         IAchievementRepository achievements,
         ISettingsStore settings,
         IDayProvider days,
-        IEntitlements? entitlements = null)
+        IEntitlements? entitlements = null,
+        IFocusRepository? focus = null)
     {
         _habits = habits ?? throw new ArgumentNullException(nameof(habits));
         _logs = logs ?? throw new ArgumentNullException(nameof(logs));
@@ -51,6 +53,7 @@ public sealed class GamificationService
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _days = days ?? throw new ArgumentNullException(nameof(days));
         _entitlements = entitlements ?? new FreeEntitlements();
+        _focus = focus;
     }
 
     /// <summary>Có mở khóa mới hoặc lên level (để giao diện ăn mừng).</summary>
@@ -84,9 +87,10 @@ public sealed class GamificationService
                 logs.AddRange(await _logs.GetAllForHabitAsync(habit.Id, ct));
             }
 
-            var xp = XpEngine.Compute(habits, logs, today);
+            var focus = _focus is null ? [] : await _focus.GetAllAsync(ct);
+            var xp = XpEngine.Compute(habits, logs, today, focus: focus);
             var flags = await LoadFlagsAsync(ct);
-            var results = new AchievementEngine().Evaluate(new AchievementContext(habits, logs, today, flags));
+            var results = new AchievementEngine().Evaluate(new AchievementContext(habits, logs, today, flags, focus.Sum(f => f.Minutes)));
             var overall = OverallStreak(logs, today);
 
             var profile = await _profile.GetAsync(ct);

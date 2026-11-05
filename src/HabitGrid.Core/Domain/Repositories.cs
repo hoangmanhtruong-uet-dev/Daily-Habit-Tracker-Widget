@@ -95,6 +95,13 @@ public interface IRoutineRepository
     Task DeleteAsync(Guid id, CancellationToken ct = default);
 }
 
+public interface IFocusRepository
+{
+    Task<IReadOnlyList<Focus.FocusRecord>> GetAllAsync(CancellationToken ct = default);
+
+    Task AddAsync(Focus.FocusRecord record, CancellationToken ct = default);
+}
+
 public interface IAchievementRepository
 {
     Task<IReadOnlyList<Achievement>> GetAllAsync(CancellationToken ct = default);

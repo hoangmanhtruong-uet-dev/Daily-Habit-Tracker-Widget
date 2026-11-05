@@ -41,6 +41,7 @@ public sealed class AppFixture : IDisposable
         Settings = new SettingsStore(Database);
         Profile = new ProfileRepository(Database, Clock, Bus);
         Achievements = new AchievementRepository(Database, Clock, Bus);
+        Focus = new FocusRepository(Database, Clock, Bus);
         Localizer = new Localizer();
     }
 
@@ -64,8 +65,12 @@ public sealed class AppFixture : IDisposable
 
     public AchievementRepository Achievements { get; }
 
+    public FocusRepository Focus { get; }
+
+    public Services.FocusService NewFocus() => new(Habits, Logs, Focus, Days);
+
     public Services.GamificationService NewGamification(IEntitlements? entitlements = null) =>
-        new(Habits, Logs, Profile, Achievements, Settings, Days, entitlements);
+        new(Habits, Logs, Profile, Achievements, Settings, Days, entitlements, Focus);
 
     public Localizer Localizer { get; }
 
