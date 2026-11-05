@@ -129,7 +129,7 @@ public sealed partial class BuddyPage : Page
 
         var icon = new TextBlock { Text = badge.Hidden ? "❓" : GroupEmoji(badge.Group), FontSize = 30, VerticalAlignment = VerticalAlignment.Center };
         var title = new TextBlock { Text = name, Style = Res("CardTitleTextStyle"), TextTrimming = TextTrimming.CharacterEllipsis };
-        var body = new TextBlock { Text = description, Style = Res("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap, MaxLines = 2 };
+        var body = new TextBlock { Text = description, Style = Res("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap, MaxLines = 2, TextTrimming = TextTrimming.CharacterEllipsis };
 
         var text = new StackPanel { Spacing = 2 };
         text.Children.Add(title);
