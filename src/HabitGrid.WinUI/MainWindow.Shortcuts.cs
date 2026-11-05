@@ -121,6 +121,7 @@ public sealed partial class MainWindow
         {
             new(PaletteKind.Page, Ui.T("nav.today"), PageKeys.Today, "📅"),
             new(PaletteKind.Page, Ui.T("nav.habits"), PageKeys.Habits, "📋"),
+            new(PaletteKind.Page, Ui.T("nav.insights"), PageKeys.Insights, "📊"),
             new(PaletteKind.Page, Ui.T("nav.buddy"), PageKeys.Buddy, "🐣"),
             new(PaletteKind.Page, Ui.T("nav.settings"), PageKeys.Settings, "⚙️"),
             new(PaletteKind.Action, Ui.T("cmd.new"), "new", "➕"),

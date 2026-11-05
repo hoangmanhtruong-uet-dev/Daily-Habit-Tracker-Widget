@@ -69,11 +69,15 @@ public partial class App : Application
         {
             // Ghi log và giữ app sống; trang lỗi thân thiện sẽ do shell hiển thị ở gói sau.
             LogSafe("UnhandledException", e.Exception);
+            CrashReporting.Record("UnhandledException", e.Exception);
             e.Handled = true;
         };
 
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+        {
             LogSafe("AppDomain.UnhandledException", e.ExceptionObject as Exception);
+            CrashReporting.Record("AppDomain.UnhandledException", e.ExceptionObject as Exception);
+        };
 
         TaskScheduler.UnobservedTaskException += (_, e) =>
         {
@@ -98,6 +102,7 @@ public partial class App : Application
     private static void ReportFatal(Exception ex)
     {
         LogSafe("Fatal startup error", ex);
+        CrashReporting.Record("Fatal startup error", ex);
         MessageBox(
             IntPtr.Zero,
             $"HabitGrid không thể khởi động.\n\n{ex.Message}\n\nNhật ký: {AppPaths.LogDir}",

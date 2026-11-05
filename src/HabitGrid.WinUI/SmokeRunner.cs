@@ -54,6 +54,8 @@ public static class SmokeRunner
             await BuddyJourneyAsync(window, logger, () => celebrations);
             await ShortcutsJourneyAsync(window, logger);
             await PlusJourneyAsync(window, logger);
+            await InsightsJourneyAsync(window, logger);
+            await AccessibilityAuditAsync(window, logger);
 
             // Mọi theme × sáng/tối phải dựng được (ảnh để duyệt giao diện).
             var variants = new (ThemeDefinition Theme, ThemeMode Mode, string Name)[]
@@ -350,12 +352,131 @@ public static class SmokeRunner
         logger.Info("SMOKE settings OK");
     }
 
+    private static async Task InsightsJourneyAsync(MainWindow window, IAppLogger logger)
+    {
+        await GoToAsync(window, PageKeys.Insights);
+        var page = window.CurrentPage as InsightsPage ?? throw new InvalidOperationException("Không mở được trang Insights.");
+        await page.Ready;
+        await Task.Delay(400);
+
+        var vm = page.ViewModel;
+        Require(vm.ErrorMessage is null, "Insights báo lỗi: " + vm.ErrorMessage);
+        Require(vm.Report is { IsEmpty: false, CheckIns: > 0 }, "Insights trống dù đã có check-in.");
+        Require(vm.Insights.Count <= 3, "Insights hiện quá 3 gợi ý.");
+        Require(vm.Insights.All(i => !InsightsPage.Describe(i).Contains('{')), "Có gợi ý còn tham số chưa thay.");
+        await SnapAsync(window, "insights");
+
+        // Đang Plus tặng: xem được toàn bộ lịch sử và xuất CSV.
+        Require(await vm.SetRangeAsync(InsightsRange.All), "Plus mà không xem được toàn bộ lịch sử.");
+        var csv = await vm.ExportCsvAsync();
+        Require(csv is not null && csv.StartsWith("date,habit,kind", StringComparison.Ordinal), "Xuất CSV không đúng định dạng.");
+        logger.Info($"SMOKE insights OK (check-ins {vm.Report!.CheckIns}, tips {vm.Insights.Count}, csv {csv!.Length} bytes)");
+    }
+
+    /// <summary>
+    /// Kiểm tra trợ năng tự động: mọi control tương tác đang hiện trên các trang chính phải có tên đọc được (Narrator đọc tên này).
+    /// Bỏ qua phần bên trong khuôn mẫu của control hệ thống (thanh cuộn, nút xóa trong ô nhập…), vốn do WinUI đặt tên.
+    /// </summary>
+    private static async Task AccessibilityAuditAsync(MainWindow window, IAppLogger logger)
+    {
+        var problems = new List<string>();
+
+        foreach (var key in new[] { PageKeys.Today, PageKeys.Habits, PageKeys.Insights, PageKeys.Buddy, PageKeys.Settings })
+        {
+            await GoToAsync(window, key);
+            await Task.Delay(700);
+
+            if (window.CurrentPage is InsightsPage insights)
+            {
+                await insights.Ready;
+            }
+            else if (window.CurrentPage is BuddyPage buddy)
+            {
+                await buddy.Ready;
+            }
+
+            await Task.Delay(300);
+            problems.AddRange(UnnamedControls(window.Content, key));
+        }
+
+        // Trang chi tiết thói quen.
+        var first = App.Host.Get<HabitsViewModel>().Items.FirstOrDefault();
+
+        if (first is not null)
+        {
+            await window.RunCommandAsync(new PaletteCommand(PaletteKind.OpenHabit, first.Name, first.Id.ToString()));
+            await Task.Delay(900);
+            problems.AddRange(UnnamedControls(window.Content, "detail"));
+        }
+
+        foreach (var problem in problems)
+        {
+            logger.Info("A11Y " + problem);
+        }
+
+        Require(problems.Count == 0, $"{problems.Count} control không có tên cho trình đọc màn hình (xem log A11Y).");
+        logger.Info("SMOKE accessibility OK");
+    }
+
+    private static IEnumerable<string> UnnamedControls(DependencyObject? root, string page)
+    {
+        foreach (var element in FindAll<FrameworkElement>(root))
+        {
+            if (element is not (Microsoft.UI.Xaml.Controls.Primitives.ButtonBase or ToggleSwitch or TextBox or ComboBox or Slider or NumberBox or TimePicker or CalendarDatePicker or AutoSuggestBox or PasswordBox))
+            {
+                continue;
+            }
+
+            if (element is Microsoft.UI.Xaml.Controls.Primitives.RepeatButton || element.Visibility != Visibility.Visible || element.ActualWidth <= 0 || IsTemplatePart(element))
+            {
+                continue;
+            }
+
+            var peer = Microsoft.UI.Xaml.Automation.Peers.FrameworkElementAutomationPeer.FromElement(element)
+                       ?? Microsoft.UI.Xaml.Automation.Peers.FrameworkElementAutomationPeer.CreatePeerForElement(element);
+            var name = peer?.GetName();
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                yield return $"{page}: {element.GetType().Name} '{element.Name}' in {Describe(VisualTreeHelper.GetParent(element))}";
+            }
+        }
+    }
+
+    private static bool IsTemplatePart(DependencyObject element)
+    {
+        for (var parent = VisualTreeHelper.GetParent(element); parent is not null; parent = VisualTreeHelper.GetParent(parent))
+        {
+            if (parent is Microsoft.UI.Xaml.Controls.Primitives.ScrollBar or TextBox or NumberBox or ComboBox or TimePicker or CalendarDatePicker
+                or AutoSuggestBox or Slider or ToggleSwitch or CalendarView or InfoBar or Expander)
+            {
+                return true;
+            }
+
+            if (parent is Page or ContentDialog)
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    private static string Describe(DependencyObject? parent) => parent switch
+    {
+        null => "?",
+        FrameworkElement { Name.Length: > 0 } named => $"{named.GetType().Name} '{named.Name}'",
+        _ => parent.GetType().Name
+    };
+
     private static async Task PlusJourneyAsync(MainWindow window, IAppLogger logger)
     {
         var plus = App.Host.Get<PlusService>();
         Require(!plus.StoreAvailable, "Bản không đóng gói không được coi là có Microsoft Store.");
-        Require(!plus.Status.IsPlus, "Bản không có Store không được tự có Plus.");
-        Require(App.Host.Get<IEntitlements>().MaxActiveHabits == FreeEntitlements.FreeMaxActiveHabits, "Gói Free phải giới hạn 5 thói quen.");
+        // Chưa mở bán trên Store: người dùng mới được tặng Plus 30 ngày (quyền cục bộ, không phải mua).
+        Require(plus.Status.Tier == HabitGrid.Core.Domain.Monetization.PlusTier.Promo, $"Người dùng mới phải được tặng Plus, đang là {plus.Status.Tier}.");
+        Require(plus.PromoDaysLeft is 29 or 30, $"Thời gian tặng phải còn 30 ngày, đang còn {plus.PromoDaysLeft}.");
+        Require(App.Host.Get<IEntitlements>().MaxActiveHabits == int.MaxValue, "Đang Plus tặng thì không giới hạn thói quen.");
 
         var root = window.Content.XamlRoot;
         var showing = HabitGrid.WinUI.Plus.PaywallDialog.ShowAsync(root, PaywallSource.Settings);
@@ -368,8 +489,8 @@ public static class SmokeRunner
         Require(buyButtons.All(b => !b.IsEnabled), "Không có Store mà nút Mua vẫn bấm được.");
 
         dialog.Hide();
-        Require(!await showing, "Đóng paywall mà lại có Plus.");
-        logger.Info("SMOKE plus OK (free, no store, paywall builds, buy disabled)");
+        await showing;
+        logger.Info($"SMOKE plus OK (promo {plus.PromoDaysLeft} days left, no store, paywall builds, buy disabled)");
     }
 
     private static async Task ShortcutsJourneyAsync(MainWindow window, IAppLogger logger)

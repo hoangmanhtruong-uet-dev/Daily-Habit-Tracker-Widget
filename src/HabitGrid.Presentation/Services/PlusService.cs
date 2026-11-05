@@ -85,7 +85,50 @@ public sealed class PlusService
     {
         Apply(_cache.Load());
         await RefreshAsync(ct);
+        await ApplyPromoAsync(ct);
         await UpdateAllowanceAsync(ct);
+    }
+
+    /// <summary>Quyền Plus tặng đang chạy (nếu có), để giao diện hiện "còn N ngày".</summary>
+    public LicenseState? Promo { get; private set; }
+
+    public int PromoDaysLeft => Promo is null ? 0 : PlusPromo.DaysLeft(Promo, _utcNow());
+
+    public const string PromoStartedKey = "promo.startedAt";
+
+    /// <summary>Có tặng Plus miễn phí cho người dùng mới không (mặc định theo <see cref="PlusPromo.Enabled"/>).</summary>
+    public bool PromoEnabled { get; init; } = PlusPromo.Enabled;
+
+    /// <summary>
+    /// Tặng Plus <see cref="PlusPromo.Days"/> ngày tính từ lần đầu mở app (lưu ngày bắt đầu, không gia hạn lại).
+    /// Chỉ áp khi người dùng chưa có Plus thật; mua trên Store luôn được ưu tiên.
+    /// </summary>
+    private async Task ApplyPromoAsync(CancellationToken ct)
+    {
+        var started = await _settings.GetAsync(PromoStartedKey, ct);
+
+        if (started is null)
+        {
+            if (!PromoEnabled)
+            {
+                return;
+            }
+
+            started = _utcNow().ToString("O", System.Globalization.CultureInfo.InvariantCulture);
+            await _settings.SetAsync(PromoStartedKey, started, ct);
+        }
+
+        if (!DateTime.TryParse(started, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind, out var startedAt))
+        {
+            return;
+        }
+
+        Promo = PlusPromo.StateFor(startedAt.ToUniversalTime());
+
+        if (!Status.IsPlus && LicensePolicy.Evaluate(Promo, _utcNow()).IsPlus)
+        {
+            Apply(Promo);
+        }
     }
 
     /// <summary>Đọc lại quyền từ Store (cũng là "Khôi phục mua hàng"). Lỗi mạng thì giữ cache, không hạ quyền.</summary>
@@ -102,6 +145,12 @@ public sealed class PlusService
             var state = LicensePolicy.FromOwned(owned, _utcNow());
             _cache.Save(state);
             Apply(state);
+
+            // Store chưa có gì nhưng còn trong thời gian tặng: giữ Plus tặng.
+            if (!Status.IsPlus && Promo is not null && LicensePolicy.Evaluate(Promo, _utcNow()).IsPlus)
+            {
+                Apply(Promo);
+            }
             await UpdateAllowanceAsync(ct);
             return true;
         }

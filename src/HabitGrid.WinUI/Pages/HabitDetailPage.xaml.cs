@@ -37,6 +37,9 @@ public sealed partial class HabitDetailPage : Page
         BackText.Text = Ui.T("detail.back");
         EditText.Text = Ui.T("habits.edit");
         FocusText.Text = Ui.T("detail.focus");
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(BackButton, BackText.Text);
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(EditButton, EditText.Text);
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(FocusButton, FocusText.Text);
         BestLabel.Text = Ui.T("detail.streak.best");
         RateLabel.Text = Ui.T("detail.rate30");
         TotalLabel.Text = Ui.T("detail.total");

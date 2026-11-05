@@ -29,6 +29,7 @@ public sealed partial class HabitsPage : Page
         {
             TitleText.Text = Ui.T("habits.title");
             AddButtonText.Text = Ui.T("habits.add");
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(AddButton, AddButtonText.Text);
             EmptyText.Text = Ui.T("habits.empty");
             UndoButton.Content = Ui.T("today.undo");
             UpdateChips();

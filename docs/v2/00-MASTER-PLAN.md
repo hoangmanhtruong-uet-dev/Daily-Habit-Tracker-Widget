@@ -175,7 +175,7 @@ Telemetry để đo các chỉ số này là **opt-in**, chỉ sự kiện ẩn 
 
 ## 9. Quyết định còn mở (cần chốt trước giai đoạn tương ứng)
 
-1. **Tên/thương hiệu:** giữ "HabitGrid" hay đổi tên dễ nhớ hơn với GenZ? (trước tuần 2)
+1. **Tên/thương hiệu:** ~~giữ "HabitGrid" hay đổi tên?~~ **Đã chốt (06/11/2026): giữ "HabitGrid"** để người dùng và người mua Pro v1 nhận ra, và nói đúng điểm khác biệt (lưới thói quen trên desktop). Cần giữ chỗ tên trên Partner Center.
 2. **Hosting server:** Azure Container Apps + Azure PostgreSQL (khuyến nghị, hợp hệ sinh thái MS) hay Fly.io/Neon (rẻ hơn khi nhỏ)? (trước tuần 9)
 3. **Giá Plus** cho thị trường VN và quốc tế (đề xuất trong SPEC-V2-10). (trước tuần 7)
 4. **Linh vật:** tự vẽ hay thuê họa sĩ? Ngân sách? (trước tuần 4)

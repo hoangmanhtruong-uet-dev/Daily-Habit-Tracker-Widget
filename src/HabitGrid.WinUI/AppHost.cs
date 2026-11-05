@@ -194,6 +194,12 @@ public sealed class AppHost : IDisposable
             sp.GetRequiredService<IDayProvider>(),
             sp.GetRequiredService<IEntitlements>(),
             sp.GetRequiredService<IFocusRepository>()));
+        services.AddTransient<InsightsViewModel>(sp => new InsightsViewModel(
+            sp.GetRequiredService<IHabitRepository>(),
+            sp.GetRequiredService<IDayLogRepository>(),
+            sp.GetRequiredService<IDayProvider>(),
+            sp.GetRequiredService<IEntitlements>(),
+            sp.GetRequiredService<ISettingsStore>()));
         services.AddTransient<BuddyViewModel>(sp => new BuddyViewModel(
             sp.GetRequiredService<GamificationService>(),
             sp.GetRequiredService<IProfileRepository>(),
