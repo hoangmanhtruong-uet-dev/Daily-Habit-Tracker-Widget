@@ -63,4 +63,12 @@ public static class HostText
     public static string FocusDone(int minutes) => IsVietnamese ? $"Xong {minutes} phút tập trung! 🎉" : $"{minutes} focused minutes done! 🎉";
 
     public static string FocusPausedBySleep => IsVietnamese ? "Đã tạm dừng khi máy ngủ" : "Paused while the PC slept";
+
+    public static string MomentEmpty => IsVietnamese ? "Chưa có khoảnh khắc" : "No moments yet";
+
+    public static string MomentEmptyHint => IsVietnamese ? "Chụp ảnh trong trang thói quen của app" : "Take a photo on a habit page in the app";
+
+    public static string MomentMonthAgo => IsVietnamese ? "Tháng trước" : "Last month";
+
+    public static string MomentToggleHint => IsVietnamese ? "Bấm để xem ngày này tháng trước" : "Click to see this day last month";
 }

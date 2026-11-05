@@ -411,4 +411,34 @@
   <data name="settings.support.version" xml:space="preserve"><value>Phiên bản {0}</value></data>
   <data name="settings.support.logs" xml:space="preserve"><value>Mở thư mục log và báo lỗi</value></data>
   <data name="settings.support.hint" xml:space="preserve"><value>Log và báo lỗi chỉ nằm trên máy bạn. Khi cần hỗ trợ, gửi file trong thư mục này cho nhà phát triển.</value></data>
+  <data name="frame.default" xml:space="preserve"><value>Mặc định</value></data>
+  <data name="frame.candy" xml:space="preserve"><value>Kẹo hồng</value></data>
+  <data name="frame.midnight" xml:space="preserve"><value>Nửa đêm</value></data>
+  <data name="frame.dew" xml:space="preserve"><value>Sương mai</value></data>
+  <data name="frame.dreamy" xml:space="preserve"><value>Tím mộng mơ</value></data>
+  <data name="frame.orbit" xml:space="preserve"><value>Quỹ đạo</value></data>
+  <data name="moments.title" xml:space="preserve"><value>Khoảnh khắc</value></data>
+  <data name="moments.capture" xml:space="preserve"><value>Chụp ảnh</value></data>
+  <data name="moments.pick" xml:space="preserve"><value>Chọn ảnh</value></data>
+  <data name="moments.share" xml:space="preserve"><value>Thẻ chia sẻ</value></data>
+  <data name="moments.empty" xml:space="preserve"><value>Lưu lại khoảnh khắc khi làm thói quen: một tấm ảnh nhỏ mỗi ngày, xem lại sau sẽ rất vui. Ảnh chỉ nằm trên máy bạn.</value></data>
+  <data name="moments.limit" xml:space="preserve"><value>Gói Free: 1 ảnh mỗi ngày cho mỗi thói quen, hôm nay bạn đã dùng. Plus không giới hạn.</value></data>
+  <data name="moments.photo" xml:space="preserve"><value>Ảnh khoảnh khắc ngày {0}</value></data>
+  <data name="moments.delete" xml:space="preserve"><value>Xóa ảnh</value></data>
+  <data name="moments.failed.LimitReached" xml:space="preserve"><value>Hôm nay đã đủ ảnh cho thói quen này (gói Free: 1 ảnh/ngày).</value></data>
+  <data name="moments.failed.InvalidImage" xml:space="preserve"><value>File này không phải ảnh JPEG/PNG hợp lệ hoặc quá lớn (tối đa 15 MB).</value></data>
+  <data name="moments.failed.NotAllowed" xml:space="preserve"><value>Không thêm ảnh được cho ngày này.</value></data>
+  <data name="share.title" xml:space="preserve"><value>Thẻ chia sẻ</value></data>
+  <data name="share.save" xml:space="preserve"><value>Lưu ảnh</value></data>
+  <data name="share.copy" xml:space="preserve"><value>Sao chép</value></data>
+  <data name="share.watermark.hide" xml:space="preserve"><value>Ẩn logo HabitGrid (Plus)</value></data>
+  <data name="share.hint" xml:space="preserve"><value>Ảnh 1080×1920 hợp đăng Story, Locket, Threads. Bạn tự đăng — HabitGrid không cần và không hỏi mật khẩu tài khoản mạng xã hội nào.</value></data>
+  <data name="share.saved" xml:space="preserve"><value>Đã lưu {0}</value></data>
+  <data name="share.copied" xml:space="preserve"><value>Đã sao chép ảnh, dán vào app bạn muốn đăng.</value></data>
+  <data name="share.failed" xml:space="preserve"><value>Không tạo được ảnh.</value></data>
+  <data name="plus.benefit.moments" xml:space="preserve"><value>Ảnh khoảnh khắc không giới hạn (Free: 1 ảnh/ngày mỗi thói quen)</value></data>
+  <data name="plus.benefit.share" xml:space="preserve"><value>Mọi khung thẻ chia sẻ, ẩn logo (Free: 2 khung)</value></data>
+  <data name="plus.benefit.momentWidget" xml:space="preserve"><value>Widget khoảnh khắc trên desktop</value></data>
+  <data name="settings.momentWidget" xml:space="preserve"><value>Widget khoảnh khắc (Plus)</value></data>
+  <data name="settings.momentWidget.hint" xml:space="preserve"><value>Hiện ảnh khoảnh khắc mới nhất trên desktop; bấm vào để xem "ngày này tháng trước".</value></data>
 </root>

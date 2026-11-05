@@ -60,7 +60,7 @@ public static class Program
         var app = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
         var database = HabitGridV3.Open(dbPath);
         var settings = new AppSettings(new MemorySettings());
-        var controller = new WidgetController(database) { EditMode = () => settings.EditMode, OpenMainApp = OpenMainApp };
+        var controller = new WidgetController(database) { EditMode = () => settings.EditMode, OpenMainApp = OpenMainApp, DataDir = dataDir };
         var started = false;
         var pendingToasts = new List<ToastArguments>();
 

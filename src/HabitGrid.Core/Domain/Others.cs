@@ -44,4 +44,10 @@ public interface IEntitlements
     bool CanUseTheme(string themeId);
 
     bool CanUseAiCoach { get; }
+
+    /// <summary>Có quyền Plus (mặc định suy từ giới hạn thói quen để không phá các hiện thực cũ).</summary>
+    bool IsPlus => MaxActiveHabits == int.MaxValue;
+
+    /// <summary>Số ảnh khoảnh khắc tối đa cho một thói quen trong một ngày (Free 1, Plus không giới hạn).</summary>
+    int MaxMomentsPerDay => IsPlus ? int.MaxValue : 1;
 }

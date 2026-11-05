@@ -411,4 +411,34 @@
   <data name="settings.support.version" xml:space="preserve"><value>Version {0}</value></data>
   <data name="settings.support.logs" xml:space="preserve"><value>Open log and report folder</value></data>
   <data name="settings.support.hint" xml:space="preserve"><value>Logs and error reports stay on your PC. If you need help, send the files in this folder to the developer.</value></data>
+  <data name="frame.default" xml:space="preserve"><value>Default</value></data>
+  <data name="frame.candy" xml:space="preserve"><value>Candy pink</value></data>
+  <data name="frame.midnight" xml:space="preserve"><value>Midnight</value></data>
+  <data name="frame.dew" xml:space="preserve"><value>Morning dew</value></data>
+  <data name="frame.dreamy" xml:space="preserve"><value>Dreamy purple</value></data>
+  <data name="frame.orbit" xml:space="preserve"><value>Orbit</value></data>
+  <data name="moments.title" xml:space="preserve"><value>Moments</value></data>
+  <data name="moments.capture" xml:space="preserve"><value>Take photo</value></data>
+  <data name="moments.pick" xml:space="preserve"><value>Choose photo</value></data>
+  <data name="moments.share" xml:space="preserve"><value>Share card</value></data>
+  <data name="moments.empty" xml:space="preserve"><value>Keep a little photo when you do this habit. It's fun to look back on. Photos stay on your PC.</value></data>
+  <data name="moments.limit" xml:space="preserve"><value>Free plan: 1 photo per habit per day, already used today. Plus is unlimited.</value></data>
+  <data name="moments.photo" xml:space="preserve"><value>Moment photo from {0}</value></data>
+  <data name="moments.delete" xml:space="preserve"><value>Delete photo</value></data>
+  <data name="moments.failed.LimitReached" xml:space="preserve"><value>You've reached today's photo limit for this habit (Free: 1 per day).</value></data>
+  <data name="moments.failed.InvalidImage" xml:space="preserve"><value>This file isn't a valid JPEG/PNG or is too large (max 15 MB).</value></data>
+  <data name="moments.failed.NotAllowed" xml:space="preserve"><value>Photos can't be added for this day.</value></data>
+  <data name="share.title" xml:space="preserve"><value>Share card</value></data>
+  <data name="share.save" xml:space="preserve"><value>Save image</value></data>
+  <data name="share.copy" xml:space="preserve"><value>Copy</value></data>
+  <data name="share.watermark.hide" xml:space="preserve"><value>Hide HabitGrid logo (Plus)</value></data>
+  <data name="share.hint" xml:space="preserve"><value>A 1080×1920 image for Stories, Locket or Threads. You post it yourself — HabitGrid never needs or asks for your social media passwords.</value></data>
+  <data name="share.saved" xml:space="preserve"><value>Saved {0}</value></data>
+  <data name="share.copied" xml:space="preserve"><value>Image copied — paste it into the app you want to post in.</value></data>
+  <data name="share.failed" xml:space="preserve"><value>Couldn't create the image.</value></data>
+  <data name="plus.benefit.moments" xml:space="preserve"><value>Unlimited moment photos (Free: 1 per habit per day)</value></data>
+  <data name="plus.benefit.share" xml:space="preserve"><value>Every share card frame, hide the logo (Free: 2 frames)</value></data>
+  <data name="plus.benefit.momentWidget" xml:space="preserve"><value>Moments widget on your desktop</value></data>
+  <data name="settings.momentWidget" xml:space="preserve"><value>Moments widget (Plus)</value></data>
+  <data name="settings.momentWidget.hint" xml:space="preserve"><value>Shows your latest moment photo on the desktop; click it to see "this day last month".</value></data>
 </root>

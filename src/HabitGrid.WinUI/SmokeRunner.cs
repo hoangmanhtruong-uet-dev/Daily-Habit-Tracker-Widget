@@ -55,6 +55,7 @@ public static class SmokeRunner
             await ShortcutsJourneyAsync(window, logger);
             await PlusJourneyAsync(window, logger);
             await InsightsJourneyAsync(window, logger);
+            await MomentsJourneyAsync(window, logger);
             await AccessibilityAuditAsync(window, logger);
 
             // Mọi theme × sáng/tối phải dựng được (ảnh để duyệt giao diện).
@@ -350,6 +351,64 @@ public static class SmokeRunner
         Require(Ui.T("settings.title") == before, "Không trả lại được ngôn ngữ ban đầu.");
 
         logger.Info("SMOKE settings OK");
+    }
+
+    private static async Task MomentsJourneyAsync(MainWindow window, IAppLogger logger)
+    {
+        var habit = App.Host.Get<HabitsViewModel>().Items.First();
+        await window.RunCommandAsync(new PaletteCommand(PaletteKind.OpenHabit, habit.Name, habit.Id.ToString()));
+        await Task.Delay(900);
+        var page = window.CurrentPage as HabitDetailPage ?? throw new InvalidOperationException("Không mở được trang chi tiết để thêm ảnh.");
+
+        // Ảnh JPEG thật (dải màu) tạo bằng bộ mã hóa của Windows.
+        var jpeg = await MakeJpegAsync();
+        Require(page.AddMomentForTest(jpeg) == MomentAddResult.Added, "Không thêm được ảnh khoảnh khắc.");
+        Require(page.AddMomentForTest(jpeg) == MomentAddResult.Added, "Đang Plus tặng mà vẫn bị giới hạn 1 ảnh/ngày.");
+        Require(App.Host.Get<MomentService>().Store.ForHabit(habit.Id).Count == 2, "Kho ảnh không có đủ 2 ảnh.");
+        await Task.Delay(600);
+        await SnapAsync(window, "habit-moments");
+
+        // Thẻ chia sẻ: mở hộp thoại, render PNG 1080×1920 như nút Lưu ảnh.
+        var root = window.Content.XamlRoot;
+        var showing = page.OpenShareForTestAsync();
+        await Task.Delay(1500);
+        var card = HabitGrid.WinUI.Moments.ShareCardDialog.CurrentCard ?? throw new InvalidOperationException("Thẻ chia sẻ không dựng được.");
+        var png = await HabitGrid.WinUI.Moments.MomentCapture.RenderPngAsync(card, 1080, 1920);
+        Require(png.Length > 10_000, $"Ảnh thẻ chia sẻ quá nhỏ ({png.Length} byte).");
+        Directory.CreateDirectory(Shot.Directory);
+        await File.WriteAllBytesAsync(Path.Combine(Shot.Directory, $"{++_shotNo:00}-share-card.png"), png);
+
+        var dialog = VisualTreeHelper.GetOpenPopupsForXamlRoot(root).Select(p => p.Child).OfType<ContentDialog>().FirstOrDefault();
+        dialog?.Hide();
+        await showing;
+        logger.Info($"SMOKE moments OK (2 photos, share card {png.Length} bytes)");
+    }
+
+    private static async Task<byte[]> MakeJpegAsync()
+    {
+        const int size = 320;
+        var pixels = new byte[size * size * 4];
+
+        for (var y = 0; y < size; y++)
+        {
+            for (var x = 0; x < size; x++)
+            {
+                var i = (y * size + x) * 4;
+                pixels[i] = (byte)(120 + x / 3);
+                pixels[i + 1] = (byte)(60 + y / 4);
+                pixels[i + 2] = (byte)(200 - x / 4);
+                pixels[i + 3] = 255;
+            }
+        }
+
+        using var stream = new Windows.Storage.Streams.InMemoryRandomAccessStream();
+        var encoder = await Windows.Graphics.Imaging.BitmapEncoder.CreateAsync(Windows.Graphics.Imaging.BitmapEncoder.JpegEncoderId, stream);
+        encoder.SetPixelData(Windows.Graphics.Imaging.BitmapPixelFormat.Bgra8, Windows.Graphics.Imaging.BitmapAlphaMode.Ignore, size, size, 96, 96, pixels);
+        await encoder.FlushAsync();
+        var bytes = new byte[stream.Size];
+        stream.Seek(0);
+        await stream.ReadAsync(System.Runtime.InteropServices.WindowsRuntime.WindowsRuntimeBufferExtensions.AsBuffer(bytes), (uint)bytes.Length, Windows.Storage.Streams.InputStreamOptions.None);
+        return bytes;
     }
 
     private static async Task InsightsJourneyAsync(MainWindow window, IAppLogger logger)

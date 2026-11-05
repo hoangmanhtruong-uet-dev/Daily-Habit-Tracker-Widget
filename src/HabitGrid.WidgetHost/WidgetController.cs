@@ -19,7 +19,7 @@ namespace HabitGrid.WidgetHost;
 /// Quản lý các widget ghim desktop: đọc CSDL v3, dựng/làm mới cửa sổ, ghi check-in qua cùng repository với app chính.
 /// Làm mới khi CSDL đổi (PRAGMA data_version, kể cả do tiến trình khác ghi) và khi qua ngày logic.
 /// </summary>
-public sealed class WidgetController : IDisposable
+public sealed partial class WidgetController : IDisposable
 {
     public const int MaxWidgets = 3;
 
@@ -135,6 +135,7 @@ public sealed class WidgetController : IDisposable
 
         await ApplyHotKeysAsync();
         await Toasts.ReplanAsync(DateTime.Now);
+        await SyncMomentWidgetAsync();
 
         _dataVersion = ReadDataVersion();
         _timer.Start();
@@ -147,15 +148,20 @@ public sealed class WidgetController : IDisposable
     {
         _visible = !_visible;
 
-        if (_todayList is not null)
+        foreach (var window in new System.Windows.Window?[] { _todayList, _momentWidget })
         {
+            if (window is null)
+            {
+                continue;
+            }
+
             if (_visible)
             {
-                _todayList.Show();
+                window.Show();
             }
             else
             {
-                _todayList.Hide();
+                window.Hide();
             }
         }
 
@@ -185,6 +191,11 @@ public sealed class WidgetController : IDisposable
         if (_todayList is not null)
         {
             ok &= !_todayList.Pin(_desktop, DesktopPinningMode.DesktopLevel).UsedFallback;
+        }
+
+        if (_momentWidget is not null)
+        {
+            ok &= !_momentWidget.Pin(_desktop, DesktopPinningMode.DesktopLevel).UsedFallback;
         }
 
         _needsRepin = !ok;
@@ -227,8 +238,10 @@ public sealed class WidgetController : IDisposable
             _todayList = null;
         }
 
+        ResetMomentWidget();
         await CreateTodayListAsync();
         await RefreshAsync();
+        await SyncMomentWidgetAsync();
         _pinRetries = 0;
         ReattachAll();
     }
@@ -341,6 +354,7 @@ public sealed class WidgetController : IDisposable
         Focus.Dispose();
         FocusWindow?.Close();
         _todayList?.Close();
+        _momentWidget?.Close();
         QuickWindow?.Close();
 
         foreach (var (window, _) in _widgets.Values)
@@ -671,6 +685,11 @@ public sealed class WidgetController : IDisposable
                 {
                     _todayList.EditMode = edit;
                 }
+
+                if (_momentWidget is not null)
+                {
+                    _momentWidget.EditMode = edit;
+                }
             }
 
             _pollCount++;
@@ -702,6 +721,7 @@ public sealed class WidgetController : IDisposable
             {
                 await ApplyAutoStartAsync();
                 await ApplyHotKeysAsync();
+                await SyncMomentWidgetAsync();
             }
 
             await ProcessHostCommandAsync();

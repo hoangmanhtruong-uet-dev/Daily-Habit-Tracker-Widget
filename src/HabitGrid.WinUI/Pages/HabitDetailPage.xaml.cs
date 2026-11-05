@@ -117,6 +117,7 @@ public sealed partial class HabitDetailPage : Page
         BuildBars(WeekdaysChart, ViewModel.Weekdays.Select(w =>
             (Ui.CurrentCulture.DateTimeFormat.GetAbbreviatedDayName(w.Day), w.Percent)).ToList(), habit.ColorHue);
         BuildJournal();
+        BuildMoments();
     }
 
     /// <summary>Chọn cỡ ô sao cho 52 tuần vừa khung; quá hẹp thì để cuộn ngang.</summary>

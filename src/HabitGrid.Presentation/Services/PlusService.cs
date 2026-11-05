@@ -96,6 +96,9 @@ public sealed class PlusService
 
     public const string PromoStartedKey = "promo.startedAt";
 
+    /// <summary>"1" khi đang có Plus (đọc bởi WidgetHost).</summary>
+    public const string PlusFlagKey = "plan.isPlus";
+
     /// <summary>Có tặng Plus miễn phí cho người dùng mới không (mặc định theo <see cref="PlusPromo.Enabled"/>).</summary>
     public bool PromoEnabled { get; init; } = PlusPromo.Enabled;
 
@@ -202,6 +205,14 @@ public sealed class PlusService
     {
         var result = await GetAllowanceAsync(ct);
         var formatted = ReadOnlyHabits.Format(result.ReadOnly.OrderBy(id => id));
+
+        // Cho WidgetHost (tiến trình khác) biết có Plus không, để bật/tắt widget khoảnh khắc.
+        var plusFlag = Status.IsPlus ? "1" : "0";
+
+        if (await _settings.GetAsync(PlusFlagKey, ct) != plusFlag)
+        {
+            await _settings.SetAsync(PlusFlagKey, plusFlag, ct);
+        }
 
         if (await _settings.GetAsync(ReadOnlyHabits.Key, ct) != formatted)
         {
