@@ -1,6 +1,7 @@
 namespace HabitGrid.Core.Domain;
 
 /// <summary>Icon thói quen: <c>fluent:&lt;key&gt;</c> hoặc <c>emoji:&lt;ký tự&gt;</c>.</summary>
+[System.Text.Json.Serialization.JsonConverter(typeof(HabitIconJsonConverter))]
 public readonly record struct HabitIcon
 {
     public const string FluentPrefix = "fluent:";

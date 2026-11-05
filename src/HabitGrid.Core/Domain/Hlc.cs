@@ -6,6 +6,7 @@ namespace HabitGrid.Core.Domain;
 /// Hybrid Logical Clock: <c>wallMs:counter:deviceId</c>. So sánh theo thứ tự (wallMs, counter, deviceId)
 /// nên cùng một dữ liệu luôn cho cùng một thứ tự trên mọi thiết bị.
 /// </summary>
+[System.Text.Json.Serialization.JsonConverter(typeof(HlcJsonConverter))]
 public readonly record struct Hlc : IComparable<Hlc>
 {
     public Hlc(long wallMs, int counter, string deviceId)

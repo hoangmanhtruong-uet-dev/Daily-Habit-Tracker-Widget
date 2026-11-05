@@ -2,7 +2,13 @@ using HabitGrid.Core.Models;
 
 namespace HabitGrid.Core.Domain;
 
-/// <summary>Tần suất của thói quen.</summary>
+/// <summary>Tần suất của thói quen. Tuần tự hóa JSON có trường phân biệt <c>type</c>.</summary>
+[System.Text.Json.Serialization.JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
+[System.Text.Json.Serialization.JsonDerivedType(typeof(Daily), "daily")]
+[System.Text.Json.Serialization.JsonDerivedType(typeof(WeekDays), "weekDays")]
+[System.Text.Json.Serialization.JsonDerivedType(typeof(TimesPerWeek), "timesPerWeek")]
+[System.Text.Json.Serialization.JsonDerivedType(typeof(TimesPerMonth), "timesPerMonth")]
+[System.Text.Json.Serialization.JsonDerivedType(typeof(EveryNDays), "everyNDays")]
 public abstract record HabitFrequency
 {
     private HabitFrequency()
