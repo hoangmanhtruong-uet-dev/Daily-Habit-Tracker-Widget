@@ -44,7 +44,7 @@ public sealed class HabitCard : UserControl
     private HabitTodayItem? _item;
     private Windows.Foundation.Point _lastPointer;
     private bool _wasDone;
-    private bool _attached;
+    private WeakRelay? _relay;
 
     public HabitCard()
     {
@@ -112,13 +112,12 @@ public sealed class HabitCard : UserControl
 
         ContextFlyout = new MenuFlyout();
         ((MenuFlyout)ContextFlyout).Opening += (_, _) => BuildMenu((MenuFlyout)ContextFlyout);
+        // Hiển thị lại (trang cache, phần tử tái sử dụng): vẽ lại theo dữ liệu hiện tại, không chạy hiệu ứng.
         Loaded += (_, _) =>
         {
-            Attach();
             _wasDone = _item?.IsDone ?? false;
-            Refresh(animate: false); // bắt kịp mọi thay đổi xảy ra khi thẻ không hiển thị
+            Refresh(animate: false);
         };
-        Unloaded += (_, _) => Detach();
     }
 
     public HabitTodayItem? Item
@@ -131,7 +130,7 @@ public sealed class HabitCard : UserControl
     public bool IsShowingDone => _fill.Opacity > 0.5;
 
     /// <summary>Thông tin chẩn đoán cho smoke test.</summary>
-    public string Diagnostics => $"attached={_attached} loaded={IsLoaded} itemHash={_item?.GetHashCode()} value={_item?.Value} status={_item?.Status} fill={_fill.Opacity} sub='{_sub.Text}'";
+    public string Diagnostics => $"relay={_relay is not null} loaded={IsLoaded} itemHash={_item?.GetHashCode()} value={_item?.Value} status={_item?.Status} fill={_fill.Opacity} sub='{_sub.Text}'";
 
     /// <summary>Dòng phụ đang hiển thị trên thẻ.</summary>
     public string DisplayedSubText => _sub.Text;
@@ -160,35 +159,45 @@ public sealed class HabitCard : UserControl
 
         _wasDone = item.IsDone;
 
-        // Chỉ đăng ký khi đang nằm trên cây giao diện; Loaded sẽ đăng ký lại sau khi trang được hiển thị lại
-        // (trang được cache, ItemsRepeater tái sử dụng phần tử) nên thẻ không bao giờ bị "mất kết nối" với dữ liệu.
-        if (IsLoaded)
-        {
-            Attach();
-        }
-
+        // Đăng ký CỐ ĐỊNH (không phụ thuộc Loaded/Unloaded: ItemsRepeater tái sử dụng phần tử nên thứ tự các sự kiện đó
+        // không đáng tin) qua một lớp trung gian chỉ giữ tham chiếu yếu tới thẻ, nên thẻ bị thu gom thì tự gỡ đăng ký.
+        _relay = new WeakRelay(this, item);
+        item.PropertyChanged += _relay.OnChanged;
         Refresh(animate: false);
-    }
-
-    private void Attach()
-    {
-        if (_item is null || _attached)
-        {
-            return;
-        }
-
-        _item.PropertyChanged += OnItemPropertyChanged;
-        _attached = true;
     }
 
     private void Detach()
     {
-        if (_item is not null && _attached)
+        if (_relay is not null)
         {
-            _item.PropertyChanged -= OnItemPropertyChanged;
+            _relay.Item.PropertyChanged -= _relay.OnChanged;
+            _relay = null;
+        }
+    }
+
+    private sealed class WeakRelay
+    {
+        private readonly WeakReference<HabitCard> _card;
+
+        public WeakRelay(HabitCard card, HabitTodayItem item)
+        {
+            _card = new WeakReference<HabitCard>(card);
+            Item = item;
         }
 
-        _attached = false;
+        public HabitTodayItem Item { get; }
+
+        public void OnChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (_card.TryGetTarget(out var card))
+            {
+                card.OnItemPropertyChanged(sender, e);
+            }
+            else
+            {
+                Item.PropertyChanged -= OnChanged;
+            }
+        }
     }
 
     private void OnItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
