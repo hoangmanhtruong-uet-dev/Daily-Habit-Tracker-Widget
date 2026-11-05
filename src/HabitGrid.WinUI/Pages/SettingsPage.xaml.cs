@@ -92,6 +92,28 @@ public sealed partial class SettingsPage : Page
         motionCard.Children.Add(motion);
         Wrap(motionCard);
 
+        // Streak freeze
+        var freezeCard = Card(Ui.T("buddy.title"));
+        var autoFreeze = new ToggleSwitch { OnContent = Ui.T("settings.freeze.auto"), OffContent = Ui.T("settings.freeze.auto") };
+        AutomationProperties.SetName(autoFreeze, Ui.T("settings.freeze.auto"));
+        var gamification = App.Host.Get<GamificationService>();
+        _ = LoadAutoFreezeAsync();
+        async Task LoadAutoFreezeAsync()
+        {
+            autoFreeze.IsOn = await gamification.GetAutoFreezeAsync();
+        }
+
+        autoFreeze.Toggled += async (_, _) =>
+        {
+            if (!_building)
+            {
+                await gamification.SetAutoFreezeAsync(autoFreeze.IsOn);
+            }
+        };
+        freezeCard.Children.Add(new TextBlock { Text = Ui.T("settings.freeze.hint"), Style = Res("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap });
+        freezeCard.Children.Add(autoFreeze);
+        Wrap(freezeCard);
+
         // Widget chạy cùng Windows (WidgetHost đọc khóa này và tự đăng ký/gỡ)
         var widgetsCard = Card(Ui.T("settings.widgets"));
         var autostart = new ToggleSwitch { OnContent = Ui.T("settings.autostart"), OffContent = Ui.T("settings.autostart") };

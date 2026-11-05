@@ -413,13 +413,21 @@ public sealed class WidgetController : IDisposable
         {
             _needsRepin = true;
         }
+        else
+        {
+            await _settings.SetAsync("flag.widget_pinned", "1");
+        }
     }
 
     private async Task CreateAuxiliaryWindowsAsync()
     {
         await CreateTodayListAsync();
 
-        QuickWindow = new QuickCheckInWindow(_quick, day => _quick.LoadAsync(day), ActAsync);
+        QuickWindow = new QuickCheckInWindow(_quick, day => _quick.LoadAsync(day), async (item, delta) =>
+        {
+            await ActAsync(item, delta);
+            await _settings.SetAsync("flag.quick_checkin_used", "1");
+        });
         QuickWindow.ApplyTheme(IsSystemDark());
         QuickWindow.Prewarm();
 

@@ -15,6 +15,7 @@ public sealed partial class MainWindow : Window
 {
     private readonly ShellViewModel _shell = App.Host.Get<ShellViewModel>();
     private readonly ThemeService _theme = App.Host.Get<ThemeService>();
+    private GamificationCoordinator? _gamification;
 
     public MainWindow()
     {
@@ -63,6 +64,12 @@ public sealed partial class MainWindow : Window
             App.Host.Get<ISettingsStore>(),
             App.Host.Get<IHabitRepository>());
 
+        _gamification = new GamificationCoordinator(
+            App.Host.Get<GamificationService>(),
+            App.Host.Get<IDataChangeBus>(),
+            DispatcherQueue,
+            () => Root.XamlRoot);
+
         if (needed)
         {
             ShowOnboarding();
@@ -70,11 +77,16 @@ public sealed partial class MainWindow : Window
         else
         {
             Navigate(PageKeys.Today);
+            _ = _gamification.StartAsync();
         }
     }
 
     /// <summary>Đổi theme lúc chạy (cài đặt, smoke test).</summary>
-    public Task SetThemeAsync(ThemeDefinition theme, ThemeMode mode) => _theme.SetAsync(theme, mode, Root);
+    public async Task SetThemeAsync(ThemeDefinition theme, ThemeMode mode)
+    {
+        await _theme.SetAsync(theme, mode, Root);
+        await App.Host.Get<GamificationService>().SetFlagAsync("theme_changed");
+    }
 
     /// <summary>Đổi ngôn ngữ lúc chạy: lưu, dịch lại dock và tiêu đề, dựng lại trang hiện tại.</summary>
     public async Task SetLanguageAsync(string language)
@@ -109,6 +121,9 @@ public sealed partial class MainWindow : Window
                 break;
             case PageKeys.Habits:
                 ContentFrame.Navigate(typeof(HabitsPage), null, transition);
+                break;
+            case PageKeys.Buddy:
+                ContentFrame.Navigate(typeof(BuddyPage), null, transition);
                 break;
             case PageKeys.Settings:
                 ContentFrame.Navigate(typeof(SettingsPage), null, transition);
@@ -167,6 +182,7 @@ public sealed partial class MainWindow : Window
         IsOnboarding = false;
         Rail.Visibility = Visibility.Visible;
         Navigate(PageKeys.Today);
+        _ = _gamification?.StartAsync();
     }
 
     /// <summary>Đưa cửa sổ lên trước (khi mở lần hai hoặc kích hoạt từ nơi khác).</summary>
