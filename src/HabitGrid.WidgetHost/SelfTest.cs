@@ -51,6 +51,30 @@ public static class SelfTest
             await Task.Delay(4500);
             Require(model.Values.ContainsKey(yesterday), "Ghi từ kết nối khác không hiện lên widget (làm mới theo data_version hỏng).");
 
+            // 3) Today List: hiển thị cùng số thói quen đến hạn.
+            Require(controller.TodayList is { IsVisible: true }, "Widget Today List không hiển thị.");
+
+            // 4) Quick check-in: lọc không dấu rồi Enter check đúng thói quen đó.
+            var quick = controller.QuickWindow ?? throw new InvalidOperationException("Không có cửa sổ Quick check-in.");
+            var all = quick.SetFilterForTest(string.Empty);
+            Require(all.Count > 0, "Quick check-in không liệt kê thói quen nào.");
+            var target = all.First(i => !i.IsDone && !i.IsSkipped);
+            var typed = HabitGrid.Presentation.Services.QuickCheckInModel.Fold(target.Name);
+            var shown = quick.SetFilterForTest(typed);
+            Require(shown.Count > 0 && shown[0].Id == target.Id, "Lọc không dấu không trả về đúng thói quen.");
+
+            await quick.EnterForTestAsync();
+            await Task.Delay(1000);
+
+            using (var db = HabitGridV3.Open(dbPath))
+            {
+                var logs = new DayLogRepository(db, new HlcClock("selftest3"), null);
+                var log = await logs.GetAsync(target.Id, today);
+                Require((log?.Value ?? 0) > target.Value, "Enter trong Quick check-in không ghi vào CSDL.");
+            }
+
+            File.AppendAllText(Path.Combine(Path.GetDirectoryName(dbPath)!, "widgethost-selftest.log"),
+                $"hotkey={controller.HotKeyDescription ?? "none"}{Environment.NewLine}");
             return 0;
         }
         catch (Exception ex)

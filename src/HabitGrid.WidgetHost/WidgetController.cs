@@ -35,6 +35,9 @@ public sealed class WidgetController : IDisposable
     private DateOnly _today;
     private bool _refreshing;
     private bool _visible = true;
+    private readonly QuickCheckInModel _quick;
+    private TodayListWindow? _todayList;
+    private HotKey? _hotKey;
 
     public WidgetController(HabitGridDatabase database)
     {
@@ -45,6 +48,7 @@ public sealed class WidgetController : IDisposable
         _logs = new DayLogRepository(database, clock, bus);
         _settings = new SettingsStore(database);
         _checkIn = new CheckInService(_habits, _logs);
+        _quick = new QuickCheckInModel(_habits, _logs);
         _desktop = new DesktopHostService(_screen);
         _watch = database.OpenConnection();
         _timer.Tick += async (_, _) => await PollAsync();
@@ -56,6 +60,13 @@ public sealed class WidgetController : IDisposable
 
     public DateOnly Today => _today;
 
+    public TodayListWindow? TodayList => _todayList;
+
+    public QuickCheckInWindow? QuickWindow { get; private set; }
+
+    /// <summary>Phím tắt Quick check-in đã đăng ký được (Win+Alt+H hoặc Ctrl+Alt+H); null nếu bị chiếm.</summary>
+    public string? HotKeyDescription => _hotKey?.Description;
+
     /// <summary>Nguồn trạng thái "chế độ sắp xếp" (menu khay); đọc mỗi nhịp làm mới.</summary>
     public Func<bool>? EditMode { get; init; }
 
@@ -64,6 +75,8 @@ public sealed class WidgetController : IDisposable
     public async Task StartAsync()
     {
         _today = CurrentDay();
+        await _quick.LoadAsync(_today);
+        await CreateAuxiliaryWindowsAsync();
         await RefreshAsync();
         _dataVersion = ReadDataVersion();
         _timer.Start();
@@ -72,6 +85,18 @@ public sealed class WidgetController : IDisposable
     public void ToggleVisibility()
     {
         _visible = !_visible;
+
+        if (_todayList is not null)
+        {
+            if (_visible)
+            {
+                _todayList.Show();
+            }
+            else
+            {
+                _todayList.Hide();
+            }
+        }
 
         foreach (var (window, _) in _widgets.Values)
         {
@@ -92,11 +117,16 @@ public sealed class WidgetController : IDisposable
         {
             window.ApplyPinning(DesktopPinningMode.DesktopLevel);
         }
+
+        _todayList?.Pin(_desktop, DesktopPinningMode.DesktopLevel);
     }
 
     public void Dispose()
     {
         _timer.Stop();
+        _hotKey?.Dispose();
+        _todayList?.Close();
+        QuickWindow?.Close();
 
         foreach (var (window, _) in _widgets.Values)
         {
@@ -136,6 +166,10 @@ public sealed class WidgetController : IDisposable
             }
 
             var dark = IsSystemDark();
+            await _quick.LoadAsync(today);
+            _todayList?.ApplyTheme(dark);
+            QuickWindow?.ApplyTheme(dark);
+            QuickWindow?.Refresh();
 
             for (var index = 0; index < habits.Count; index++)
             {
@@ -162,6 +196,64 @@ public sealed class WidgetController : IDisposable
             _refreshing = false;
         }
     }
+
+    /// <summary>Thao tác từ Today List/Quick check-in: delta 0 = bật-tắt/đếm +1, khác 0 = tăng/giảm.</summary>
+    public async Task ActAsync(QuickItem item, int delta)
+    {
+        if (delta == 0)
+        {
+            await _quick.ToggleAsync(item);
+        }
+        else
+        {
+            await _quick.AdjustAsync(item, delta);
+        }
+
+        await RefreshAsync();
+    }
+
+    private async Task CreateAuxiliaryWindowsAsync()
+    {
+        _todayList = new TodayListWindow(_quick, ActAsync);
+        _todayList.ApplyTheme(IsSystemDark());
+        _todayList.Show();
+        _todayList.Moved += async (_, _) =>
+            await _settings.SetAsync(TodayListKey, string.Create(CultureInfo.InvariantCulture, $"{(int)_todayList.Left},{(int)_todayList.Top}"));
+
+        var saved = await _settings.GetAsync(TodayListKey);
+
+        if (saved?.Split(',') is [var left, var top] && double.TryParse(left, CultureInfo.InvariantCulture, out var l) && double.TryParse(top, CultureInfo.InvariantCulture, out var t))
+        {
+            _todayList.Left = l;
+            _todayList.Top = t;
+        }
+        else
+        {
+            _todayList.Left = System.Windows.SystemParameters.WorkArea.Right - _todayList.Width - 40;
+            _todayList.Top = 80;
+        }
+
+        _todayList.Pin(_desktop, DesktopPinningMode.DesktopLevel);
+
+        QuickWindow = new QuickCheckInWindow(_quick, day => _quick.LoadAsync(day), ActAsync);
+        QuickWindow.ApplyTheme(IsSystemDark());
+        QuickWindow.Prewarm();
+
+        _hotKey = new HotKey();
+        _hotKey.Pressed += async (_, _) =>
+        {
+            try
+            {
+                await QuickWindow.PresentAsync(CurrentDay());
+            }
+            catch (Exception)
+            {
+                // Không để lỗi hiển thị làm sập tiến trình nền.
+            }
+        };
+    }
+
+    private const string TodayListKey = "widget.pos.todaylist";
 
     /// <summary>Check-in một ngày rồi làm mới. Dùng cho widget bấm ô.</summary>
     public async Task CheckInAsync(Guid habitId, DateOnly day)
@@ -214,6 +306,11 @@ public sealed class WidgetController : IDisposable
                 foreach (var (window, _) in _widgets.Values)
                 {
                     window.SetEditMode(edit);
+                }
+
+                if (_todayList is not null)
+                {
+                    _todayList.EditMode = edit;
                 }
             }
 
