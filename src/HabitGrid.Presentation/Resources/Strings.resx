@@ -60,4 +60,90 @@
   <data name="validation.name.too_long" xml:space="preserve"><value>Tên tối đa 40 ký tự.</value></data>
   <data name="validation.target.range" xml:space="preserve"><value>Mục tiêu phải lớn hơn 0.</value></data>
   <data name="validation.generic" xml:space="preserve"><value>Thông tin chưa hợp lệ.</value></data>
+  <data name="habits.edit" xml:space="preserve"><value>Sửa</value></data>
+  <data name="editor.title.new" xml:space="preserve"><value>Thói quen mới</value></data>
+  <data name="editor.title.edit" xml:space="preserve"><value>Sửa thói quen</value></data>
+  <data name="editor.name" xml:space="preserve"><value>Tên thói quen</value></data>
+  <data name="editor.description" xml:space="preserve"><value>Mô tả (tùy chọn)</value></data>
+  <data name="editor.icon" xml:space="preserve"><value>Biểu tượng</value></data>
+  <data name="editor.icon.custom" xml:space="preserve"><value>Hoặc gõ một emoji</value></data>
+  <data name="editor.color" xml:space="preserve"><value>Màu</value></data>
+  <data name="editor.kind" xml:space="preserve"><value>Loại</value></data>
+  <data name="editor.target" xml:space="preserve"><value>Mục tiêu mỗi ngày</value></data>
+  <data name="editor.unit" xml:space="preserve"><value>Đơn vị</value></data>
+  <data name="editor.frequency" xml:space="preserve"><value>Tần suất</value></data>
+  <data name="editor.freq.daily" xml:space="preserve"><value>Mỗi ngày</value></data>
+  <data name="editor.freq.weekdays" xml:space="preserve"><value>Các thứ cố định</value></data>
+  <data name="editor.freq.timesPerWeek" xml:space="preserve"><value>X lần mỗi tuần</value></data>
+  <data name="editor.freq.timesPerMonth" xml:space="preserve"><value>X lần mỗi tháng</value></data>
+  <data name="editor.freq.everyNDays" xml:space="preserve"><value>Mỗi N ngày</value></data>
+  <data name="editor.freq.times" xml:space="preserve"><value>Số lần</value></data>
+  <data name="editor.freq.interval" xml:space="preserve"><value>Cách nhau (ngày)</value></data>
+  <data name="editor.timeOfDay" xml:space="preserve"><value>Khung giờ</value></data>
+  <data name="editor.reminders" xml:space="preserve"><value>Nhắc nhở</value></data>
+  <data name="editor.reminder.add" xml:space="preserve"><value>Thêm giờ nhắc</value></data>
+  <data name="editor.reminder.smart" xml:space="preserve"><value>Nhắc thông minh</value></data>
+  <data name="editor.reminder.followUp" xml:space="preserve"><value>Nhắc lại nếu chưa làm</value></data>
+  <data name="editor.reminder.remove" xml:space="preserve"><value>Xóa</value></data>
+  <data name="editor.askMood" xml:space="preserve"><value>Hỏi mood sau khi check-in</value></data>
+  <data name="editor.allowNotes" xml:space="preserve"><value>Cho phép ghi chú</value></data>
+  <data name="editor.allowFreeze" xml:space="preserve"><value>Cho phép đóng băng chuỗi</value></data>
+  <data name="editor.tags" xml:space="preserve"><value>Thẻ</value></data>
+  <data name="editor.tags.hint" xml:space="preserve"><value>Phân cách bằng dấu phẩy, tối đa 5</value></data>
+  <data name="editor.startDate" xml:space="preserve"><value>Ngày bắt đầu</value></data>
+  <data name="editor.advanced" xml:space="preserve"><value>Nâng cao</value></data>
+  <data name="editor.preview" xml:space="preserve"><value>Xem trước</value></data>
+  <data name="editor.save" xml:space="preserve"><value>Lưu</value></data>
+  <data name="editor.cancel" xml:space="preserve"><value>Hủy</value></data>
+  <data name="day.mon" xml:space="preserve"><value>T2</value></data>
+  <data name="day.tue" xml:space="preserve"><value>T3</value></data>
+  <data name="day.wed" xml:space="preserve"><value>T4</value></data>
+  <data name="day.thu" xml:space="preserve"><value>T5</value></data>
+  <data name="day.fri" xml:space="preserve"><value>T6</value></data>
+  <data name="day.sat" xml:space="preserve"><value>T7</value></data>
+  <data name="day.sun" xml:space="preserve"><value>CN</value></data>
+  <data name="validation.frequency.days.empty" xml:space="preserve"><value>Hãy chọn ít nhất một ngày trong tuần.</value></data>
+  <data name="validation.frequency.times.range" xml:space="preserve"><value>Số lần không hợp lệ (tuần 1–6, tháng 1–27).</value></data>
+  <data name="validation.frequency.interval.range" xml:space="preserve"><value>Khoảng cách phải từ 2 đến 30 ngày.</value></data>
+  <data name="validation.color.invalid" xml:space="preserve"><value>Màu không hợp lệ.</value></data>
+  <data name="validation.description.too_long" xml:space="preserve"><value>Mô tả tối đa 200 ký tự.</value></data>
+  <data name="validation.tags.too_many" xml:space="preserve"><value>Tối đa 5 thẻ.</value></data>
+  <data name="validation.tags.invalid" xml:space="preserve"><value>Thẻ không hợp lệ (tối đa 20 ký tự).</value></data>
+  <data name="validation.target.unit_too_long" xml:space="preserve"><value>Đơn vị tối đa 12 ký tự.</value></data>
+  <data name="validation.reminders.too_many" xml:space="preserve"><value>Tối đa 5 giờ nhắc cho mỗi thói quen.</value></data>
+  <data name="validation.limit.habits" xml:space="preserve"><value>Gói Free chạy tối đa 5 thói quen cùng lúc. Lưu trữ bớt một thói quen hoặc nâng cấp Plus.</value></data>
+  <data name="topic.study" xml:space="preserve"><value>Học tập</value></data>
+  <data name="topic.health" xml:space="preserve"><value>Sức khỏe</value></data>
+  <data name="topic.fitness" xml:space="preserve"><value>Thể dục</value></data>
+  <data name="topic.mind" xml:space="preserve"><value>Tinh thần</value></data>
+  <data name="topic.creative" xml:space="preserve"><value>Sáng tạo</value></data>
+  <data name="topic.work" xml:space="preserve"><value>Công việc</value></data>
+  <data name="topic.home" xml:space="preserve"><value>Nhà cửa</value></data>
+  <data name="topic.quit" xml:space="preserve"><value>Bỏ thói quen xấu</value></data>
+  <data name="onboarding.welcome.title" xml:space="preserve"><value>Mỗi ngày một ô sáng.</value></data>
+  <data name="onboarding.welcome.body" xml:space="preserve"><value>HabitGrid giúp bạn giữ thói quen bằng một lưới nhỏ ngay trên màn hình nền. Không cần tài khoản.</value></data>
+  <data name="onboarding.start" xml:space="preserve"><value>Bắt đầu</value></data>
+  <data name="onboarding.haveData" xml:space="preserve"><value>Tôi tự làm, bỏ qua</value></data>
+  <data name="onboarding.goals.title" xml:space="preserve"><value>Bạn muốn xây thói quen nào?</value></data>
+  <data name="onboarding.goals.hint" xml:space="preserve"><value>Chọn tối đa 3 chủ đề</value></data>
+  <data name="onboarding.habits.title" xml:space="preserve"><value>Chọn thói quen đầu tiên</value></data>
+  <data name="onboarding.habits.hint" xml:space="preserve"><value>Chọn tối đa 3 và sửa tên nếu muốn</value></data>
+  <data name="onboarding.custom" xml:space="preserve"><value>Tự đặt tên</value></data>
+  <data name="onboarding.custom.placeholder" xml:space="preserve"><value>Tên thói quen của bạn</value></data>
+  <data name="onboarding.custom.add" xml:space="preserve"><value>Thêm</value></data>
+  <data name="onboarding.buddy.title" xml:space="preserve"><value>Đặt tên cho Buddy</value></data>
+  <data name="onboarding.buddy.body" xml:space="preserve"><value>Buddy sẽ lớn lên cùng chuỗi ngày của bạn.</value></data>
+  <data name="onboarding.buddy.default" xml:space="preserve"><value>Bạn nhỏ</value></data>
+  <data name="onboarding.reminder.title" xml:space="preserve"><value>Nhắc bạn lúc nào?</value></data>
+  <data name="onboarding.reminder.body" xml:space="preserve"><value>Bạn có thể đổi bất kỳ lúc nào trong phần sửa thói quen.</value></data>
+  <data name="reminder.none" xml:space="preserve"><value>Không nhắc</value></data>
+  <data name="reminder.morning" xml:space="preserve"><value>Buổi sáng 08:00</value></data>
+  <data name="reminder.evening" xml:space="preserve"><value>Buổi tối 20:00</value></data>
+  <data name="reminder.custom" xml:space="preserve"><value>Tự chọn giờ</value></data>
+  <data name="onboarding.next" xml:space="preserve"><value>Tiếp tục</value></data>
+  <data name="onboarding.back" xml:space="preserve"><value>Quay lại</value></data>
+  <data name="onboarding.finish" xml:space="preserve"><value>Bắt đầu thôi!</value></data>
+  <data name="onboarding.step" xml:space="preserve"><value>Bước {0}/{1}</value></data>
+  <data name="onboarding.limit.topics" xml:space="preserve"><value>Chỉ chọn tối đa 3 chủ đề.</value></data>
+  <data name="onboarding.limit.picks" xml:space="preserve"><value>Chỉ chọn tối đa 3 thói quen.</value></data>
 </root>

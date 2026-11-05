@@ -14,6 +14,7 @@ public static partial class HabitValidator
     public const int MaxTagLength = 20;
     public const int MaxUnitLength = 12;
     public const int MaxTarget = 100_000;
+    public const int MaxReminders = 5;
 
     public static IReadOnlyList<ValidationError> Validate(Habit habit)
     {
@@ -52,6 +53,11 @@ public static partial class HabitValidator
         if (habit.Tags.Any(t => string.IsNullOrWhiteSpace(t) || t.Length > MaxTagLength))
         {
             errors.Add(new("tags.invalid", nameof(Habit.Tags)));
+        }
+
+        if (habit.Reminders.Count > MaxReminders)
+        {
+            errors.Add(new("reminders.too_many", nameof(Habit.Reminders)));
         }
 
         if (!FractionalIndex.IsValid(habit.SortKey))

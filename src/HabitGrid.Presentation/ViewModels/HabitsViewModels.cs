@@ -17,7 +17,8 @@ public sealed record HabitDraft(
     TimeOfDay TimeOfDay = TimeOfDay.Anytime,
     HabitFrequency? Frequency = null,
     string? ColorHue = null,
-    DateOnly? StartDate = null);
+    DateOnly? StartDate = null,
+    IReadOnlyList<Reminder>? Reminders = null);
 
 public sealed record CreateHabitResult(Habit? Habit, IReadOnlyList<ValidationError> Errors)
 {
@@ -37,8 +38,11 @@ public sealed class HabitCreationService
     private readonly IHabitRepository _habits;
     private readonly IDayProvider _dayProvider;
 
-    public HabitCreationService(IHabitRepository habits, IDayProvider dayProvider)
+    private readonly IEntitlements _entitlements;
+
+    public HabitCreationService(IHabitRepository habits, IDayProvider dayProvider, IEntitlements? entitlements = null)
     {
+        _entitlements = entitlements ?? new UnlimitedEntitlements();
         _habits = habits ?? throw new ArgumentNullException(nameof(habits));
         _dayProvider = dayProvider ?? throw new ArgumentNullException(nameof(dayProvider));
     }
@@ -48,6 +52,12 @@ public sealed class HabitCreationService
         ArgumentNullException.ThrowIfNull(draft);
 
         var existing = await _habits.GetAllAsync(ct);
+
+        if (existing.Count(h => h.IsActive) >= _entitlements.MaxActiveHabits)
+        {
+            return new CreateHabitResult(null, [new ValidationError("limit.habits", nameof(Habit))]);
+        }
+
         var last = existing.Select(h => h.SortKey).OrderBy(k => k, StringComparer.Ordinal).LastOrDefault();
 
         var habit = new Habit
@@ -62,6 +72,7 @@ public sealed class HabitCreationService
             TimeOfDay = draft.TimeOfDay,
             ColorHue = draft.ColorHue ?? PresetColors[existing.Count % PresetColors.Count],
             StartDate = draft.StartDate ?? _dayProvider.GetToday(),
+            Reminders = draft.Reminders?.ToList() ?? [],
             SortKey = FractionalIndex.After(last)
         };
 

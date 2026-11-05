@@ -60,4 +60,90 @@
   <data name="validation.name.too_long" xml:space="preserve"><value>Name can be at most 40 characters.</value></data>
   <data name="validation.target.range" xml:space="preserve"><value>Target must be greater than 0.</value></data>
   <data name="validation.generic" xml:space="preserve"><value>Some details are not valid.</value></data>
+  <data name="habits.edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="editor.title.new" xml:space="preserve"><value>New habit</value></data>
+  <data name="editor.title.edit" xml:space="preserve"><value>Edit habit</value></data>
+  <data name="editor.name" xml:space="preserve"><value>Habit name</value></data>
+  <data name="editor.description" xml:space="preserve"><value>Description (optional)</value></data>
+  <data name="editor.icon" xml:space="preserve"><value>Icon</value></data>
+  <data name="editor.icon.custom" xml:space="preserve"><value>Or type an emoji</value></data>
+  <data name="editor.color" xml:space="preserve"><value>Color</value></data>
+  <data name="editor.kind" xml:space="preserve"><value>Type</value></data>
+  <data name="editor.target" xml:space="preserve"><value>Daily target</value></data>
+  <data name="editor.unit" xml:space="preserve"><value>Unit</value></data>
+  <data name="editor.frequency" xml:space="preserve"><value>Frequency</value></data>
+  <data name="editor.freq.daily" xml:space="preserve"><value>Every day</value></data>
+  <data name="editor.freq.weekdays" xml:space="preserve"><value>Certain weekdays</value></data>
+  <data name="editor.freq.timesPerWeek" xml:space="preserve"><value>X times a week</value></data>
+  <data name="editor.freq.timesPerMonth" xml:space="preserve"><value>X times a month</value></data>
+  <data name="editor.freq.everyNDays" xml:space="preserve"><value>Every N days</value></data>
+  <data name="editor.freq.times" xml:space="preserve"><value>Times</value></data>
+  <data name="editor.freq.interval" xml:space="preserve"><value>Every (days)</value></data>
+  <data name="editor.timeOfDay" xml:space="preserve"><value>Time of day</value></data>
+  <data name="editor.reminders" xml:space="preserve"><value>Reminders</value></data>
+  <data name="editor.reminder.add" xml:space="preserve"><value>Add reminder</value></data>
+  <data name="editor.reminder.smart" xml:space="preserve"><value>Smart reminder</value></data>
+  <data name="editor.reminder.followUp" xml:space="preserve"><value>Follow up if not done</value></data>
+  <data name="editor.reminder.remove" xml:space="preserve"><value>Remove</value></data>
+  <data name="editor.askMood" xml:space="preserve"><value>Ask for mood after check-in</value></data>
+  <data name="editor.allowNotes" xml:space="preserve"><value>Allow notes</value></data>
+  <data name="editor.allowFreeze" xml:space="preserve"><value>Allow streak freeze</value></data>
+  <data name="editor.tags" xml:space="preserve"><value>Tags</value></data>
+  <data name="editor.tags.hint" xml:space="preserve"><value>Comma separated, up to 5</value></data>
+  <data name="editor.startDate" xml:space="preserve"><value>Start date</value></data>
+  <data name="editor.advanced" xml:space="preserve"><value>Advanced</value></data>
+  <data name="editor.preview" xml:space="preserve"><value>Preview</value></data>
+  <data name="editor.save" xml:space="preserve"><value>Save</value></data>
+  <data name="editor.cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="day.mon" xml:space="preserve"><value>Mon</value></data>
+  <data name="day.tue" xml:space="preserve"><value>Tue</value></data>
+  <data name="day.wed" xml:space="preserve"><value>Wed</value></data>
+  <data name="day.thu" xml:space="preserve"><value>Thu</value></data>
+  <data name="day.fri" xml:space="preserve"><value>Fri</value></data>
+  <data name="day.sat" xml:space="preserve"><value>Sat</value></data>
+  <data name="day.sun" xml:space="preserve"><value>Sun</value></data>
+  <data name="validation.frequency.days.empty" xml:space="preserve"><value>Pick at least one weekday.</value></data>
+  <data name="validation.frequency.times.range" xml:space="preserve"><value>Invalid count (1-6 per week, 1-27 per month).</value></data>
+  <data name="validation.frequency.interval.range" xml:space="preserve"><value>Interval must be 2 to 30 days.</value></data>
+  <data name="validation.color.invalid" xml:space="preserve"><value>Invalid color.</value></data>
+  <data name="validation.description.too_long" xml:space="preserve"><value>Description can be at most 200 characters.</value></data>
+  <data name="validation.tags.too_many" xml:space="preserve"><value>At most 5 tags.</value></data>
+  <data name="validation.tags.invalid" xml:space="preserve"><value>Invalid tag (max 20 characters).</value></data>
+  <data name="validation.target.unit_too_long" xml:space="preserve"><value>Unit can be at most 12 characters.</value></data>
+  <data name="validation.reminders.too_many" xml:space="preserve"><value>At most 5 reminders per habit.</value></data>
+  <data name="validation.limit.habits" xml:space="preserve"><value>The Free plan runs up to 5 habits at once. Archive one or upgrade to Plus.</value></data>
+  <data name="topic.study" xml:space="preserve"><value>Study</value></data>
+  <data name="topic.health" xml:space="preserve"><value>Health</value></data>
+  <data name="topic.fitness" xml:space="preserve"><value>Fitness</value></data>
+  <data name="topic.mind" xml:space="preserve"><value>Mind</value></data>
+  <data name="topic.creative" xml:space="preserve"><value>Creative</value></data>
+  <data name="topic.work" xml:space="preserve"><value>Work</value></data>
+  <data name="topic.home" xml:space="preserve"><value>Home</value></data>
+  <data name="topic.quit" xml:space="preserve"><value>Quit a bad habit</value></data>
+  <data name="onboarding.welcome.title" xml:space="preserve"><value>One glowing cell a day.</value></data>
+  <data name="onboarding.welcome.body" xml:space="preserve"><value>HabitGrid keeps your habits on a tiny grid right on your desktop. No account needed.</value></data>
+  <data name="onboarding.start" xml:space="preserve"><value>Get started</value></data>
+  <data name="onboarding.haveData" xml:space="preserve"><value>I will set up myself</value></data>
+  <data name="onboarding.goals.title" xml:space="preserve"><value>What habits do you want to build?</value></data>
+  <data name="onboarding.goals.hint" xml:space="preserve"><value>Pick up to 3 topics</value></data>
+  <data name="onboarding.habits.title" xml:space="preserve"><value>Pick your first habits</value></data>
+  <data name="onboarding.habits.hint" xml:space="preserve"><value>Pick up to 3 and rename them if you like</value></data>
+  <data name="onboarding.custom" xml:space="preserve"><value>Your own</value></data>
+  <data name="onboarding.custom.placeholder" xml:space="preserve"><value>Name your habit</value></data>
+  <data name="onboarding.custom.add" xml:space="preserve"><value>Add</value></data>
+  <data name="onboarding.buddy.title" xml:space="preserve"><value>Name your Buddy</value></data>
+  <data name="onboarding.buddy.body" xml:space="preserve"><value>Your Buddy grows with your streak.</value></data>
+  <data name="onboarding.buddy.default" xml:space="preserve"><value>Buddy</value></data>
+  <data name="onboarding.reminder.title" xml:space="preserve"><value>When should we remind you?</value></data>
+  <data name="onboarding.reminder.body" xml:space="preserve"><value>You can change this anytime when editing a habit.</value></data>
+  <data name="reminder.none" xml:space="preserve"><value>No reminder</value></data>
+  <data name="reminder.morning" xml:space="preserve"><value>Morning 08:00</value></data>
+  <data name="reminder.evening" xml:space="preserve"><value>Evening 20:00</value></data>
+  <data name="reminder.custom" xml:space="preserve"><value>Pick a time</value></data>
+  <data name="onboarding.next" xml:space="preserve"><value>Continue</value></data>
+  <data name="onboarding.back" xml:space="preserve"><value>Back</value></data>
+  <data name="onboarding.finish" xml:space="preserve"><value>Let's go!</value></data>
+  <data name="onboarding.step" xml:space="preserve"><value>Step {0} of {1}</value></data>
+  <data name="onboarding.limit.topics" xml:space="preserve"><value>You can pick up to 3 topics.</value></data>
+  <data name="onboarding.limit.picks" xml:space="preserve"><value>You can pick up to 3 habits.</value></data>
 </root>

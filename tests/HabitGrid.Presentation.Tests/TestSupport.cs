@@ -38,6 +38,9 @@ public sealed class AppFixture : IDisposable
         Logs = new DayLogRepository(Database, Clock, Bus);
         Days = new FixedDayProvider(Today);
         Creation = new ViewModels.HabitCreationService(Habits, Days);
+        Settings = new SettingsStore(Database);
+        Profile = new ProfileRepository(Database, Clock, Bus);
+        Localizer = new Localizer();
     }
 
     public HabitGridDatabase Database { get; }
@@ -53,6 +56,18 @@ public sealed class AppFixture : IDisposable
     public FixedDayProvider Days { get; }
 
     public ViewModels.HabitCreationService Creation { get; }
+
+    public SettingsStore Settings { get; }
+
+    public ProfileRepository Profile { get; }
+
+    public Localizer Localizer { get; }
+
+    public ViewModels.HabitEditorViewModel NewEditor(IEntitlements? entitlements = null) =>
+        new(Habits, Days, entitlements);
+
+    public ViewModels.OnboardingViewModel NewOnboarding(IEntitlements? entitlements = null) =>
+        new(new ViewModels.HabitCreationService(Habits, Days, entitlements), Profile, Settings, Days, Localizer);
 
     public ViewModels.TodayViewModel NewToday(IUiDispatcher? dispatcher = null, bool withBus = false) =>
         new(Habits, Logs, Days, bus: withBus ? Bus : null, dispatcher: dispatcher);
