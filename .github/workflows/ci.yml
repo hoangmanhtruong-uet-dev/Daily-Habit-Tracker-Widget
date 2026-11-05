@@ -21,8 +21,6 @@ jobs:
       - name: Test
         run: dotnet test HabitGrid.sln -c Release --no-build --logger "trx;LogFileName=test-results.trx"
       - name: WinUI smoke test
-        # Chưa chắc runner có desktop tương tác nên chưa chặn merge; chuyển thành bắt buộc khi đã ổn định.
-        continue-on-error: true
         shell: pwsh
         run: |
           $env:HABITGRID_DATA_DIR = Join-Path $env:RUNNER_TEMP 'hg-smoke'

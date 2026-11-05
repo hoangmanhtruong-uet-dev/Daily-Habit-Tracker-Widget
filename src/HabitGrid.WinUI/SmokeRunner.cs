@@ -329,7 +329,10 @@ public static class SmokeRunner
 
             if (item.Kind is HabitKind.Count or HabitKind.Duration && item.Value > 0)
             {
-                Require(card.DisplayedSubText.Contains(item.Value.ToString()), $"Thẻ '{item.Name}' không hiển thị giá trị {item.Value}: '{card.DisplayedSubText}'.");
+                var vmItem = today.Groups.SelectMany(g => g.Items).First(i => i.Id == item.Id);
+                Require(
+                    card.DisplayedSubText.Contains(item.Value.ToString()),
+                    $"Thẻ '{item.Name}' không hiển thị giá trị {item.Value}. Thẻ: [{card.Diagnostics}]; cùng đối tượng với VM: {ReferenceEquals(vmItem, item)} (vmHash={vmItem.GetHashCode()} vmValue={vmItem.Value}).");
             }
         }
     }

@@ -130,6 +130,9 @@ public sealed class HabitCard : UserControl
     /// <summary>Thẻ đang hiển thị trạng thái "xong" (nền gradient đã phủ). Dùng để smoke test đối chiếu giao diện với ViewModel.</summary>
     public bool IsShowingDone => _fill.Opacity > 0.5;
 
+    /// <summary>Thông tin chẩn đoán cho smoke test.</summary>
+    public string Diagnostics => $"attached={_attached} loaded={IsLoaded} itemHash={_item?.GetHashCode()} value={_item?.Value} status={_item?.Status} fill={_fill.Opacity} sub='{_sub.Text}'";
+
     /// <summary>Dòng phụ đang hiển thị trên thẻ.</summary>
     public string DisplayedSubText => _sub.Text;
 
