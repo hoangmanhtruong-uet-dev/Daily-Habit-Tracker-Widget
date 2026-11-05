@@ -146,6 +146,15 @@ public sealed class AppHost : IDisposable
         var database = HabitGridV3.Open(AppPaths.Database);
         var bus = new DataChangeBus();
         var localizer = new Localizer();
+        var settings = new SettingsStore(database);
+
+        // Ngôn ngữ: theo cài đặt đã lưu, nếu chưa có thì theo ngôn ngữ giao diện của Windows.
+        var savedLanguage = await settings.GetAsync(SettingKeys.Language);
+        localizer.SetLanguage(savedLanguage ?? (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "vi" ? "vi" : "en"));
+        var entitlements = new FreeEntitlements();
+        var dayStartHour = int.TryParse(await settings.GetAsync(SettingKeys.DayStartHour), NumberStyles.Integer, CultureInfo.InvariantCulture, out var hour)
+            ? Math.Clamp(hour, 0, 5)
+            : 0;
 
         var services = new ServiceCollection();
         services.AddSingleton<IAppLogger>(logger);
@@ -158,10 +167,25 @@ public sealed class AppHost : IDisposable
         services.AddSingleton<IDayLogRepository>(_ => new DayLogRepository(database, clock, bus));
         services.AddSingleton<IRoutineRepository>(_ => new RoutineRepository(database, clock, bus));
         services.AddSingleton<IProfileRepository>(_ => new ProfileRepository(database, clock, bus));
-        services.AddSingleton<IDayProvider>(_ => new DayProvider(TimeSpan.FromHours(ReadDayStartHour(database))));
+        services.AddSingleton<ISettingsStore>(settings);
+        services.AddSingleton<IEntitlements>(entitlements);
+        services.AddSingleton<IDayProvider>(_ => new DayProvider(TimeSpan.FromHours(dayStartHour)));
         services.AddSingleton<IStreakCalculator>(new StreakCalculator());
         services.AddSingleton<IStatsCalculator>(new StatsCalculator());
-        services.AddSingleton<HabitCreationService>();
+        services.AddSingleton<HabitCreationService>(sp => new HabitCreationService(
+            sp.GetRequiredService<IHabitRepository>(),
+            sp.GetRequiredService<IDayProvider>(),
+            sp.GetRequiredService<IEntitlements>()));
+        services.AddTransient<HabitEditorViewModel>(sp => new HabitEditorViewModel(
+            sp.GetRequiredService<IHabitRepository>(),
+            sp.GetRequiredService<IDayProvider>(),
+            sp.GetRequiredService<IEntitlements>()));
+        services.AddTransient<OnboardingViewModel>(sp => new OnboardingViewModel(
+            sp.GetRequiredService<HabitCreationService>(),
+            sp.GetRequiredService<IProfileRepository>(),
+            sp.GetRequiredService<ISettingsStore>(),
+            sp.GetRequiredService<IDayProvider>(),
+            sp.GetRequiredService<ILocalizer>()));
         services.AddSingleton<ShellViewModel>();
         services.AddSingleton<TodayViewModel>(sp => new TodayViewModel(
             sp.GetRequiredService<IHabitRepository>(),
@@ -230,23 +254,5 @@ public sealed class AppHost : IDisposable
         var created = $"win-{Guid.NewGuid():N}"[..16];
         File.WriteAllText(idFile, created);
         return created;
-    }
-
-    private static int ReadDayStartHour(HabitGridDatabase database)
-    {
-        try
-        {
-            using var connection = database.OpenConnection();
-            using var command = connection.CreateCommand();
-            command.CommandText = "SELECT value FROM settings WHERE key = 'dayStartHour';";
-            var raw = command.ExecuteScalar() as string;
-            return int.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out var hour)
-                ? Math.Clamp(hour, 0, 5)
-                : 0;
-        }
-        catch (SqliteException)
-        {
-            return 0;
-        }
     }
 }

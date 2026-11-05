@@ -148,4 +148,19 @@ public static class Ui
 
         return string.Join(" · ", parts);
     }
+
+    public static string TopicEmoji(Presentation.Templates.HabitTopic topic) => topic switch
+    {
+        Presentation.Templates.HabitTopic.Study => "📚",
+        Presentation.Templates.HabitTopic.Health => "🍎",
+        Presentation.Templates.HabitTopic.Fitness => "💪",
+        Presentation.Templates.HabitTopic.Mind => "🧘",
+        Presentation.Templates.HabitTopic.Creative => "🎨",
+        Presentation.Templates.HabitTopic.Work => "💼",
+        Presentation.Templates.HabitTopic.Home => "🏠",
+        _ => "🚭"
+    };
+
+    public static string TopicTitle(Presentation.Templates.HabitTopic topic) =>
+        T($"topic.{topic.ToString().ToLowerInvariant()}");
 }

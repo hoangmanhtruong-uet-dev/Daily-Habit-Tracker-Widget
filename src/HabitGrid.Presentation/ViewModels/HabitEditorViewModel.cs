@@ -247,6 +247,35 @@ public sealed partial class HabitEditorViewModel : ObservableObject
         return habit;
     }
 
+    /// <summary>Bản sao đầy đủ của thói quen (kể cả các trường mà trình chỉnh sửa không đụng tới).</summary>
+    private static Habit CloneForEdit(Habit source) => new()
+    {
+        Id = source.Id,
+        CreatedAt = source.CreatedAt,
+        Name = source.Name,
+        Description = source.Description,
+        Icon = source.Icon,
+        ColorHue = source.ColorHue,
+        Kind = source.Kind,
+        Target = source.Target,
+        Frequency = source.Frequency,
+        TimeOfDay = source.TimeOfDay,
+        StartDate = source.StartDate,
+        Reminders = source.Reminders.ToList(),
+        AskMood = source.AskMood,
+        AllowNotes = source.AllowNotes,
+        AllowFreeze = source.AllowFreeze,
+        RoutineId = source.RoutineId,
+        RoutineOrder = source.RoutineOrder,
+        Tags = source.Tags.ToList(),
+        SortKey = source.SortKey,
+        ArchivedAt = source.ArchivedAt,
+        DeletedAt = source.DeletedAt,
+        UpdatedAt = source.UpdatedAt,
+        Version = source.Version,
+        SharedChallengeId = source.SharedChallengeId
+    };
+
     /// <summary>Kiểm tra mà không lưu (dùng để bật/tắt nút Lưu và hiện lỗi).</summary>
     public IReadOnlyList<ValidationError> Validate() =>
         HabitValidator.Validate(Apply(new Habit(), _editing?.SortKey ?? "V"));
@@ -295,7 +324,8 @@ public sealed partial class HabitEditorViewModel : ObservableObject
     {
         if (_editing is { } existing)
         {
-            var updated = Apply(existing, existing.SortKey);
+            // Làm việc trên bản sao: nếu không hợp lệ thì đối tượng đang hiển thị trong danh sách không bị đổi.
+            var updated = Apply(CloneForEdit(existing), existing.SortKey);
             var errors = HabitValidator.Validate(updated);
             if (errors.Count > 0)
             {
@@ -303,6 +333,7 @@ public sealed partial class HabitEditorViewModel : ObservableObject
             }
 
             await _habits.UpdateAsync(updated, ct);
+            _editing = updated;
             return new SaveHabitResult(updated, []);
         }
 

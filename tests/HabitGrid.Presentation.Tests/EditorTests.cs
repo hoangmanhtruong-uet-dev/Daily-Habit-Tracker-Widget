@@ -127,6 +127,51 @@ public class HabitEditorTests
     }
 
     [Fact]
+    public async Task Edit_InvalidSave_DoesNotMutateTheLiveObjectOrTheDatabase()
+    {
+        using var f = new AppFixture();
+        var habit = await f.AddAsync("Giữ nguyên");
+        var live = (await f.Habits.GetByIdAsync(habit.Id))!;
+
+        var editor = f.NewEditor();
+        editor.LoadFrom(live);
+        editor.Name = "";
+        editor.TimeOfDay = TimeOfDay.Evening;
+
+        var result = await editor.SaveAsync();
+
+        result.Succeeded.Should().BeFalse();
+        live.Name.Should().Be("Giữ nguyên", "đối tượng đang hiển thị không bị đổi khi lưu lỗi");
+        live.TimeOfDay.Should().Be(TimeOfDay.Anytime);
+        (await f.Habits.GetByIdAsync(habit.Id))!.Name.Should().Be("Giữ nguyên");
+
+        editor.Name = "Đã sửa";
+        (await editor.SaveAsync()).Succeeded.Should().BeTrue();
+        (await f.Habits.GetByIdAsync(habit.Id))!.TimeOfDay.Should().Be(TimeOfDay.Evening);
+    }
+
+    [Fact]
+    public async Task Edit_PreservesFieldsTheEditorDoesNotShow()
+    {
+        using var f = new AppFixture();
+        var habit = await f.AddAsync("Có nhóm");
+        var routineId = Guid.NewGuid();
+        var live = (await f.Habits.GetByIdAsync(habit.Id))!;
+        live.RoutineId = routineId;
+        live.RoutineOrder = 4;
+        await f.Habits.UpdateAsync(live);
+
+        var editor = f.NewEditor();
+        editor.LoadFrom((await f.Habits.GetByIdAsync(habit.Id))!);
+        editor.Name = "Đổi tên";
+        await editor.SaveAsync();
+
+        var after = (await f.Habits.GetByIdAsync(habit.Id))!;
+        after.RoutineId.Should().Be(routineId);
+        after.RoutineOrder.Should().Be(4);
+    }
+
+    [Fact]
     public async Task Edit_WithNoChanges_DoesNotAlterTheHabit()
     {
         using var f = new AppFixture();

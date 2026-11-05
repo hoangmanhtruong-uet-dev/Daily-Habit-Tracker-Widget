@@ -50,6 +50,7 @@ public partial class App : Application
             MainWindowInstance = window;
             main.Activated += (_, _) => window.DispatcherQueue.TryEnqueue(window.BringToFront);
             window.Activate();
+            await window.InitializeAsync();
 
             if (smoke)
             {

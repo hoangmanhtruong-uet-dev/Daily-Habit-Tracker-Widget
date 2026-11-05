@@ -91,5 +91,13 @@ Project WPF cũ (`HabitGrid.UI`, `HabitGrid.App` v1) chuyển vào `legacy/` t�
 - DI dùng `Microsoft.Extensions.DependencyInjection` thuần, chưa dùng Generic Host (chưa cần cấu hình/hosted service).
 - Smoke test tự viết trong app thay vì FlaUI để chạy được ngay không cần driver; FlaUI vẫn là hướng cho kiểm tra từ bên ngoài.
 
-**Chưa làm:** onboarding, trang chi tiết thói quen, trình tạo đầy đủ (tần suất/nhắc nhở), Insights, Buddy, Cài đặt (đổi ngôn ngữ/theme), command palette, tray, title bar tìm kiếm, MSIX, đo ngân sách hiệu năng (§7), kiểm tra Accessibility Insights, Narrator cho heatmap. Chưa kiểm tra hiển thị ở DPI khác và Windows 10.
+**Cập nhật 2 (05/11/2026): trình tạo/sửa đầy đủ + onboarding.**
+- `HabitEditorViewModel` + `HabitEditorView` (hộp thoại): tên, emoji (24 gợi ý hoặc gõ tự do), 12 màu preset kèm dải xem trước thang 5 mức (OKLCH), 4 loại, mục tiêu + đơn vị, 5 kiểu tần suất, khung giờ, tối đa 5 giờ nhắc (thông minh / nhắc lại), mood/ghi chú/freeze, mô tả, thẻ, ngày bắt đầu. Dùng chung cho tạo mới và sửa; lỗi hiển thị bằng ngôn ngữ người dùng và giữ hộp thoại mở. Sửa thao tác trên bản sao nên lưu lỗi không làm bẩn danh sách đang hiển thị.
+- `OnboardingViewModel` + `OnboardingPage`: chào → chủ đề (≤3) → thói quen (≤3, sửa tên/mục tiêu) → đặt tên Buddy → nhắc nhở. Tiến độ được lưu để mở lại giữa chừng; tự bỏ qua nếu đã có dữ liệu (ví dụ nhập từ v1). 64 mẫu thói quen, 8 chủ đề, VI/EN.
+- Giới hạn gói Free (5 thói quen đang chạy) áp ở editor và onboarding; lưu trữ để nhường chỗ; sửa thói quen có sẵn không bị chặn. Màn paywall thật thuộc SPEC-V2-10.
+- Ngôn ngữ mặc định theo ngôn ngữ giao diện của Windows (vi → Việt, còn lại → English) cho tới khi có trang Cài đặt.
+- Smoke test chạy trọn hành trình người dùng mới và xuất ảnh từng bước vào `<dữ liệu>\shots\`.
+- Chưa làm trong onboarding: bước "ghim widget" (chờ SPEC-V2-05) và hướng dẫn check-in đầu tiên.
+
+**Chưa làm:** trang chi tiết thói quen, Insights, Buddy, Cài đặt (đổi ngôn ngữ/theme), command palette, tray, title bar tìm kiếm, MSIX, đo ngân sách hiệu năng (§7), kiểm tra Accessibility Insights, Narrator cho heatmap. Chưa kiểm tra hiển thị ở DPI khác và Windows 10.
 

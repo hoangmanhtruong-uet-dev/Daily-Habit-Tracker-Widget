@@ -48,6 +48,10 @@
                                 <FontIcon Glyph="&#xE712;" FontSize="16" />
                                 <Button.Flyout>
                                     <MenuFlyout>
+                                        <MenuFlyoutItem Tag="{x:Bind}" Click="OnEditClick"
+                                                        Text="{x:Bind local:Ui.T('habits.edit')}">
+                                            <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE70F;" /></MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
                                         <MenuFlyoutItem Tag="{x:Bind}" Click="OnArchiveClick"
                                                         Text="{x:Bind local:Ui.T('habits.archive')}">
                                             <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE7B8;" /></MenuFlyoutItem.Icon>

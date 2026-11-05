@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using HabitGrid.Core.Domain;
 using HabitGrid.Presentation.Services;
 using HabitGrid.Presentation.ViewModels;
 using HabitGrid.WinUI.Pages;
@@ -37,6 +38,49 @@ public sealed partial class MainWindow : Window
 
     public string CurrentPageKey => _shell.SelectedKey;
 
+    /// <summary>Đang ở luồng làm quen (ẩn thanh điều hướng).</summary>
+    public bool IsOnboarding { get; private set; }
+
+    public OnboardingPage? CurrentOnboardingPage => ContentFrame.Content as OnboardingPage;
+
+    /// <summary>Quyết định hiện onboarding hay vào thẳng trang Hôm nay.</summary>
+    public async Task InitializeAsync()
+    {
+        var needed = await OnboardingViewModel.IsNeededAsync(
+            App.Host.Get<ISettingsStore>(),
+            App.Host.Get<IHabitRepository>());
+
+        if (needed)
+        {
+            ShowOnboarding();
+        }
+        else
+        {
+            Nav.SelectedItem = _items[PageKeys.Today];
+        }
+    }
+
+    private void ShowOnboarding()
+    {
+        IsOnboarding = true;
+        Nav.IsPaneVisible = false;
+        Nav.IsPaneToggleButtonVisible = false;
+        ContentFrame.Navigate(typeof(OnboardingPage), null, new Microsoft.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
+
+        if (ContentFrame.Content is OnboardingPage page)
+        {
+            page.Completed += OnOnboardingCompleted;
+        }
+    }
+
+    private void OnOnboardingCompleted(object? sender, OnboardingResult? result)
+    {
+        IsOnboarding = false;
+        Nav.IsPaneVisible = true;
+        Nav.IsPaneToggleButtonVisible = true;
+        Nav.SelectedItem = _items[PageKeys.Today];
+    }
+
     private void BuildNavigation()
     {
         foreach (var item in _shell.MainItems)
@@ -50,7 +94,6 @@ public sealed partial class MainWindow : Window
         _items[PageKeys.Settings] = settings;
         Nav.FooterMenuItems.Add(settings);
 
-        Nav.SelectedItem = _items[PageKeys.Today];
     }
 
     private NavigationViewItem CreateItem(NavItem item) => new()
@@ -71,7 +114,7 @@ public sealed partial class MainWindow : Window
 
     private void OnSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
-        if (args.SelectedItem is not NavigationViewItem { Tag: string key })
+        if (IsOnboarding || args.SelectedItem is not NavigationViewItem { Tag: string key })
         {
             return;
         }

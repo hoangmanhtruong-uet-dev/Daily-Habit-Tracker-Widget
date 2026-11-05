@@ -1,5 +1,6 @@
 using HabitGrid.Core.Domain;
 using HabitGrid.Presentation.Services;
+using HabitGrid.Presentation.Templates;
 using HabitGrid.Presentation.ViewModels;
 using HabitGrid.WinUI.Controls;
 using HabitGrid.WinUI.Pages;
@@ -10,12 +11,15 @@ using Microsoft.UI.Xaml.Media;
 namespace HabitGrid.WinUI;
 
 /// <summary>
-/// Chế độ <c>--smoke</c>: dựng thật mọi trang, mở hộp thoại, rồi check-in và hoàn tác qua chính nút trên giao diện.
-/// Đây là bài kiểm tra "dựng XAML thật" mà bản v1 đã thiếu (SPEC-V2-11). Thoát 0 nếu mọi thứ đạt, khác 0 nếu có lỗi.
+/// Chế độ <c>--smoke</c>: chạy toàn bộ hành trình người dùng mới trên giao diện thật rồi xuất ảnh chụp từng bước:
+/// onboarding → Hôm nay → check-in/hoàn tác → tạo thói quen → sửa thói quen → mọi trang.
+/// Đây là bài kiểm tra "dựng XAML thật" mà bản v1 đã thiếu (SPEC-V2-11). Thoát 0 nếu đạt, khác 0 nếu có lỗi.
 /// Từ chối chạy khi không đặt <c>HABITGRID_DATA_DIR</c> vì smoke test ghi dữ liệu.
 /// </summary>
 public static class SmokeRunner
 {
+    private static int _shotNo;
+
     public static async Task RunAsync(MainWindow window)
     {
         var logger = App.Host.Get<IAppLogger>();
@@ -30,14 +34,16 @@ public static class SmokeRunner
 
             await Task.Delay(800);
 
-            foreach (var key in new[] { PageKeys.Today, PageKeys.Habits, PageKeys.Insights, PageKeys.Buddy, PageKeys.Settings })
+            await OnboardingJourneyAsync(window, logger);
+            await CheckInRoundTripAsync(window, logger);
+            await EditorJourneyAsync(window, logger);
+
+            foreach (var key in new[] { PageKeys.Habits, PageKeys.Insights, PageKeys.Buddy, PageKeys.Settings, PageKeys.Today })
             {
                 await GoToAsync(window, key);
+                await SnapAsync(window, $"page-{key}");
                 logger.Info($"SMOKE page {key} OK");
             }
-
-            await CheckInRoundTripAsync(window, logger);
-            await DialogAsync(window, logger);
 
             logger.Info("SMOKE OK");
             Environment.Exit(0);
@@ -49,37 +55,66 @@ public static class SmokeRunner
         }
     }
 
-    private static async Task GoToAsync(MainWindow window, string key)
-    {
-        window.NavigateTo(key);
-        await Task.Delay(600);
+    // ------------------------------------------------------------------ onboarding
 
-        if (window.CurrentPageKey != key)
-        {
-            throw new InvalidOperationException($"Không chuyển được tới trang '{key}'.");
-        }
+    private static async Task OnboardingJourneyAsync(MainWindow window, IAppLogger logger)
+    {
+        Require(window.IsOnboarding, "Dữ liệu trống nhưng không thấy onboarding.");
+        var page = window.CurrentOnboardingPage ?? throw new InvalidOperationException("Không có trang onboarding.");
+        var vm = page.ViewModel;
+        await Task.Delay(500);
+        await SnapAsync(window, "onboarding-1-welcome");
+
+        await page.GoNextAsync();
+        Require(vm.Step == OnboardingStep.Goals && page.IsPanelVisible(OnboardingStep.Goals), "Không sang được bước chủ đề.");
+        Require(!vm.CanGoNext, "Chưa chọn chủ đề mà vẫn đi tiếp được.");
+        vm.ToggleTopic(HabitTopic.Fitness);
+        vm.ToggleTopic(HabitTopic.Mind);
+        page.RefreshForSmoke();
+        await Task.Delay(400);
+        await SnapAsync(window, "onboarding-2-goals");
+
+        await page.GoNextAsync();
+        Require(vm.Step == OnboardingStep.Habits && page.IsPanelVisible(OnboardingStep.Habits), "Không sang được bước thói quen.");
+        Require(vm.Suggestions.Count >= 16, "Thiếu gợi ý thói quen.");
+        vm.TogglePick(HabitTemplates.Find("fit.gym")!);
+        vm.TogglePick(HabitTemplates.Find("mind.meditate")!);
+        page.RefreshForSmoke();
+        await Task.Delay(700);
+        await SnapAsync(window, "onboarding-3-habits");
+
+        await page.GoNextAsync();
+        Require(vm.Step == OnboardingStep.Buddy && page.IsPanelVisible(OnboardingStep.Buddy), "Không sang được bước Buddy.");
+        vm.BuddyName = "Mochi";
+        page.RefreshForSmoke();
+        await Task.Delay(400);
+        await SnapAsync(window, "onboarding-4-buddy");
+
+        await page.GoNextAsync();
+        Require(vm.Step == OnboardingStep.Reminder && page.IsPanelVisible(OnboardingStep.Reminder), "Không sang được bước nhắc nhở.");
+        await Task.Delay(400);
+        await SnapAsync(window, "onboarding-5-reminder");
+
+        await page.FinishAsync();
+        await Task.Delay(1200);
+
+        Require(!window.IsOnboarding, "Onboarding xong nhưng vẫn ở chế độ onboarding.");
+        var habits = await App.Host.Get<IHabitRepository>().GetAllActiveAsync();
+        Require(habits.Count == 2, $"Kỳ vọng 2 thói quen sau onboarding, thực tế {habits.Count}.");
+        Require((await App.Host.Get<IProfileRepository>().GetAsync()).BuddyName == "Mochi", "Tên Buddy không được lưu.");
+        Require(await App.Host.Get<ISettingsStore>().GetAsync(SettingKeys.OnboardingDone) == "1", "Chưa đánh dấu onboarding xong.");
+        Require(window.CurrentPageKey == PageKeys.Today, "Sau onboarding không vào trang Hôm nay.");
+        await SnapAsync(window, "today-after-onboarding");
+        logger.Info("SMOKE onboarding OK");
     }
 
-    /// <summary>Tạo thói quen, bấm nút check trên giao diện, kiểm tra DB và danh sách; rồi hoàn tác.</summary>
+    // ------------------------------------------------------------------ check-in
+
     private static async Task CheckInRoundTripAsync(MainWindow window, IAppLogger logger)
     {
-        var habits = App.Host.Get<IHabitRepository>();
         var logs = App.Host.Get<IDayLogRepository>();
         var today = App.Host.Get<TodayViewModel>();
 
-        if ((await habits.GetAllActiveAsync()).Count == 0)
-        {
-            var created = await App.Host.Get<HabitCreationService>()
-                .CreateAsync(new HabitDraft("Smoke test", HabitIcon.Emoji("🧪")));
-
-            if (!created.Succeeded)
-            {
-                throw new InvalidOperationException("Không tạo được thói quen mẫu cho smoke test.");
-            }
-        }
-
-        await GoToAsync(window, PageKeys.Habits);
-        await GoToAsync(window, PageKeys.Today);
         await today.LoadAsync();
         await Task.Delay(500);
 
@@ -87,7 +122,6 @@ public static class SmokeRunner
                       ?? throw new InvalidOperationException("Không có thói quen kiểu có/không để check-in.");
 
         var doneBefore = today.DoneCount;
-
         var button = FindButtons(window.Content).FirstOrDefault(b => b.Tag is HabitTodayItem item && item.Id == pending.Id)
                      ?? throw new InvalidOperationException("Không tìm thấy nút check trên giao diện.");
 
@@ -97,53 +131,133 @@ public static class SmokeRunner
         var saved = await logs.GetAsync(pending.Id, today.Today)
                     ?? throw new InvalidOperationException("Bấm nút nhưng DB không có ghi nhận.");
 
-        if (saved.Status != DayStatus.Done || today.DoneCount != doneBefore + 1)
-        {
-            throw new InvalidOperationException(
-                $"Sau check-in kỳ vọng Done và DoneCount {doneBefore + 1}, thực tế {saved.Status} / {today.DoneCount}.");
-        }
-
+        Require(saved.Status == DayStatus.Done && today.DoneCount == doneBefore + 1,
+            $"Sau check-in kỳ vọng Done và DoneCount {doneBefore + 1}, thực tế {saved.Status} / {today.DoneCount}.");
+        await SnapAsync(window, "today-checked");
         logger.Info("SMOKE check-in OK");
 
         await today.UndoAsync();
         await Task.Delay(500);
-
-        if (await logs.GetAsync(pending.Id, today.Today) is not null || today.DoneCount != doneBefore)
-        {
-            throw new InvalidOperationException("Hoàn tác không đưa dữ liệu về trạng thái trước.");
-        }
-
+        Require(await logs.GetAsync(pending.Id, today.Today) is null && today.DoneCount == doneBefore, "Hoàn tác không đưa dữ liệu về trạng thái trước.");
         logger.Info("SMOKE undo OK");
     }
 
-    private static async Task DialogAsync(MainWindow window, IAppLogger logger)
+    // ------------------------------------------------------------------ tạo / sửa thói quen
+
+    private static async Task EditorJourneyAsync(MainWindow window, IAppLogger logger)
     {
-        if (window.Content is not FrameworkElement root)
+        var habits = App.Host.Get<IHabitRepository>();
+        var root = window.Content as FrameworkElement ?? throw new InvalidOperationException("Cửa sổ chưa có nội dung.");
+
+        // --- tạo mới ---
+        var createTask = HabitEditorDialog.ShowAsync(root.XamlRoot);
+        await Task.Delay(700);
+        var view = FindEditorView(root) ?? throw new InvalidOperationException("Hộp thoại tạo thói quen không mở được.");
+
+        view.ViewModel.Name = "Đọc sách (smoke)";
+        view.ViewModel.Kind = HabitKind.Duration;
+        view.ViewModel.Target = 25;
+        view.ViewModel.FrequencyType = FrequencyType.WeekDays;
+        view.ViewModel.WeekDays = Core.Models.DayOfWeekMask.Monday | Core.Models.DayOfWeekMask.Wednesday | Core.Models.DayOfWeekMask.Friday;
+        view.ViewModel.TimeOfDay = TimeOfDay.Evening;
+        view.ViewModel.ColorHue = "#EC4899";
+        view.ViewModel.AddReminder();
+        await Task.Delay(600);
+        await SnapElementAsync(view.FullContent, "editor-new");
+
+        Require(await view.TrySaveAsync(), "Lưu thói quen mới thất bại.");
+        CloseDialogs(root);
+        Require(await createTask is not null, "Hộp thoại không trả về thói quen đã lưu.");
+
+        var created = (await habits.GetAllActiveAsync()).FirstOrDefault(h => h.Name == "Đọc sách (smoke)")
+                      ?? throw new InvalidOperationException("Thói quen mới không có trong DB.");
+        Require(created.Kind == HabitKind.Duration && created.Target.Value == 25, "Loại/mục tiêu không được lưu.");
+        Require(created.Frequency is HabitFrequency.WeekDays, "Tần suất không được lưu.");
+        Require(created.Reminders.Count == 1, "Nhắc nhở không được lưu.");
+        logger.Info("SMOKE editor create OK");
+
+        // --- dữ liệu không hợp lệ phải được chặn ---
+        var invalidTask = HabitEditorDialog.ShowAsync(root.XamlRoot);
+        await Task.Delay(600);
+        var invalidView = FindEditorView(root) ?? throw new InvalidOperationException("Không mở được hộp thoại lần hai.");
+        Require(!await invalidView.TrySaveAsync(), "Lưu thói quen không tên lại thành công.");
+        await Task.Delay(300);
+        await SnapElementAsync(invalidView.FullContent, "editor-error");
+        CloseDialogs(root);
+        await invalidTask;
+        logger.Info("SMOKE editor validation OK");
+
+        // --- sửa ---
+        var editTask = HabitEditorDialog.ShowAsync(root.XamlRoot, created);
+        await Task.Delay(700);
+        var editView = FindEditorView(root) ?? throw new InvalidOperationException("Hộp thoại sửa không mở được.");
+        Require(editView.ViewModel.IsEditing && editView.ViewModel.Name == "Đọc sách (smoke)", "Hộp thoại sửa không nạp đúng dữ liệu.");
+        editView.ViewModel.Name = "Đọc sách (đã sửa)";
+        editView.ViewModel.FrequencyType = FrequencyType.TimesPerWeek;
+        editView.ViewModel.TimesPerWeek = 4;
+        await Task.Delay(400);
+        await SnapElementAsync(editView.FullContent, "editor-edit");
+
+        Require(await editView.TrySaveAsync(), "Lưu chỉnh sửa thất bại.");
+        CloseDialogs(root);
+        await editTask;
+
+        var edited = await habits.GetByIdAsync(created.Id);
+        Require(edited!.Name == "Đọc sách (đã sửa)" && edited.Frequency is HabitFrequency.TimesPerWeek { Times: 4 }, "Chỉnh sửa không được lưu.");
+        Require(edited.Id == created.Id, "Sửa không được đổi Id.");
+        logger.Info("SMOKE editor edit OK");
+    }
+
+    // ------------------------------------------------------------------ tiện ích
+
+    private static async Task GoToAsync(MainWindow window, string key)
+    {
+        window.NavigateTo(key);
+        await Task.Delay(700);
+        Require(window.CurrentPageKey == key, $"Không chuyển được tới trang '{key}'.");
+    }
+
+    private static async Task SnapAsync(MainWindow window, string name)
+    {
+        if (window.Content is UIElement content)
         {
-            throw new InvalidOperationException("Cửa sổ chưa có nội dung.");
+            await Shot.SaveAsync(content, $"{++_shotNo:00}-{name}");
+        }
+    }
+
+    private static async Task SnapElementAsync(UIElement element, string name) =>
+        await Shot.SaveAsync(element, $"{++_shotNo:00}-{name}");
+
+    private static void Require(bool condition, string message)
+    {
+        if (!condition)
+        {
+            throw new InvalidOperationException(message);
+        }
+    }
+
+    private static HabitEditorView? FindEditorView(FrameworkElement root)
+    {
+        foreach (var popup in VisualTreeHelper.GetOpenPopupsForXamlRoot(root.XamlRoot))
+        {
+            if (popup.Child is ContentDialog { Content: HabitEditorView view })
+            {
+                return view;
+            }
         }
 
-        var dialogTask = AddHabitDialog.ShowAsync(root.XamlRoot);
-        await Task.Delay(600);
+        return null;
+    }
 
-        var closed = 0;
+    private static void CloseDialogs(FrameworkElement root)
+    {
         foreach (var popup in VisualTreeHelper.GetOpenPopupsForXamlRoot(root.XamlRoot))
         {
             if (popup.Child is ContentDialog dialog)
             {
                 dialog.Hide();
-                closed++;
             }
         }
-
-        await dialogTask;
-
-        if (closed == 0)
-        {
-            throw new InvalidOperationException("Hộp thoại thêm thói quen không mở được.");
-        }
-
-        logger.Info("SMOKE dialog OK");
     }
 
     private static IEnumerable<HabitCheckButton> FindButtons(DependencyObject? parent)

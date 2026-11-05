@@ -60,7 +60,7 @@ public sealed partial class HabitsPage : Page
     {
         try
         {
-            if (await AddHabitDialog.ShowAsync(XamlRoot))
+            if (await HabitEditorDialog.ShowAsync(XamlRoot) is not null)
             {
                 await ViewModel.LoadAsync();
             }
@@ -68,6 +68,22 @@ public sealed partial class HabitsPage : Page
         catch (Exception ex)
         {
             Log(ex, "Thêm thói quen lỗi");
+        }
+    }
+
+    private async void OnEditClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (sender is FrameworkElement { Tag: HabitListItem item } &&
+                await HabitEditorDialog.ShowAsync(XamlRoot, item.Habit) is not null)
+            {
+                await ViewModel.LoadAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Log(ex, "Sửa thói quen lỗi");
         }
     }
 

@@ -136,7 +136,7 @@ public sealed partial class TodayPage : Page
     {
         try
         {
-            if (await AddHabitDialog.ShowAsync(XamlRoot))
+            if (await HabitEditorDialog.ShowAsync(XamlRoot) is not null)
             {
                 await ViewModel.LoadAsync();
                 ApplyTexts();
