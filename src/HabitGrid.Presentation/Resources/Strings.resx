@@ -289,4 +289,33 @@
   <data name="badge.perfect_week.desc" xml:space="preserve"><value>7 ngày hoàn hảo liên tiếp.</value></data>
   <data name="badge.marathon_day.name" xml:space="preserve"><value>Ngày marathon</value></data>
   <data name="badge.marathon_day.desc" xml:space="preserve"><value>Hoàn thành 10 check-in trong một ngày.</value></data>
+  <data name="palette.title" xml:space="preserve"><value>Lệnh nhanh</value></data>
+  <data name="palette.placeholder" xml:space="preserve"><value>Gõ để tìm trang, hành động, thói quen…</value></data>
+  <data name="palette.empty" xml:space="preserve"><value>Không có lệnh nào khớp</value></data>
+  <data name="cmd.new" xml:space="preserve"><value>Thói quen mới</value></data>
+  <data name="cmd.focus" xml:space="preserve"><value>Bắt đầu Focus</value></data>
+  <data name="cmd.focus.stop" xml:space="preserve"><value>Dừng Focus</value></data>
+  <data name="cmd.quick" xml:space="preserve"><value>Quick check-in</value></data>
+  <data name="cmd.open" xml:space="preserve"><value>Mở: {0}</value></data>
+  <data name="cmd.check" xml:space="preserve"><value>Check: {0}</value></data>
+  <data name="cmd.undo" xml:space="preserve"><value>Hoàn tác</value></data>
+  <data name="detail.focus" xml:space="preserve"><value>Focus</value></data>
+  <data name="focus.sent" xml:space="preserve"><value>Đã gửi lệnh Focus tới widget</value></data>
+  <data name="focus.host.missing" xml:space="preserve"><value>Không tìm thấy HabitGrid Widgets để chạy Focus.</value></data>
+  <data name="settings.reminders" xml:space="preserve"><value>Nhắc nhở</value></data>
+  <data name="settings.reminders.enabled" xml:space="preserve"><value>Bật nhắc nhở</value></data>
+  <data name="settings.reminders.hint" xml:space="preserve"><value>Toast nhắc vẫn hiện đúng giờ kể cả khi app đã tắt. Đặt giờ nhắc cho từng thói quen trong trình sửa.</value></data>
+  <data name="settings.quiet" xml:space="preserve"><value>Giờ yên lặng</value></data>
+  <data name="settings.quiet.from" xml:space="preserve"><value>Từ</value></data>
+  <data name="settings.quiet.to" xml:space="preserve"><value>Đến</value></data>
+  <data name="settings.rescue" xml:space="preserve"><value>Nhắc giữ chuỗi lúc 21:00</value></data>
+  <data name="settings.morning" xml:space="preserve"><value>Tổng kết buổi sáng</value></data>
+  <data name="settings.morning.at" xml:space="preserve"><value>Lúc</value></data>
+  <data name="settings.hotkeys" xml:space="preserve"><value>Phím tắt</value></data>
+  <data name="settings.hotkey.quick" xml:space="preserve"><value>Quick check-in (Win+Alt+H)</value></data>
+  <data name="settings.hotkey.focus" xml:space="preserve"><value>Bắt đầu/tạm dừng Focus (Win+Alt+F)</value></data>
+  <data name="settings.hotkeys.hint" xml:space="preserve"><value>Phím tắt toàn cục do HabitGrid Widgets đăng ký. Nếu trùng với ứng dụng khác sẽ tự đổi sang Ctrl+Alt.</value></data>
+  <data name="settings.hotkey.registered" xml:space="preserve"><value>Đang dùng: {0}</value></data>
+  <data name="settings.hotkey.none" xml:space="preserve"><value>Chưa đăng ký (widget chưa chạy hoặc phím bị chiếm)</value></data>
+  <data name="settings.shortcuts.inapp" xml:space="preserve"><value>Trong app: Ctrl+K lệnh nhanh · Ctrl+N thói quen mới · Ctrl+Z hoàn tác · Ctrl+, cài đặt · 1–9 check trên trang Hôm nay</value></data>
 </root>

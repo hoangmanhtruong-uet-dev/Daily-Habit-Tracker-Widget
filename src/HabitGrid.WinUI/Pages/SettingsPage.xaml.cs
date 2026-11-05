@@ -92,6 +92,9 @@ public sealed partial class SettingsPage : Page
         motionCard.Children.Add(motion);
         Wrap(motionCard);
 
+        BuildRemindersCard();
+        BuildHotkeysCard();
+
         // Streak freeze
         var freezeCard = Card(Ui.T("buddy.title"));
         var autoFreeze = new ToggleSwitch { OnContent = Ui.T("settings.freeze.auto"), OffContent = Ui.T("settings.freeze.auto") };
@@ -157,6 +160,128 @@ public sealed partial class SettingsPage : Page
     }
 
     private static Style Res(string key) => (Style)Application.Current.Resources[key];
+
+    /// <summary>Nhắc nhở: bật/tắt, giờ yên lặng, cứu streak, tổng kết sáng. WidgetHost đọc lại và lập lịch toast trong vài giây.</summary>
+    private void BuildRemindersCard()
+    {
+        var store = App.Host.Get<ISettingsStore>();
+        var card = Card(Ui.T("settings.reminders"));
+        card.Children.Add(new TextBlock { Text = Ui.T("settings.reminders.hint"), Style = Res("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap });
+
+        var enabled = new ToggleSwitch { OnContent = Ui.T("settings.reminders.enabled"), OffContent = Ui.T("settings.reminders.enabled") };
+        var quiet = new ToggleSwitch { OnContent = Ui.T("settings.quiet"), OffContent = Ui.T("settings.quiet") };
+        var from = new TimePicker { Header = Ui.T("settings.quiet.from"), ClockIdentifier = "24HourClock", MinuteIncrement = 15 };
+        var to = new TimePicker { Header = Ui.T("settings.quiet.to"), ClockIdentifier = "24HourClock", MinuteIncrement = 15 };
+        var rescue = new ToggleSwitch { OnContent = Ui.T("settings.rescue"), OffContent = Ui.T("settings.rescue") };
+        var morning = new ToggleSwitch { OnContent = Ui.T("settings.morning"), OffContent = Ui.T("settings.morning") };
+        var morningAt = new TimePicker { Header = Ui.T("settings.morning.at"), ClockIdentifier = "24HourClock", MinuteIncrement = 5 };
+
+        foreach (var (control, key) in new (FrameworkElement, string)[] { (enabled, "settings.reminders.enabled"), (quiet, "settings.quiet"), (rescue, "settings.rescue"), (morning, "settings.morning") })
+        {
+            AutomationProperties.SetName(control, Ui.T(key));
+        }
+
+        var quietRow = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12 };
+        quietRow.Children.Add(from);
+        quietRow.Children.Add(to);
+
+        card.Children.Add(enabled);
+        card.Children.Add(quiet);
+        card.Children.Add(quietRow);
+        card.Children.Add(rescue);
+        card.Children.Add(morning);
+        card.Children.Add(morningAt);
+        Wrap(card);
+
+        var loading = true;
+        _ = LoadAsync();
+
+        async Task LoadAsync()
+        {
+            var settings = await ReminderSettingsStore.LoadAsync(store);
+            enabled.IsOn = await ReminderSettingsStore.RemindersEnabledAsync(store);
+            quiet.IsOn = settings.QuietHoursEnabled;
+            from.Time = settings.QuietStart.ToTimeSpan();
+            to.Time = settings.QuietEnd.ToTimeSpan();
+            rescue.IsOn = settings.StreakRescue;
+            morning.IsOn = settings.MorningSummary;
+            morningAt.Time = settings.MorningSummaryAt.ToTimeSpan();
+            loading = false;
+        }
+
+        async Task SaveAsync()
+        {
+            if (loading || _building)
+            {
+                return;
+            }
+
+            await store.SetAsync(ReminderSettingsStore.RemindersEnabledKey, enabled.IsOn ? "1" : "0");
+            await ReminderSettingsStore.SaveAsync(store, new HabitGrid.Core.Domain.Reminders.ReminderSettings
+            {
+                QuietHoursEnabled = quiet.IsOn,
+                QuietStart = TimeOnly.FromTimeSpan(from.Time),
+                QuietEnd = TimeOnly.FromTimeSpan(to.Time),
+                StreakRescue = rescue.IsOn,
+                MorningSummary = morning.IsOn,
+                MorningSummaryAt = TimeOnly.FromTimeSpan(morningAt.Time)
+            });
+
+            // Nhắc WidgetHost lập lại lịch ngay (ghi settings làm đổi data_version).
+            HostLink.EnsureRunning();
+        }
+
+        enabled.Toggled += async (_, _) => await SaveAsync();
+        quiet.Toggled += async (_, _) => await SaveAsync();
+        rescue.Toggled += async (_, _) => await SaveAsync();
+        morning.Toggled += async (_, _) => await SaveAsync();
+        from.TimeChanged += async (_, _) => await SaveAsync();
+        to.TimeChanged += async (_, _) => await SaveAsync();
+        morningAt.TimeChanged += async (_, _) => await SaveAsync();
+    }
+
+    /// <summary>Phím tắt: bật/tắt hai phím toàn cục (WidgetHost áp dụng trong ~30 giây) và hiện phím thực tế đang đăng ký.</summary>
+    private void BuildHotkeysCard()
+    {
+        var store = App.Host.Get<ISettingsStore>();
+        var card = Card(Ui.T("settings.hotkeys"));
+        card.Children.Add(new TextBlock { Text = Ui.T("settings.hotkeys.hint"), Style = Res("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap });
+
+        foreach (var (enabledKey, registeredKey, label) in new[]
+        {
+            (ReminderSettingsStore.QuickHotKeyEnabledKey, "hotkey.quick.registered", "settings.hotkey.quick"),
+            (ReminderSettingsStore.FocusHotKeyEnabledKey, "hotkey.focus.registered", "settings.hotkey.focus")
+        })
+        {
+            var toggle = new ToggleSwitch { OnContent = Ui.T(label), OffContent = Ui.T(label) };
+            AutomationProperties.SetName(toggle, Ui.T(label));
+            var status = new TextBlock { Style = Res("BodySecondaryTextStyle"), Margin = new Thickness(0, -6, 0, 4) };
+            var loading = true;
+            _ = LoadAsync();
+
+            async Task LoadAsync()
+            {
+                toggle.IsOn = await store.GetAsync(enabledKey) != "0";
+                var registered = await store.GetAsync(registeredKey);
+                status.Text = string.IsNullOrEmpty(registered) ? Ui.T("settings.hotkey.none") : Ui.Loc.Format("settings.hotkey.registered", registered);
+                loading = false;
+            }
+
+            toggle.Toggled += async (_, _) =>
+            {
+                if (!loading && !_building)
+                {
+                    await store.SetAsync(enabledKey, toggle.IsOn ? "1" : "0");
+                }
+            };
+
+            card.Children.Add(toggle);
+            card.Children.Add(status);
+        }
+
+        card.Children.Add(new TextBlock { Text = Ui.T("settings.shortcuts.inapp"), Style = Res("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap });
+        Wrap(card);
+    }
 
     private static StackPanel Card(string title)
     {

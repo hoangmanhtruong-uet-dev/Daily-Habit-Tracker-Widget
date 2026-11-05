@@ -168,6 +168,7 @@ public sealed class AppHost : IDisposable
         services.AddSingleton<IRoutineRepository>(_ => new RoutineRepository(database, clock, bus));
         services.AddSingleton<IProfileRepository>(_ => new ProfileRepository(database, clock, bus));
         services.AddSingleton<IAchievementRepository>(_ => new AchievementRepository(database, clock, bus));
+        services.AddSingleton<IFocusRepository>(_ => new FocusRepository(database, clock, bus));
         services.AddSingleton<ISettingsStore>(settings);
         services.AddSingleton(new ThemeService(settings));
         services.AddSingleton<IEntitlements>(entitlements);
@@ -181,7 +182,8 @@ public sealed class AppHost : IDisposable
             sp.GetRequiredService<IAchievementRepository>(),
             sp.GetRequiredService<ISettingsStore>(),
             sp.GetRequiredService<IDayProvider>(),
-            sp.GetRequiredService<IEntitlements>()));
+            sp.GetRequiredService<IEntitlements>(),
+            sp.GetRequiredService<IFocusRepository>()));
         services.AddTransient<BuddyViewModel>(sp => new BuddyViewModel(
             sp.GetRequiredService<GamificationService>(),
             sp.GetRequiredService<IProfileRepository>(),

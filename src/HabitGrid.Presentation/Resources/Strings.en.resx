@@ -289,4 +289,33 @@
   <data name="badge.perfect_week.desc" xml:space="preserve"><value>Seven perfect days in a row.</value></data>
   <data name="badge.marathon_day.name" xml:space="preserve"><value>Marathon day</value></data>
   <data name="badge.marathon_day.desc" xml:space="preserve"><value>Complete 10 check-ins in one day.</value></data>
+  <data name="palette.title" xml:space="preserve"><value>Command palette</value></data>
+  <data name="palette.placeholder" xml:space="preserve"><value>Type to find pages, actions, habits…</value></data>
+  <data name="palette.empty" xml:space="preserve"><value>No matching command</value></data>
+  <data name="cmd.new" xml:space="preserve"><value>New habit</value></data>
+  <data name="cmd.focus" xml:space="preserve"><value>Start Focus</value></data>
+  <data name="cmd.focus.stop" xml:space="preserve"><value>Stop Focus</value></data>
+  <data name="cmd.quick" xml:space="preserve"><value>Quick check-in</value></data>
+  <data name="cmd.open" xml:space="preserve"><value>Open: {0}</value></data>
+  <data name="cmd.check" xml:space="preserve"><value>Check: {0}</value></data>
+  <data name="cmd.undo" xml:space="preserve"><value>Undo</value></data>
+  <data name="detail.focus" xml:space="preserve"><value>Focus</value></data>
+  <data name="focus.sent" xml:space="preserve"><value>Focus command sent to the widgets</value></data>
+  <data name="focus.host.missing" xml:space="preserve"><value>HabitGrid Widgets was not found, so Focus can't start.</value></data>
+  <data name="settings.reminders" xml:space="preserve"><value>Reminders</value></data>
+  <data name="settings.reminders.enabled" xml:space="preserve"><value>Enable reminders</value></data>
+  <data name="settings.reminders.hint" xml:space="preserve"><value>Reminder toasts appear on time even when the app is closed. Set reminder times per habit in the editor.</value></data>
+  <data name="settings.quiet" xml:space="preserve"><value>Quiet hours</value></data>
+  <data name="settings.quiet.from" xml:space="preserve"><value>From</value></data>
+  <data name="settings.quiet.to" xml:space="preserve"><value>To</value></data>
+  <data name="settings.rescue" xml:space="preserve"><value>Streak rescue at 9 PM</value></data>
+  <data name="settings.morning" xml:space="preserve"><value>Morning summary</value></data>
+  <data name="settings.morning.at" xml:space="preserve"><value>At</value></data>
+  <data name="settings.hotkeys" xml:space="preserve"><value>Shortcuts</value></data>
+  <data name="settings.hotkey.quick" xml:space="preserve"><value>Quick check-in (Win+Alt+H)</value></data>
+  <data name="settings.hotkey.focus" xml:space="preserve"><value>Start/pause Focus (Win+Alt+F)</value></data>
+  <data name="settings.hotkeys.hint" xml:space="preserve"><value>Global shortcuts are registered by HabitGrid Widgets. If another app already uses one, Ctrl+Alt is used instead.</value></data>
+  <data name="settings.hotkey.registered" xml:space="preserve"><value>In use: {0}</value></data>
+  <data name="settings.hotkey.none" xml:space="preserve"><value>Not registered (widgets not running or the key is taken)</value></data>
+  <data name="settings.shortcuts.inapp" xml:space="preserve"><value>In the app: Ctrl+K commands · Ctrl+N new habit · Ctrl+Z undo · Ctrl+, settings · 1–9 check on Today</value></data>
 </root>

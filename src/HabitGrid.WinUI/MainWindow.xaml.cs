@@ -32,6 +32,7 @@ public sealed partial class MainWindow : Window
         Rail.Build(_shell.MainItems, _shell.SettingsItem);
         Rail.Navigated += (_, key) => Navigate(key);
         Rail.AddRequested += async (_, _) => await AddHabitAsync();
+        RegisterShortcuts();
 
         _theme.Changed += (_, palette) =>
         {

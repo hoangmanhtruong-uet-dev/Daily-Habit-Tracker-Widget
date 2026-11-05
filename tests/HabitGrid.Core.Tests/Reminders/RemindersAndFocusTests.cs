@@ -85,7 +85,8 @@ public class ReminderPlannerTests
     {
         var plan = ReminderPlanner.Plan([WithReminder(5)], [], Now, NoExtras with { QuietHoursEnabled = false });
 
-        plan.Should().ContainSingle().Which.At.Date.Should().Be(Now.Date.AddDays(1));
+        // Cửa sổ 48 giờ từ 06:00 hôm nay kéo tới 06:00 ngày kia: có 05:00 ngày mai và 05:00 ngày kia, không có hôm nay.
+        plan.Select(p => p.At).Should().Equal(Now.Date.AddDays(1).AddHours(5), Now.Date.AddDays(2).AddHours(5));
     }
 
     [Fact]

@@ -68,7 +68,7 @@ public sealed class GamificationCoordinator : IDisposable
     private void OnChanged(object? sender, DataChange change)
     {
         // Chỉ nhật ký và thói quen ảnh hưởng XP/huy hiệu; hồ sơ/huy hiệu do chính dịch vụ ghi nên bỏ qua (tránh vòng lặp).
-        if (_disposed || change.Entity is not (DataEntity.DayLog or DataEntity.Habit or DataEntity.Everything))
+        if (_disposed || change.Entity is not (DataEntity.DayLog or DataEntity.Habit or DataEntity.XpEvent or DataEntity.Everything))
         {
             return;
         }
