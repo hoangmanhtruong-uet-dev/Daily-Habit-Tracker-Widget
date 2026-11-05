@@ -37,3 +37,6 @@ Thumbs.db
 
 # CI screenshots downloaded for review
 artifacts/
+
+# Personal Claude Code permissions (not shared)
+.claude/settings.local.json
