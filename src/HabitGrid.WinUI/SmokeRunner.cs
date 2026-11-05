@@ -1,3 +1,4 @@
+using IDayProvider = HabitGrid.Core.Services.IDayProvider;
 using HabitGrid.Core.Domain;
 using HabitGrid.Presentation.Services;
 using HabitGrid.Presentation.Templates;
@@ -268,6 +269,7 @@ public static class SmokeRunner
 
     private static async Task DetailJourneyAsync(MainWindow window, IAppLogger logger)
     {
+        await SeedHistoryAsync();
         await GoToAsync(window, PageKeys.Habits);
         await Task.Delay(500);
 
@@ -304,6 +306,34 @@ public static class SmokeRunner
 
         await SnapAsync(window, "habit-detail");
         logger.Info("SMOKE habit detail OK");
+    }
+
+    /// <summary>Lùi ngày bắt đầu của các thói quen có/không và ghi lịch sử mẫu để ảnh chụp có heatmap thật.</summary>
+    private static async Task SeedHistoryAsync()
+    {
+        var habitsRepo = App.Host.Get<IHabitRepository>();
+        var logs = App.Host.Get<IDayLogRepository>();
+        var today = App.Host.Get<IDayProvider>().GetToday();
+        var seed = 7;
+
+        foreach (var habit in (await habitsRepo.GetAllActiveAsync()).Where(h => h.Kind == HabitKind.Boolean).Take(3))
+        {
+            habit.StartDate = today.AddDays(-120);
+            await habitsRepo.UpdateAsync(habit);
+
+            for (var back = 1; back <= 110; back++)
+            {
+                seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+
+                if (seed % 100 < 68)
+                {
+                    var day = today.AddDays(-back);
+                    await logs.UpsertAsync(DayLogRules.Normalize(habit, new DayLog { HabitId = habit.Id, Day = day, Value = 1 }));
+                }
+            }
+        }
+
+        await App.Host.Get<HabitsViewModel>().LoadAsync();
     }
 
     // ------------------------------------------------------------------ tiện ích

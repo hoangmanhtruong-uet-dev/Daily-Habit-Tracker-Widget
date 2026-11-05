@@ -109,11 +109,6 @@ public sealed class HeatmapGrid : UserControl
             {
                 var cell = data.Weeks[w][row];
 
-                if (cell.IsBeforeStart && !IsInteractive)
-                {
-                    continue; // thẻ nhỏ: không vẽ ô trước ngày bắt đầu cho gọn
-                }
-
                 var rect = new Rectangle
                 {
                     Width = size,
@@ -122,7 +117,9 @@ public sealed class HeatmapGrid : UserControl
                     RadiusY = radius,
                     Fill = FillFor(cell, color),
                     Stroke = cell.IsToday ? (Brush)Application.Current.Resources["TextPrimaryBrush"] : null,
-                    StrokeThickness = cell.IsToday ? 1.5 : 0
+                    StrokeThickness = cell.IsToday ? 1.5 : 0,
+                    // Ô trước ngày bắt đầu / ngày chưa tới mờ đi để lưới vẫn đủ hình dạng.
+                    Opacity = cell.IsBeforeStart || cell.IsFuture ? 0.35 : 1
                 };
 
                 Canvas.SetLeft(rect, left + w * step);
@@ -178,14 +175,9 @@ public sealed class HeatmapGrid : UserControl
 
     private static Brush FillFor(HeatCell cell, Color color)
     {
-        if (cell.IsBeforeStart)
+        if (cell.IsBeforeStart || cell.IsFuture)
         {
-            return new SolidColorBrush(Microsoft.UI.Colors.Transparent);
-        }
-
-        if (cell.IsFuture)
-        {
-            return new SolidColorBrush(Color.FromArgb(14, 255, 255, 255));
+            return (Brush)Application.Current.Resources["HeatEmptyBrush"];
         }
 
         return cell.Status switch
