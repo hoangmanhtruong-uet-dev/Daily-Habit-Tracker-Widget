@@ -6,7 +6,7 @@
 
 ### A.1 Công nghệ
 - SQLite (Microsoft.Data.Sqlite), WAL, `foreign_keys=ON`, `busy_timeout=5000`. Giữ cách truy cập SQL thuần + mapping tay như v1 (nhẹ, AOT-friendly), hoặc Dapper. **Không** dùng EF Core ở client.
-- Vị trí: `%LOCALAPPDATA%\HabitGrid\habitgrid.db` (đóng gói MSIX: `ApplicationData.LocalFolder`). Giữ đường dẫn v1 để migrate tại chỗ.
+- Vị trí: **`%LOCALAPPDATA%\HabitGrid\habitgrid-v3.db`**, một file MỚI cạnh `habitgrid.db` của v1 (đóng gói MSIX: `ApplicationData.LocalFolder`). *Điều chỉnh so với bản đầu (05/11/2026): không migrate tại chỗ; xem A.3.*
 - Hai tiến trình (app + widget host) cùng truy cập: chỉ **app** ghi; widget ghi thông qua IPC tới app (named pipe), hoặc tự ghi nếu app không chạy (WAL đảm bảo an toàn). Mọi thay đổi phát sự kiện qua pipe để tiến trình còn lại làm mới.
 
 ### A.2 Schema v3
@@ -32,18 +32,28 @@ Index: `day_logs(day)`, `habits(deleted_at, archived_at)`, `sync_outbox(seq)`.
 
 Phân loại dữ liệu: **sync** (habits, reminders, day_logs, routines, profile, xp_events, achievements) và **theo máy** (widgets, settings).
 
-### A.3 Migration v1/v2 → v3
-1. Trước khi chạy: sao lưu file DB thành `habitgrid.db.bak-v{n}-{yyyyMMddHHmm}` (giữ 5 bản gần nhất).
-2. Chạy trong một transaction; lỗi thì rollback và hiện màn hình lỗi có nút khôi phục bản sao lưu.
-3. Ánh xạ: `entries` → `day_logs` (status suy ra); `schedule_mask` → `frequency_json` (127 → Daily, khác → WeekDays); `palette_id/custom_color` → `color_hue`; `sort_order` int → `sort_key` fractional theo thứ tự cũ; `widget_state` → `widgets` (mỗi habit một widget, giữ vị trí); `reminder_time/mask` → bảng `reminders`.
-4. Gán `hlc` khởi tạo cho mọi bản ghi; tạo `device_id` mới.
-5. Test: fixture DB v1 thật (lấy từ máy dev, đã ẩn danh) → migrate → so sánh streak/số liệu từng habit với v1.
+### A.3 Nhập dữ liệu v1/v2 → v3 (`LegacyImporter`)
+**Quyết định:** không sửa file v1 tại chỗ mà **dựng file v3 mới từ file v1**. Lý do: file v1 chỉ bị mở đọc nên không bao giờ có thể hỏng; không cần rollback; v1 và v2 có thể cùng tồn tại khi chuyển tiếp; mất điện giữa chừng không để lại trạng thái nửa vời.
+1. Mở `habitgrid.db` bằng kết nối **chỉ đọc** (nhận cả CSDL v1 chưa có cột `read_only`).
+2. Ánh xạ bằng `V1Mapper` (xem SPEC-V2-01) rồi ghi vào file tạm `habitgrid-v3.db.importing` trong một transaction: `entries` → `day_logs` (status suy ra); `schedule_mask` → `frequency_json` (127 → Daily, khác → WeekDays); `palette_id`/`custom_color` → `color_hue`; `sort_order` → `sort_key` fractional giữ đúng thứ tự cũ; `widget_state` → `widgets`; `reminder_time/mask` → `reminders`; `settings` sao chép nguyên.
+3. Mọi bản ghi nhận một HLC và một dòng `sync_outbox` (sẵn sàng đẩy lên cloud ở v2.1). Ghi `sync_state`: `import.legacy_at`, `import.legacy_path`, `device_id`.
+4. `wal_checkpoint(TRUNCATE)` rồi `File.Move` nguyên tử sang `habitgrid-v3.db`.
+5. **Bất biến an toàn:** chỉ thay file đích khi nó chắc chắn là CSDL v3 của HabitGrid còn trống và chưa nhập (kiểm bằng kết nối chỉ đọc, không tạo bảng). File lạ, kể cả SQLite của app khác, không bao giờ bị ghi đè. Chạy lại là no-op (`target.initialized`).
+6. Hủy/lỗi: xóa file tạm; không bao giờ có DB v3 nửa vời. File tạm còn sót từ lần crash trước được thay.
+
+`MigrationRunner` sao lưu theo tên file DB (`{tên file}.bak-v{n}`) và bỏ qua khi DB còn trống (version 0). Trước đây tên cố định `habitgrid.db.bak-v{n}` có thể đè lên bản sao lưu v1 khi có thêm một DB khác cùng thư mục.
 
 ### A.4 Repository
 Giữ interface trong Core (`IHabitRepository`, `IDayLogRepository`, `IRoutineRepository`, `IProfileRepository`…). Mọi hàm ghi MUST:
 1. Gán `UpdatedAt` + `hlc = clock.Now()`.
 2. Ghi bản ghi và một dòng `sync_outbox` **trong cùng transaction**.
 3. Phát `DataChanged(entity, id)` lên `IDataChangeBus`.
+
+### A.4b Ghi chú triển khai (đã làm)
+- Interface (`IHabitRepository`, `IDayLogRepository`, `IRoutineRepository`, `IProfileRepository`, `IDataChangeBus`) nằm ở `HabitGrid.Core.Domain`; hiện thực ở `HabitGrid.Data.V3`. Repository v1 và `habitgrid.db` được giữ nguyên cho tới khi bỏ app WPF.
+- Payload outbox hiện là **ảnh chụp toàn bộ thực thể** (nhắc nhở nằm trong payload của habit). Diff theo từng trường kèm HLC từng trường (B.1) sẽ làm cùng `MergeEngine` ở phần B.
+- Xóa habit là tombstone (`deleted_at`); `PurgeDeletedAsync` chỉ xóa hẳn khi quá hạn và không còn thay đổi nào của habit đó trong outbox.
+- Lưu ý NativeAOT: serialization JSON dùng reflection (`DomainJson`). Nếu sau này bật NativeAOT cho app thì cần chuyển sang source generator.
 
 ### A.5 Sao lưu
 - Tự động: mỗi ngày 1 bản snapshot JSON nén (`.hgbackup`, zip + manifest có `schema_version`) vào `Backups\`, giữ 14 bản. Free có, vì đây là dữ liệu của người dùng.

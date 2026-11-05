@@ -77,3 +77,27 @@ Project WPF cũ (`HabitGrid.UI`, `HabitGrid.App` v1) chuyển vào `legacy/` t�
 4. Ném exception giả lập ở mọi ViewModel → app không thoát, hiện lỗi thân thiện, có log.
 5. Ngân sách hiệu năng §7 đo bằng script trong CI (máy runner Windows) hoặc thủ công có ghi số.
 6. Accessibility Insights for Windows: 0 lỗi nghiêm trọng trên các trang chính.
+
+## 9. Tiến độ triển khai (cập nhật 05/11/2026)
+
+**Đã làm (lát cắt dọc đầu tiên):**
+- `HabitGrid.Presentation` (net10, không tham chiếu UI): `TodayViewModel`, `HabitsViewModel`, `ShellViewModel`, `HabitCreationService`, `Localizer` (VI/EN `.resx`), `IUiDispatcher`. 30 test chạy trên SQLite v3 thật.
+- `HabitGrid.WinUI` (WinUI 3, Windows App SDK 2.6.5, unpackaged): shell Mica + NavigationView, trang **Hôm nay** (nhóm theo khung giờ, check-in một chạm, hoàn tác, tiến độ ngày, mini heatmap 7 ngày), trang **Thói quen** (lưu trữ, xóa có hoàn tác, kéo-thả đổi thứ tự), hộp thoại thêm thói quen, các trang giữ chỗ (Insights, Buddy, Cài đặt).
+- Khởi động: single instance (`AppInstance`) kiểm tra **trước** khi mở CSDL; import v1→v3 ở lần chạy đầu; log file xoay vòng; mọi handler async có try/catch; bắt lỗi toàn cục.
+- Chế độ `--smoke`: dựng mọi trang, bấm nút check-in qua cây XAML, kiểm tra DB, hoàn tác, mở hộp thoại; thoát 0/2. Từ chối chạy (mã 3) nếu không đặt `HABITGRID_DATA_DIR`. Có bước CI (chưa bắt buộc).
+
+**Khác với spec:**
+- Project WinUI tên `HabitGrid.WinUI` (không đè `HabitGrid.App` của v1); WPF cũ chưa chuyển vào `legacy/`.
+- DI dùng `Microsoft.Extensions.DependencyInjection` thuần, chưa dùng Generic Host (chưa cần cấu hình/hosted service).
+- Smoke test tự viết trong app thay vì FlaUI để chạy được ngay không cần driver; FlaUI vẫn là hướng cho kiểm tra từ bên ngoài.
+
+**Cập nhật 2 (05/11/2026): trình tạo/sửa đầy đủ + onboarding.**
+- `HabitEditorViewModel` + `HabitEditorView` (hộp thoại): tên, emoji (24 gợi ý hoặc gõ tự do), 12 màu preset kèm dải xem trước thang 5 mức (OKLCH), 4 loại, mục tiêu + đơn vị, 5 kiểu tần suất, khung giờ, tối đa 5 giờ nhắc (thông minh / nhắc lại), mood/ghi chú/freeze, mô tả, thẻ, ngày bắt đầu. Dùng chung cho tạo mới và sửa; lỗi hiển thị bằng ngôn ngữ người dùng và giữ hộp thoại mở. Sửa thao tác trên bản sao nên lưu lỗi không làm bẩn danh sách đang hiển thị.
+- `OnboardingViewModel` + `OnboardingPage`: chào → chủ đề (≤3) → thói quen (≤3, sửa tên/mục tiêu) → đặt tên Buddy → nhắc nhở. Tiến độ được lưu để mở lại giữa chừng; tự bỏ qua nếu đã có dữ liệu (ví dụ nhập từ v1). 64 mẫu thói quen, 8 chủ đề, VI/EN.
+- Giới hạn gói Free (5 thói quen đang chạy) áp ở editor và onboarding; lưu trữ để nhường chỗ; sửa thói quen có sẵn không bị chặn. Màn paywall thật thuộc SPEC-V2-10.
+- Ngôn ngữ mặc định theo ngôn ngữ giao diện của Windows (vi → Việt, còn lại → English) cho tới khi có trang Cài đặt.
+- Smoke test chạy trọn hành trình người dùng mới và xuất ảnh từng bước vào `<dữ liệu>\shots\`.
+- Chưa làm trong onboarding: bước "ghim widget" (chờ SPEC-V2-05) và hướng dẫn check-in đầu tiên.
+
+**Chưa làm:** trang chi tiết thói quen, Insights, Buddy, Cài đặt (đổi ngôn ngữ/theme), command palette, tray, title bar tìm kiếm, MSIX, đo ngân sách hiệu năng (§7), kiểm tra Accessibility Insights, Narrator cho heatmap. Chưa kiểm tra hiển thị ở DPI khác và Windows 10.
+

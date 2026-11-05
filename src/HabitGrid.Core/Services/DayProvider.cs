@@ -11,13 +11,18 @@ public sealed class DayProvider : IDayProvider
     public static readonly TimeSpan MaxDayStartOffset = TimeSpan.FromHours(5);
 
     private readonly Func<DateTime> _localNowProvider;
+    private readonly TimeZoneInfo _timeZone;
 
     /// <param name="dayStartOffset">Mốc chuyển ngày. Mặc định 00:00. Chỉ nhận giá trị trong khoảng 00:00–05:00.</param>
     /// <param name="localNowProvider">
     /// Nguồn cung cấp thời gian địa phương hiện tại. Mặc định là <see cref="DateTime.Now"/>.
     /// Tham số này tồn tại để kiểm thử được các mốc chuyển ngày mà không phụ thuộc đồng hồ thật.
     /// </param>
-    public DayProvider(TimeSpan? dayStartOffset = null, Func<DateTime>? localNowProvider = null)
+    /// <param name="timeZone">
+    /// Múi giờ dùng để tính ngày logic. Mặc định là múi giờ của máy. Khi đặt (từ profile người dùng),
+    /// đi du lịch đổi múi giờ máy không làm sai streak.
+    /// </param>
+    public DayProvider(TimeSpan? dayStartOffset = null, Func<DateTime>? localNowProvider = null, TimeZoneInfo? timeZone = null)
     {
         var offset = dayStartOffset ?? TimeSpan.Zero;
 
@@ -30,7 +35,8 @@ public sealed class DayProvider : IDayProvider
         }
 
         DayStartOffset = offset;
-        _localNowProvider = localNowProvider ?? (() => DateTime.Now);
+        _timeZone = timeZone ?? TimeZoneInfo.Local;
+        _localNowProvider = localNowProvider ?? (() => TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, _timeZone));
     }
 
     public TimeSpan DayStartOffset { get; }
@@ -40,7 +46,7 @@ public sealed class DayProvider : IDayProvider
     public DateOnly ToLogicalDate(DateTime localDateTime)
     {
         var local = localDateTime.Kind == DateTimeKind.Utc
-            ? localDateTime.ToLocalTime()
+            ? TimeZoneInfo.ConvertTimeFromUtc(localDateTime, _timeZone)
             : localDateTime;
 
         return local.TimeOfDay < DayStartOffset
@@ -65,7 +71,13 @@ public sealed class DayProvider : IDayProvider
             nextTransitionLocal = nowLocal.AddHours(1);
         }
 
-        var localKind = DateTime.SpecifyKind(nextTransitionLocal, DateTimeKind.Local);
-        return TimeZoneInfo.ConvertTimeToUtc(localKind, TimeZoneInfo.Local);
+        nextTransitionLocal = DateTime.SpecifyKind(nextTransitionLocal, DateTimeKind.Unspecified);
+        // Mốc rơi vào khoảng giờ không tồn tại (bước nhảy giờ mùa hè) thì dời sang giờ hợp lệ kế tiếp.
+        if (_timeZone.IsInvalidTime(nextTransitionLocal))
+        {
+            nextTransitionLocal = nextTransitionLocal.AddHours(1);
+        }
+
+        return TimeZoneInfo.ConvertTimeToUtc(nextTransitionLocal, _timeZone);
     }
 }

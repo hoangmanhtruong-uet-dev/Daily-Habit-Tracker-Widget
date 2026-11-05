@@ -4,7 +4,7 @@ namespace HabitGrid.Data.Migrations;
 
 /// <summary>
 /// Bộ chạy migration có an toàn dữ liệu:
-/// 1. Sao lưu file CSDL thành <c>habitgrid.db.bak-v{currentVersion}</c> trước khi nâng cấp.
+/// 1. Sao lưu file CSDL thành <c>{tên file CSDL}.bak-v{currentVersion}</c> trước khi nâng cấp.
 /// 2. Mỗi migration chạy trong một transaction riêng; lỗi sẽ được rollback và ném lại.
 /// </summary>
 public sealed class MigrationRunner : IMigrationRunner
@@ -124,7 +124,8 @@ public sealed class MigrationRunner : IMigrationRunner
     /// </summary>
     private void CreateSafetyBackup(SqliteConnection connection, int currentVersion)
     {
-        if (_database.IsInMemory)
+        // CSDL mới tinh (version 0) chưa có dữ liệu để sao lưu.
+        if (_database.IsInMemory || currentVersion == 0)
         {
             // CSDL in-memory không tồn tại trên đĩa nên không có gì để sao lưu.
             return;
@@ -136,7 +137,7 @@ public sealed class MigrationRunner : IMigrationRunner
 
         Directory.CreateDirectory(directory);
 
-        var backupPath = Path.Combine(directory, $"habitgrid.db.bak-v{currentVersion}");
+        var backupPath = Path.Combine(directory, $"{Path.GetFileName(_database.DatabasePath!)}.bak-v{currentVersion}");
 
         // VACUUM INTO không ghi đè file đã tồn tại.
         if (File.Exists(backupPath))

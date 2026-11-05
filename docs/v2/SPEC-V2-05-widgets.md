@@ -13,7 +13,7 @@ Câu hỏi: cửa sổ WinUI 3 có ghim được xuống lớp desktop (child c�
 | C. Giữ WPF cho riêng widget host | Dùng lại code v1 đã POC | Chắc chắn chạy; khác công nghệ với app chính |
 
 Dùng lại bộ 7 tiêu chí POC v1 (`docs/specs/POC-desktop-pinning.md`) + thêm: RAM < 40 MB cho 3 widget, CPU nhàn rỗi ≈ 0%, Windows 11 24H2/25H2 và Windows 10 22H2.
-**Quyết định mặc định nếu A không đạt:** chọn B; nếu thời gian gấp, chọn C.
+**Quyết định (05/11/2026, xem `POC-V2-report.md`):** WinUI 3 ghim được nhưng không đạt ngân sách RAM/CPU (≈89 MB/tiến trình, 1 cửa sổ trống). **Chọn phương án C: `HabitGrid.WidgetHost` dùng WPF, tái dùng control/widget v1 đã kiểm chứng, cho v2.0.** App chính vẫn WinUI 3. Xem lại phương án B (Win32 + Direct2D) ở v2.1 nếu số đo RAM của WPF với 3 widget vượt ngân sách.
 
 ## 2. Widget ghim desktop
 
