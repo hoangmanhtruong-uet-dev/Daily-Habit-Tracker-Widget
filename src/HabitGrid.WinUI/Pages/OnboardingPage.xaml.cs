@@ -83,9 +83,9 @@ public sealed partial class OnboardingPage : Page
                     }
                 },
                 Tag = topic,
+                Style = (Style)Application.Current.Resources["ChipStyle"],
                 Margin = new Thickness(0, 0, 10, 10),
-                Padding = new Thickness(16, 10, 16, 10),
-                CornerRadius = new CornerRadius(20)
+                Padding = new Thickness(18, 10, 18, 10)
             };
             toggle.Click += OnTopicClick;
             TopicGrid.Items.Add(toggle);
@@ -98,7 +98,7 @@ public sealed partial class OnboardingPage : Page
 
         foreach (var key in new[] { "reminder.none", "reminder.morning", "reminder.evening", "reminder.custom" })
         {
-            ReminderRadio.Items.Add(Ui.T(key));
+            ReminderRadio.Add(Ui.T(key));
         }
 
         for (var i = 0; i < OnboardingViewModel.StepCount; i++)
@@ -121,7 +121,7 @@ public sealed partial class OnboardingPage : Page
             BuddyNameBox.Text = ViewModel.BuddyName;
             BuddyColorGrid.SelectedIndex = HabitCreationService.PresetColors.ToList()
                 .FindIndex(c => c.Equals(ViewModel.BuddyColor, StringComparison.OrdinalIgnoreCase));
-            BuddyBubble.Background = Ui.SoftBrush(ViewModel.BuddyColor);
+            BuddyBubble.Background = BuddyBrush(ViewModel.BuddyColor);
             ReminderRadio.SelectedIndex = (int)ViewModel.ReminderChoice;
             CustomTimePicker.Time = ViewModel.CustomReminderTime.ToTimeSpan();
             CustomTimePicker.Visibility = ViewModel.ReminderChoice == ReminderChoice.Custom ? Visibility.Visible : Visibility.Collapsed;
@@ -146,6 +146,7 @@ public sealed partial class OnboardingPage : Page
             var card = new ToggleButton
             {
                 Tag = template,
+                Style = (Style)Application.Current.Resources["ChipStyle"],
                 IsChecked = ViewModel.IsPicked(template),
                 Margin = new Thickness(0, 0, 8, 8),
                 Padding = new Thickness(12, 8, 12, 8),
@@ -416,11 +417,23 @@ public sealed partial class OnboardingPage : Page
         if (!_syncing && BuddyColorGrid.SelectedItem is Ellipse { Tag: string hex })
         {
             ViewModel.BuddyColor = hex;
-            BuddyBubble.Background = Ui.SoftBrush(hex);
+            BuddyBubble.Background = BuddyBrush(hex);
         }
     }
 
-    private void OnReminderChanged(object sender, SelectionChangedEventArgs e)
+    private static Microsoft.UI.Xaml.Media.Brush BuddyBrush(string hex)
+    {
+        try
+        {
+            return Ui.GradientBrush(HabitGradient.From(hex));
+        }
+        catch (FormatException)
+        {
+            return Ui.SoftBrush(hex);
+        }
+    }
+
+    private void OnReminderChanged(object? sender, EventArgs e)
     {
         if (_syncing || ReminderRadio.SelectedIndex < 0)
         {

@@ -34,6 +34,7 @@ public sealed class IconRail : UserControl
 
     public void Build(IEnumerable<NavItem> main, NavItem settings)
     {
+        _fills.Clear();
         var grid = new Grid
         {
             Padding = new Thickness(16, 8, 16, 20),

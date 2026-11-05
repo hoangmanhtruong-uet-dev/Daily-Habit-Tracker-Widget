@@ -196,4 +196,19 @@
   <data name="day.invalid" xml:space="preserve"><value>This day can't be edited.</value></data>
   <data name="detail.legend.less" xml:space="preserve"><value>Less</value></data>
   <data name="detail.legend.more" xml:space="preserve"><value>More</value></data>
+  <data name="theme.candy" xml:space="preserve"><value>Candy Bento</value></data>
+  <data name="theme.neon" xml:space="preserve"><value>Neon Night</value></data>
+  <data name="theme.pastel" xml:space="preserve"><value>Soft Pastel</value></data>
+  <data name="settings.title" xml:space="preserve"><value>Settings</value></data>
+  <data name="settings.theme" xml:space="preserve"><value>Color theme</value></data>
+  <data name="settings.mode" xml:space="preserve"><value>Appearance</value></data>
+  <data name="settings.mode.system" xml:space="preserve"><value>System</value></data>
+  <data name="settings.mode.light" xml:space="preserve"><value>Light</value></data>
+  <data name="settings.mode.dark" xml:space="preserve"><value>Dark</value></data>
+  <data name="settings.motion" xml:space="preserve"><value>Reduce motion</value></data>
+  <data name="settings.motion.hint" xml:space="preserve"><value>Turns off the animated background, confetti and the check-in ripple.</value></data>
+  <data name="settings.language" xml:space="preserve"><value>Language</value></data>
+  <data name="settings.lang.vi" xml:space="preserve"><value>Tiếng Việt</value></data>
+  <data name="settings.lang.en" xml:space="preserve"><value>English</value></data>
+  <data name="settings.pastel.note" xml:space="preserve"><value>This theme is light only.</value></data>
 </root>

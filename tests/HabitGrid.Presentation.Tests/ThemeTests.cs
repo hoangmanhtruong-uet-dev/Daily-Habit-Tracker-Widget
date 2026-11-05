@@ -57,6 +57,20 @@ public class ThemeTests
     }
 
     [Fact]
+    public void MutedText_StaysLegible_AndHeatmapEmptyCellsAreVisibleOnCards()
+    {
+        foreach (var palette in AllPalettes())
+        {
+            var card = Flatten(palette.CardIdle, palette.Canvas);
+            var empty = Flatten(palette.HeatEmpty, card);
+
+            HabitGradient.ContrastRatio(palette.TextMuted, palette.Canvas).Should().BeGreaterThanOrEqualTo(3.0, "chữ mờ trên nền");
+            HabitGradient.ContrastRatio(palette.TextMuted, card).Should().BeGreaterThanOrEqualTo(3.0, "chữ mờ trên thẻ");
+            HabitGradient.ContrastRatio(empty, card).Should().BeGreaterThanOrEqualTo(1.08, "ô heatmap trống phải thấy được trên thẻ");
+        }
+    }
+
+    [Fact]
     public void WhiteText_OnAccentGradient_MeetsAA_WithScrim()
     {
         foreach (var palette in AllPalettes())

@@ -32,7 +32,11 @@ public sealed partial class MainWindow : Window
         Rail.Navigated += (_, key) => Navigate(key);
         Rail.AddRequested += async (_, _) => await AddHabitAsync();
 
-        _theme.Changed += (_, palette) => ApplyPalette(palette);
+        _theme.Changed += (_, palette) =>
+        {
+            ApplyPalette(palette);
+            Backdrop.SetAnimated(_theme.AnimationsEnabled);
+        };
         Activated += (_, e) => Backdrop.SetAnimated(_theme.AnimationsEnabled && e.WindowActivationState != WindowActivationState.Deactivated);
         Closed += (_, _) => Closing?.Invoke(this, EventArgs.Empty);
     }
@@ -72,6 +76,17 @@ public sealed partial class MainWindow : Window
     /// <summary>Đổi theme lúc chạy (cài đặt, smoke test).</summary>
     public Task SetThemeAsync(ThemeDefinition theme, ThemeMode mode) => _theme.SetAsync(theme, mode, Root);
 
+    /// <summary>Đổi ngôn ngữ lúc chạy: lưu, dịch lại dock và tiêu đề, dựng lại trang hiện tại.</summary>
+    public async Task SetLanguageAsync(string language)
+    {
+        await App.Host.Get<ISettingsStore>().SetAsync(SettingKeys.Language, language);
+        App.Host.Get<ILocalizer>().SetLanguage(language);
+        Title = Ui.T("app.name");
+        TitleText.Text = Ui.T("app.name");
+        Rail.Build(_shell.MainItems, _shell.SettingsItem);
+        Navigate(_shell.SelectedKey);
+    }
+
     /// <summary>Chuyển tới trang theo khóa (dùng cho dock và smoke test).</summary>
     public void NavigateTo(string key) => Navigate(key);
 
@@ -94,6 +109,9 @@ public sealed partial class MainWindow : Window
                 break;
             case PageKeys.Habits:
                 ContentFrame.Navigate(typeof(HabitsPage), null, transition);
+                break;
+            case PageKeys.Settings:
+                ContentFrame.Navigate(typeof(SettingsPage), null, transition);
                 break;
             default:
                 ContentFrame.Navigate(typeof(PlaceholderPage), key, transition);

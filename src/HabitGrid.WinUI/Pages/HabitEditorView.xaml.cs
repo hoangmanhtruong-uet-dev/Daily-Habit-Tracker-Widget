@@ -35,7 +35,7 @@ public sealed partial class HabitEditorView : UserControl
     public HabitEditorViewModel ViewModel { get; }
 
     /// <summary>Toàn bộ nội dung (kể cả phần cuộn), dùng để chụp ảnh trong smoke test.</summary>
-    public UIElement FullContent => Content is ScrollViewer { Content: UIElement inner } ? inner : this;
+    public UIElement FullContent => Content is Grid { Children: [_, ScrollViewer { Content: UIElement inner }] } ? inner : this;
 
     /// <summary>Thói quen vừa lưu thành công.</summary>
     public Habit? Saved { get; private set; }
@@ -76,17 +76,17 @@ public sealed partial class HabitEditorView : UserControl
 
         foreach (var key in new[] { "add.kind.boolean", "add.kind.count", "add.kind.duration", "add.kind.quit" })
         {
-            KindRadio.Items.Add(Ui.T(key));
+            KindRadio.Add(Ui.T(key));
         }
 
         foreach (var key in new[] { "editor.freq.daily", "editor.freq.weekdays", "editor.freq.timesPerWeek", "editor.freq.timesPerMonth", "editor.freq.everyNDays" })
         {
-            FrequencyBox.Items.Add(Ui.T(key));
+            FrequencyBox.Add(Ui.T(key));
         }
 
         foreach (var key in new[] { "group.anytime", "group.morning", "group.afternoon", "group.evening" })
         {
-            TimeOfDayBox.Items.Add(Ui.T(key));
+            TimeOfDayBox.Add(Ui.T(key));
         }
 
         var days = new[]
@@ -143,6 +143,7 @@ public sealed partial class HabitEditorView : UserControl
         if (e.PropertyName is nameof(HabitEditorViewModel.Name) or nameof(HabitEditorViewModel.Description)
             or nameof(HabitEditorViewModel.TagsText) or nameof(HabitEditorViewModel.Unit))
         {
+            UpdatePreview();
             return;
         }
 
@@ -156,7 +157,7 @@ public sealed partial class HabitEditorView : UserControl
         try
         {
             IconPreviewText.Text = Ui.IconText(ViewModel.Icon);
-            IconPreview.Background = Ui.SoftBrush(ViewModel.ColorHue);
+            UpdatePreview();
 
             var emojiIndex = Array.IndexOf(Emojis, ViewModel.Icon.StartsWith("emoji:") ? ViewModel.Icon["emoji:".Length..] : string.Empty);
             EmojiGrid.SelectedIndex = emojiIndex;
@@ -192,6 +193,30 @@ public sealed partial class HabitEditorView : UserControl
         {
             _syncing = false;
         }
+    }
+
+    private static readonly string[] KindKeys = ["add.kind.boolean", "add.kind.count", "add.kind.duration", "add.kind.quit"];
+
+    private static readonly string[] TimeKeys = ["group.anytime", "group.morning", "group.afternoon", "group.evening"];
+
+    private void UpdatePreview()
+    {
+        try
+        {
+            var stops = HabitGradient.From(ViewModel.ColorHue);
+            PreviewFill.Background = Ui.GradientBrush(stops);
+            PreviewScrim.Opacity = stops.ScrimOpacity;
+        }
+        catch (FormatException)
+        {
+            // Màu đang nhập dở: giữ nguyên gradient cũ.
+        }
+
+        IconPreviewText.Text = Ui.IconText(ViewModel.Icon);
+        PreviewName.Text = string.IsNullOrWhiteSpace(ViewModel.Name) ? Ui.T("editor.name") : ViewModel.Name;
+        var kind = KindKeys[Math.Clamp((int)ViewModel.Kind, 0, KindKeys.Length - 1)];
+        var time = TimeKeys[Math.Clamp((int)ViewModel.TimeOfDay, 0, TimeKeys.Length - 1)];
+        PreviewSub.Text = Ui.T(kind) + " · " + Ui.T(time);
     }
 
     /// <summary>Dải xem trước thang màu 5 mức theo màu đang chọn (theo theme hiện tại).</summary>
@@ -296,7 +321,7 @@ public sealed partial class HabitEditorView : UserControl
         }
     }
 
-    private void OnKindChanged(object sender, SelectionChangedEventArgs e)
+    private void OnKindChanged(object? sender, EventArgs e)
     {
         if (!_syncing && KindRadio.SelectedIndex >= 0)
         {
@@ -312,7 +337,7 @@ public sealed partial class HabitEditorView : UserControl
         }
     }
 
-    private void OnFrequencyChanged(object sender, SelectionChangedEventArgs e)
+    private void OnFrequencyChanged(object? sender, EventArgs e)
     {
         if (!_syncing && FrequencyBox.SelectedIndex >= 0)
         {
@@ -344,7 +369,7 @@ public sealed partial class HabitEditorView : UserControl
         }
     }
 
-    private void OnTimeOfDayChanged(object sender, SelectionChangedEventArgs e)
+    private void OnTimeOfDayChanged(object? sender, EventArgs e)
     {
         if (!_syncing && TimeOfDayBox.SelectedIndex >= 0)
         {

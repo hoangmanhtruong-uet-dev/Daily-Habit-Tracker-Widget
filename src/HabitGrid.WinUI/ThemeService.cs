@@ -38,6 +38,16 @@ public sealed class ThemeService
         AnimationsEnabled = _uiSettings.AnimationsEnabled && await _settings.GetAsync(SettingKeys.ReduceMotion) != "1";
     }
 
+    /// <summary>Bật/tắt giảm chuyển động ngay lập tức và nhớ lựa chọn.</summary>
+    public async Task SetReduceMotionAsync(bool reduce)
+    {
+        await _settings.SetAsync(SettingKeys.ReduceMotion, reduce ? "1" : "0");
+        AnimationsEnabled = _uiSettings.AnimationsEnabled && !reduce;
+        Changed?.Invoke(this, Palette);
+    }
+
+    public bool ReduceMotionSetting => !AnimationsEnabled;
+
     public async Task SetAsync(ThemeDefinition theme, ThemeMode mode, FrameworkElement? root)
     {
         Theme = theme;

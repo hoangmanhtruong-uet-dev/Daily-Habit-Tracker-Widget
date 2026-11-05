@@ -64,10 +64,18 @@ public static class SmokeRunner
                 await GoToAsync(window, PageKeys.Today);
                 await Task.Delay(500);
                 await SnapAsync(window, $"theme-{name}");
+                await GoToAsync(window, PageKeys.Habits);
+                await Task.Delay(400);
+                await SnapAsync(window, $"theme-{name}-habits");
+                await GoToAsync(window, PageKeys.Settings);
+                await Task.Delay(300);
+                await SnapAsync(window, $"theme-{name}-settings");
             }
 
             await window.SetThemeAsync(Themes.CandyBento, ThemeMode.System);
             logger.Info("SMOKE themes OK");
+
+            await SettingsJourneyAsync(window, logger);
 
             logger.Info("SMOKE OK");
             Environment.Exit(0);
@@ -306,6 +314,34 @@ public static class SmokeRunner
 
         await SnapAsync(window, "habit-detail");
         logger.Info("SMOKE habit detail OK");
+    }
+
+    private static async Task SettingsJourneyAsync(MainWindow window, IAppLogger logger)
+    {
+        var theme = App.Host.Get<ThemeService>();
+        var loc = App.Host.Get<ILocalizer>();
+        var originalLanguage = loc.Language;
+
+        await GoToAsync(window, PageKeys.Settings);
+        Require(window.CurrentPage is SettingsPage, "Trang Cài đặt không dựng được.");
+
+        // Giảm chuyển động: áp dụng ngay và nhớ lựa chọn.
+        await theme.SetReduceMotionAsync(true);
+        Require(!theme.AnimationsEnabled, "Bật giảm chuyển động nhưng hiệu ứng vẫn chạy.");
+        await theme.SetReduceMotionAsync(false);
+
+        // Đổi ngôn ngữ lúc chạy: chữ đổi ngay, rồi trả về như cũ.
+        var other = originalLanguage == "en" ? "vi" : "en";
+        var before = Ui.T("settings.title");
+        await window.SetLanguageAsync(other);
+        await Task.Delay(500);
+        Require(Ui.T("settings.title") != before, "Đổi ngôn ngữ nhưng chữ không đổi.");
+        await SnapAsync(window, "settings-other-language");
+        await window.SetLanguageAsync(originalLanguage);
+        await Task.Delay(300);
+        Require(Ui.T("settings.title") == before, "Không trả lại được ngôn ngữ ban đầu.");
+
+        logger.Info("SMOKE settings OK");
     }
 
     /// <summary>Lùi ngày bắt đầu của các thói quen có/không và ghi lịch sử mẫu để ảnh chụp có heatmap thật.</summary>
