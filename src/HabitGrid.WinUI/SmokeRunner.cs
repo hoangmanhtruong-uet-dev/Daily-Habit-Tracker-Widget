@@ -168,7 +168,8 @@ public static class SmokeRunner
         {
             await today.SetValueAsync(numeric, Math.Max(1, numeric.Target / 3));
             await Task.Delay(700);
-            await SnapAsync(window, "today-partial");
+            AssertCardsMatchViewModel(window, today);
+        await SnapAsync(window, "today-partial");
             Require(numeric.Status != DayStatus.Done && numeric.Progress > 0, "Thẻ số không hiện tiến độ dở dang.");
         }
 
@@ -182,6 +183,7 @@ public static class SmokeRunner
         await Task.Delay(700);
         Require(today.AllDone, "Check hết mà chưa AllDone.");
         Require(today.BuddyMood == BuddyMood.Ecstatic, "Buddy không ăn mừng khi xong hết.");
+        AssertCardsMatchViewModel(window, today);
         await SnapAsync(window, "today-all-done");
         logger.Info("SMOKE all-done OK");
 
@@ -308,6 +310,26 @@ public static class SmokeRunner
             if (popup.Child is ContentDialog dialog)
             {
                 dialog.Hide();
+            }
+        }
+    }
+
+    /// <summary>Mỗi thẻ trên màn hình phải khớp trạng thái ViewModel (bắt lỗi thẻ "mất kết nối" với dữ liệu).</summary>
+    private static void AssertCardsMatchViewModel(MainWindow window, TodayViewModel today)
+    {
+        var cards = FindCards(window.Content).Where(c => c.Item is not null).ToList();
+        Require(cards.Count >= today.Groups.Sum(g => g.Items.Count), "Số thẻ trên màn hình ít hơn ViewModel.");
+
+        foreach (var card in cards)
+        {
+            var item = card.Item!;
+            Require(
+                card.IsShowingDone == item.IsDone,
+                $"Thẻ '{item.Name}' hiển thị {(card.IsShowingDone ? "xong" : "chưa xong")} nhưng ViewModel là {(item.IsDone ? "xong" : "chưa xong")}.");
+
+            if (item.Kind is HabitKind.Count or HabitKind.Duration && item.Value > 0)
+            {
+                Require(card.DisplayedSubText.Contains(item.Value.ToString()), $"Thẻ '{item.Name}' không hiển thị giá trị {item.Value}: '{card.DisplayedSubText}'.");
             }
         }
     }

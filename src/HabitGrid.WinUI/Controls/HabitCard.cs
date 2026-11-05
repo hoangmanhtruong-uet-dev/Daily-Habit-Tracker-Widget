@@ -44,6 +44,7 @@ public sealed class HabitCard : UserControl
     private HabitTodayItem? _item;
     private Windows.Foundation.Point _lastPointer;
     private bool _wasDone;
+    private bool _attached;
 
     public HabitCard()
     {
@@ -111,6 +112,12 @@ public sealed class HabitCard : UserControl
 
         ContextFlyout = new MenuFlyout();
         ((MenuFlyout)ContextFlyout).Opening += (_, _) => BuildMenu((MenuFlyout)ContextFlyout);
+        Loaded += (_, _) =>
+        {
+            Attach();
+            _wasDone = _item?.IsDone ?? false;
+            Refresh(animate: false); // bắt kịp mọi thay đổi xảy ra khi thẻ không hiển thị
+        };
         Unloaded += (_, _) => Detach();
     }
 
@@ -119,6 +126,12 @@ public sealed class HabitCard : UserControl
         get => (HabitTodayItem?)GetValue(ItemProperty);
         set => SetValue(ItemProperty, value);
     }
+
+    /// <summary>Thẻ đang hiển thị trạng thái "xong" (nền gradient đã phủ). Dùng để smoke test đối chiếu giao diện với ViewModel.</summary>
+    public bool IsShowingDone => _fill.Opacity > 0.5;
+
+    /// <summary>Dòng phụ đang hiển thị trên thẻ.</summary>
+    public string DisplayedSubText => _sub.Text;
 
     /// <summary>Kích hoạt như người dùng bấm (smoke test, trợ năng).</summary>
     public Task PerformClickAsync()
@@ -142,17 +155,37 @@ public sealed class HabitCard : UserControl
             return;
         }
 
-        item.PropertyChanged += OnItemPropertyChanged;
         _wasDone = item.IsDone;
+
+        // Chỉ đăng ký khi đang nằm trên cây giao diện; Loaded sẽ đăng ký lại sau khi trang được hiển thị lại
+        // (trang được cache, ItemsRepeater tái sử dụng phần tử) nên thẻ không bao giờ bị "mất kết nối" với dữ liệu.
+        if (IsLoaded)
+        {
+            Attach();
+        }
+
         Refresh(animate: false);
+    }
+
+    private void Attach()
+    {
+        if (_item is null || _attached)
+        {
+            return;
+        }
+
+        _item.PropertyChanged += OnItemPropertyChanged;
+        _attached = true;
     }
 
     private void Detach()
     {
-        if (_item is not null)
+        if (_item is not null && _attached)
         {
             _item.PropertyChanged -= OnItemPropertyChanged;
         }
+
+        _attached = false;
     }
 
     private void OnItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
