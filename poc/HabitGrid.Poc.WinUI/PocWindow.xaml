@@ -1,0 +1,13 @@
+<Window x:Class="HabitGrid.Poc.WinUI.PocWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid x:Name="Root" Background="#CC1C1C22" Padding="12">
+        <StackPanel Spacing="8">
+            <TextBlock Text="HabitGrid POC-V2 (WinUI 3)" FontSize="18" Foreground="White" />
+            <TextBlock x:Name="StatusText" Foreground="#A9A9B8" Text="..." />
+            <Button x:Name="ClickButton" Content="Click test: 0" Click="OnClick" />
+            <Button Content="Re-pin" Click="OnRepin" />
+            <Button Content="Close" Click="OnClose" />
+        </StackPanel>
+    </Grid>
+</Window>
