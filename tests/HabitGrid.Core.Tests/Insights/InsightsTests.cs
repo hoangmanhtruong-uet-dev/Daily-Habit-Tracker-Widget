@@ -30,6 +30,22 @@ public class InsightsCalculatorTests
     }
 
     [Fact]
+    public void TodayPending_DoesNotCountAsAMiss_ButTodayDoneCounts()
+    {
+        var done = NewHabit(start: Today.AddDays(-30));
+        var pending = NewHabit(start: Today.AddDays(-30));
+        var logs = new List<DayLog>();
+        logs.AddRange(DoneRange(done, Today.AddDays(-9), Today));
+        logs.AddRange(DoneRange(pending, Today.AddDays(-9), Today.AddDays(-1)));
+
+        var report = InsightsCalculator.Build([done, pending], logs, Today, Today.AddDays(-9));
+
+        report.Habits.Should().OnlyContain(h => h.Rate == 1, "hôm nay chưa xong không phải là lỡ");
+        report.OverallRate.Should().Be(1);
+        report.Weekdays.Single(w => w.Day == Today.DayOfWeek).Rate.Should().Be(1);
+    }
+
+    [Fact]
     public void WeeklyTrend_HasMovingAverageOverUpTo4Weeks()
     {
         var h = NewHabit(start: Today.AddDays(-100));

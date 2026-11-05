@@ -56,3 +56,9 @@ Bản v1 có 207 unit test pass nhưng app sập ngay khi mở vì: (1) markup e
 - [ ] Narrator đọc được trang Hôm nay và widget
 - [ ] WACK pass
 - [ ] Ghi chú phát hành VI/EN
+
+## Tiến độ triển khai (06/11/2026)
+- **Báo lỗi cục bộ**: mọi ngoại lệ không bắt được (UI, AppDomain, lỗi khởi động) ghi một file `crash-*.txt` trong thư mục log (phiên bản app, hệ điều hành, nơi xảy ra, ngoại lệ, 40 dòng log gần nhất; giữ 20 file). Lần mở sau app hỏi một lần, cho mở thư mục hoặc sao chép nội dung để người dùng **tự gửi** — chưa có Sentry/máy chủ nên không tải gì lên. Cài đặt → Hỗ trợ: phiên bản + mở thư mục log.
+- **Trợ năng tự động trong smoke test**: duyệt cây giao diện 6 trang (Hôm nay, Thói quen, Chi tiết, Insights, Buddy, Cài đặt), mọi control tương tác đang hiện phải có tên cho trình đọc màn hình; lần chạy đầu bắt được 5 nút thiếu tên (đã sửa). Test độ tương phản token màu đã có từ R5.
+- **Windows 10/11**: thêm khai báo `supportedOS` vào manifest (thiếu thì một số API báo sai phiên bản). App yêu cầu tối thiểu Windows 10 2004 (19041).
+- **Chưa kiểm được trên CI**: Narrator bằng tai người, DPI cao/nhiều màn hình, Windows 10 (GitHub Actions không còn máy Win10) → xem `QA-CHECKLIST-v2.0.md`. Telemetry sản phẩm opt-in, FlaUI trên bản MSIX, visual diff hằng đêm, WACK: chưa làm.

@@ -19,7 +19,7 @@ namespace HabitGrid.WinUI.Pages;
 /// </summary>
 public sealed partial class InsightsPage : Page
 {
-    private readonly StackPanel _root = new() { Spacing = 16, Padding = new Thickness(36, 28, 36, 32), MaxWidth = 1100, HorizontalAlignment = HorizontalAlignment.Left };
+    private readonly StackPanel _root = new() { Spacing = 16, Padding = new Thickness(36, 28, 36, 32), MaxWidth = 1100, HorizontalAlignment = HorizontalAlignment.Stretch };
 
     public InsightsPage()
     {

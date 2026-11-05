@@ -75,6 +75,10 @@ public static class InsightsCalculator
         var inRange = logs.Where(l => l.Day >= from && l.Day <= to && tracked.Any(h => h.Id == l.HabitId)).ToList();
         var latest = Latest(inRange);
 
+        // Hôm nay chưa kết thúc: chỉ tính khi đã xong, không coi "chưa làm" là lỡ (tránh tỷ lệ tụt vô lý buổi sáng).
+        DateOnly EndFor(Habit h) =>
+            latest.TryGetValue((h.Id, today), out var log) && log.Status == DayStatus.Done ? today : today.AddDays(-1);
+
         // Từng thói quen.
         var rows = new List<HabitInsightRow>();
 
@@ -92,7 +96,7 @@ public static class InsightsCalculator
                 habit.ColorHue,
                 habit.Kind,
                 habit.Target.Unit,
-                stats.CompletionRate(habit, mine, from, to),
+                stats.CompletionRate(habit, mine, from, EndFor(habit)),
                 streak.Current,
                 streak.Best,
                 streak.Unit,
@@ -114,7 +118,7 @@ public static class InsightsCalculator
             var weekFrom = week < from ? from : week;
             var weekTo = week.AddDays(6) > to ? to : week.AddDays(6);
             var rates = tracked.Where(h => h.Kind != HabitKind.Quit)
-                .Select(h => stats.CompletionRate(h, LogsOf(h), weekFrom, weekTo))
+                .Select(h => stats.CompletionRate(h, LogsOf(h), weekFrom, weekTo > EndFor(h) ? EndFor(h) : weekTo))
                 .Where(r => r is not null)
                 .Select(r => r!.Value)
                 .ToList();
@@ -136,7 +140,7 @@ public static class InsightsCalculator
             latest.Values.Count(l => l.Status == DayStatus.Done && tracked.First(h => h.Id == l.HabitId).Kind != HabitKind.Quit),
             rows.Select(r => r.BestStreak).DefaultIfEmpty(0).Max(),
             weeks,
-            Weekdays(tracked, latest, from, to, schedule),
+            Weekdays(tracked, latest, from, to, today, schedule),
             stats.CheckInsByHour(latest.Values.ToList()),
             rows,
             Mood(latest.Values.ToList()));
@@ -186,6 +190,7 @@ public static class InsightsCalculator
         IReadOnlyDictionary<(Guid HabitId, DateOnly Day), DayLog> latest,
         DateOnly from,
         DateOnly to,
+        DateOnly today,
         IScheduleCalculator schedule)
     {
         var done = new int[7];
@@ -202,7 +207,7 @@ public static class InsightsCalculator
 
                 var status = latest.TryGetValue((habit.Id, day), out var log) ? log.Status : DayStatus.None;
 
-                if (status is DayStatus.Skipped or DayStatus.Frozen)
+                if (status is DayStatus.Skipped or DayStatus.Frozen || (day == today && status != DayStatus.Done))
                 {
                     continue;
                 }
