@@ -151,7 +151,8 @@ public sealed class AppHost : IDisposable
         // Ngôn ngữ: theo cài đặt đã lưu, nếu chưa có thì theo ngôn ngữ giao diện của Windows.
         var savedLanguage = await settings.GetAsync(SettingKeys.Language);
         localizer.SetLanguage(savedLanguage ?? (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "vi" ? "vi" : "en"));
-        var entitlements = new FreeEntitlements();
+        // Quyền "sống": Free cho tới khi PlusService xác minh được Plus (từ cache offline hoặc Store).
+        var entitlements = new HabitGrid.Core.Domain.Monetization.LiveEntitlements();
         var dayStartHour = int.TryParse(await settings.GetAsync(SettingKeys.DayStartHour), NumberStyles.Integer, CultureInfo.InvariantCulture, out var hour)
             ? Math.Clamp(hour, 0, 5)
             : 0;
@@ -172,6 +173,15 @@ public sealed class AppHost : IDisposable
         services.AddSingleton<ISettingsStore>(settings);
         services.AddSingleton(new ThemeService(settings));
         services.AddSingleton<IEntitlements>(entitlements);
+        services.AddSingleton(entitlements);
+        services.AddSingleton<HabitGrid.Core.Domain.Monetization.IPlusStore>(_ => CreatePlusStore());
+        services.AddSingleton<ILicenseCache>(_ => new Plus.DpapiLicenseCache(Path.Combine(AppPaths.DataDir, ".plus.dat")));
+        services.AddSingleton<PlusService>(sp => new PlusService(
+            sp.GetRequiredService<HabitGrid.Core.Domain.Monetization.IPlusStore>(),
+            sp.GetRequiredService<ILicenseCache>(),
+            entitlements,
+            sp.GetRequiredService<ISettingsStore>(),
+            sp.GetRequiredService<IHabitRepository>()));
         services.AddSingleton<IDayProvider>(_ => new DayProvider(TimeSpan.FromHours(dayStartHour)));
         services.AddSingleton<IStreakCalculator>(new StreakCalculator());
         services.AddSingleton<IStatsCalculator>(new StatsCalculator());
@@ -212,7 +222,10 @@ public sealed class AppHost : IDisposable
             sp.GetRequiredService<IDataChangeBus>(),
             sp.GetRequiredService<IUiDispatcher>(),
             sp.GetRequiredService<IAppLogger>(),
-            sp.GetRequiredService<IProfileRepository>()));
+            sp.GetRequiredService<IProfileRepository>())
+        {
+            Settings = sp.GetRequiredService<ISettingsStore>()
+        });
         services.AddSingleton<HabitsViewModel>(sp => new HabitsViewModel(
             sp.GetRequiredService<IHabitRepository>(),
             sp.GetRequiredService<IDayLogRepository>(),
@@ -234,6 +247,18 @@ public sealed class AppHost : IDisposable
     }
 
     public T Get<T>() where T : notnull => Services.GetRequiredService<T>();
+
+    /// <summary>Store thật (chỉ chạy khi app có danh tính gói MSIX). Bản Debug có Store giả nếu đặt HABITGRID_FAKE_STORE=1.</summary>
+    private static HabitGrid.Core.Domain.Monetization.IPlusStore CreatePlusStore()
+    {
+#if DEBUG
+        if (Environment.GetEnvironmentVariable("HABITGRID_FAKE_STORE") == "1")
+        {
+            return new Plus.DebugFakePlusStore();
+        }
+#endif
+        return new Plus.WindowsPlusStore();
+    }
 
     public void Dispose() => Services.Dispose();
 

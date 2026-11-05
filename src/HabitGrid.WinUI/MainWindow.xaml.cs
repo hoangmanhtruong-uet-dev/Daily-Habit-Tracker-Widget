@@ -60,6 +60,7 @@ public sealed partial class MainWindow : Window
     {
         await _theme.LoadAsync();
         _theme.Apply(Root);
+        await InitializePlusAsync();
 
         var needed = await OnboardingViewModel.IsNeededAsync(
             App.Host.Get<ISettingsStore>(),
@@ -79,6 +80,7 @@ public sealed partial class MainWindow : Window
         {
             Navigate(PageKeys.Today);
             _ = _gamification.StartAsync();
+            _ = AskToChooseRunningIfNeededAsync();
         }
     }
 

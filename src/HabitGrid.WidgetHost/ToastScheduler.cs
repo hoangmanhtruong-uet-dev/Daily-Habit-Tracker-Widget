@@ -60,6 +60,9 @@ public sealed class ToastScheduler
                 logs.AddRange(await _logs.GetAllForHabitAsync(habit.Id));
             }
 
+            // Thói quen chỉ đọc (vượt giới hạn Free) không được nhắc.
+            var readOnly = await ReadOnlyHabits.LoadAsync(_settings);
+            habits = habits.Where(h => !readOnly.Contains(h.Id)).ToList();
             var enabled = await ReminderSettingsStore.RemindersEnabledAsync(_settings);
             var settings = await ReminderSettingsStore.LoadAsync(_settings);
             var plan = enabled ? ReminderPlanner.Plan(habits, logs, nowLocal, settings) : [];
@@ -162,7 +165,8 @@ public sealed class ToastScheduler
 
     private async Task MarkDoneAsync(Guid id, DateOnly day)
     {
-        if (await _habits.GetByIdAsync(id) is not { DeletedAt: null } habit || habit.Kind == HabitKind.Quit)
+        if (await _habits.GetByIdAsync(id) is not { DeletedAt: null } habit || habit.Kind == HabitKind.Quit
+            || (await ReadOnlyHabits.LoadAsync(_settings)).Contains(id))
         {
             return;
         }
@@ -188,7 +192,8 @@ public sealed class ToastScheduler
 
     private async Task AddOneAsync(Guid id, DateOnly day)
     {
-        if (await _habits.GetByIdAsync(id) is not { DeletedAt: null } habit || habit.Kind == HabitKind.Quit)
+        if (await _habits.GetByIdAsync(id) is not { DeletedAt: null } habit || habit.Kind == HabitKind.Quit
+            || (await ReadOnlyHabits.LoadAsync(_settings)).Contains(id))
         {
             return;
         }

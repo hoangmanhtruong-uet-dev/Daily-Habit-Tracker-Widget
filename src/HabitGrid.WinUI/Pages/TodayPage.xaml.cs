@@ -154,7 +154,7 @@ public sealed partial class TodayPage : Page
         }
 
         // Mã lỗi nghiệp vụ được dịch; lỗi hệ thống hiện thông điệp chung.
-        ErrorBar.Message = message == "skip.limit" ? Ui.T("skip.limit") : Ui.T("error.generic");
+        ErrorBar.Message = message is "skip.limit" or "plan.readonly" ? Ui.T(message) : Ui.T("error.generic");
         ErrorBar.IsOpen = true;
     }
 

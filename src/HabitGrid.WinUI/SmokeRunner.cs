@@ -53,6 +53,7 @@ public static class SmokeRunner
             await DetailJourneyAsync(window, logger);
             await BuddyJourneyAsync(window, logger, () => celebrations);
             await ShortcutsJourneyAsync(window, logger);
+            await PlusJourneyAsync(window, logger);
 
             // Mọi theme × sáng/tối phải dựng được (ảnh để duyệt giao diện).
             var variants = new (ThemeDefinition Theme, ThemeMode Mode, string Name)[]
@@ -347,6 +348,28 @@ public static class SmokeRunner
         Require(Ui.T("settings.title") == before, "Không trả lại được ngôn ngữ ban đầu.");
 
         logger.Info("SMOKE settings OK");
+    }
+
+    private static async Task PlusJourneyAsync(MainWindow window, IAppLogger logger)
+    {
+        var plus = App.Host.Get<PlusService>();
+        Require(!plus.StoreAvailable, "Bản không đóng gói không được coi là có Microsoft Store.");
+        Require(!plus.Status.IsPlus, "Bản không có Store không được tự có Plus.");
+        Require(App.Host.Get<IEntitlements>().MaxActiveHabits == FreeEntitlements.FreeMaxActiveHabits, "Gói Free phải giới hạn 5 thói quen.");
+
+        var root = window.Content.XamlRoot;
+        var showing = HabitGrid.WinUI.Plus.PaywallDialog.ShowAsync(root, PaywallSource.Settings);
+        await Task.Delay(1000);
+
+        var dialog = VisualTreeHelper.GetOpenPopupsForXamlRoot(root).Select(p => p.Child).OfType<ContentDialog>().FirstOrDefault()
+                     ?? throw new InvalidOperationException("Paywall không mở được.");
+        var buyButtons = FindAll<Button>(dialog).Where(b => Equals(b.Content, Ui.T("plus.buy"))).ToList();
+        Require(buyButtons.Count == 3, $"Paywall phải có 3 gói, thấy {buyButtons.Count}.");
+        Require(buyButtons.All(b => !b.IsEnabled), "Không có Store mà nút Mua vẫn bấm được.");
+
+        dialog.Hide();
+        Require(!await showing, "Đóng paywall mà lại có Plus.");
+        logger.Info("SMOKE plus OK (free, no store, paywall builds, buy disabled)");
     }
 
     private static async Task ShortcutsJourneyAsync(MainWindow window, IAppLogger logger)

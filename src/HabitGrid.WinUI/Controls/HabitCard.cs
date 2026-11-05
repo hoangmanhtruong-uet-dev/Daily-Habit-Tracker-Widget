@@ -234,7 +234,7 @@ public sealed class HabitCard : UserControl
         _idle.BorderBrush = Ui.GradientBrush(stops, 0.55);
         _fill.Background = gradient;
         _scrim.Opacity = done ? stops.ScrimOpacity : 0;
-        Opacity = skipped ? 0.6 : 1;
+        Opacity = item.IsReadOnly ? 0.5 : skipped ? 0.6 : 1;
 
         var textBrush = done ? (Brush)Application.Current.Resources["OnGradientBrush"] : (Brush)Application.Current.Resources["TextPrimaryBrush"];
         var subBrush = done ? new SolidColorBrush(Windows.UI.Color.FromArgb(220, 255, 255, 255)) : (Brush)Application.Current.Resources["TextSecondaryBrush"];
@@ -245,6 +245,10 @@ public sealed class HabitCard : UserControl
         if (done)
         {
             Badge("✓  " + Ui.T("today.state.done"), new SolidColorBrush(Windows.UI.Color.FromArgb(70, 255, 255, 255)), Microsoft.UI.Colors.White);
+        }
+        else if (item.IsReadOnly)
+        {
+            Badge(Ui.T("today.state.readonly"), (Brush)Application.Current.Resources["Surface2Brush"], Ui.ParseColor("#B4B4C6"));
         }
         else if (skipped)
         {

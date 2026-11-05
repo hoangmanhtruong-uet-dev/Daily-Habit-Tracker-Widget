@@ -40,6 +40,9 @@ public sealed partial class HabitEditorView : UserControl
     /// <summary>Thói quen vừa lưu thành công.</summary>
     public Habit? Saved { get; private set; }
 
+    /// <summary>Lần lưu gần nhất bị chặn vì chạm giới hạn gói Free (để mở paywall sau khi đóng hộp thoại).</summary>
+    public bool HitLimit { get; private set; }
+
     /// <summary>Lưu qua ViewModel; hiện lỗi (đã dịch) ngay trong hộp thoại nếu không hợp lệ.</summary>
     public async Task<bool> TrySaveAsync()
     {
@@ -52,6 +55,7 @@ public sealed partial class HabitEditorView : UserControl
             return true;
         }
 
+        HitLimit = result.Errors.Any(e => e.Code == "limit.habits");
         ErrorText.Text = string.Join(" ", result.Errors.Select(e => ValidationText.For(Ui.Loc, e)).Distinct());
         ErrorText.Visibility = Visibility.Visible;
         return false;

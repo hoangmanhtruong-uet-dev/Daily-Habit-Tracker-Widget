@@ -318,4 +318,52 @@
   <data name="settings.hotkey.registered" xml:space="preserve"><value>In use: {0}</value></data>
   <data name="settings.hotkey.none" xml:space="preserve"><value>Not registered (widgets not running or the key is taken)</value></data>
   <data name="settings.shortcuts.inapp" xml:space="preserve"><value>In the app: Ctrl+K commands · Ctrl+N new habit · Ctrl+Z undo · Ctrl+, settings · 1–9 check on Today</value></data>
+  <data name="plus.name" xml:space="preserve"><value>HabitGrid Plus</value></data>
+  <data name="plus.tagline" xml:space="preserve"><value>More habits, more style, a cooler Buddy.</value></data>
+  <data name="plus.benefit.habits" xml:space="preserve"><value>Unlimited habits (Free: 5)</value></data>
+  <data name="plus.benefit.themes" xml:space="preserve"><value>Every color theme, including seasonal ones</value></data>
+  <data name="plus.benefit.freeze" xml:space="preserve"><value>Hold up to 5 freezes (Free: 3)</value></data>
+  <data name="plus.benefit.insights" xml:space="preserve"><value>Insights over your whole history, CSV export</value></data>
+  <data name="plus.benefit.sounds" xml:space="preserve"><value>Background sounds for Focus</value></data>
+  <data name="plus.benefit.support" xml:space="preserve"><value>Support an independent developer ❤</value></data>
+  <data name="plus.plan.monthly" xml:space="preserve"><value>Monthly</value></data>
+  <data name="plus.plan.yearly" xml:space="preserve"><value>Yearly</value></data>
+  <data name="plus.plan.lifetime" xml:space="preserve"><value>Lifetime</value></data>
+  <data name="plus.per.month" xml:space="preserve"><value>per month</value></data>
+  <data name="plus.per.year" xml:space="preserve"><value>per year</value></data>
+  <data name="plus.once" xml:space="preserve"><value>one-time</value></data>
+  <data name="plus.save" xml:space="preserve"><value>Save {0}%</value></data>
+  <data name="plus.trial" xml:space="preserve"><value>7-day free trial</value></data>
+  <data name="plus.buy" xml:space="preserve"><value>Choose this plan</value></data>
+  <data name="plus.restore" xml:space="preserve"><value>Restore purchases</value></data>
+  <data name="plus.close" xml:space="preserve"><value>Not now</value></data>
+  <data name="plus.terms" xml:space="preserve"><value>Monthly and yearly plans renew automatically until you cancel in your Microsoft account (account.microsoft.com → Services &amp; subscriptions). The 7-day trial is on the yearly plan only; cancel before it ends and you won't be charged.</value></data>
+  <data name="plus.reference" xml:space="preserve"><value>Reference prices; the real price in your currency appears in the Microsoft Store window.</value></data>
+  <data name="plus.nostore" xml:space="preserve"><value>Purchases are only available in the Microsoft Store version. This copy isn't linked to the Store, so it can't buy here.</value></data>
+  <data name="plus.msg.thanks" xml:space="preserve"><value>Thank you! Plus is unlocked 🎉</value></data>
+  <data name="plus.msg.network" xml:space="preserve"><value>Couldn't reach the Microsoft Store. Please try again later.</value></data>
+  <data name="plus.msg.nostore" xml:space="preserve"><value>This copy isn't linked to the Microsoft Store, so it can't make purchases.</value></data>
+  <data name="plus.msg.failed" xml:space="preserve"><value>The purchase couldn't be completed.</value></data>
+  <data name="plus.msg.restored" xml:space="preserve"><value>Plus restored.</value></data>
+  <data name="plus.msg.nothing" xml:space="preserve"><value>No Plus purchase was found on this Microsoft account.</value></data>
+  <data name="plus.reason.limit" xml:space="preserve"><value>The Free plan allows up to 5 running habits.</value></data>
+  <data name="plus.reason.theme" xml:space="preserve"><value>This theme is part of Plus (or unlocks at level {0}).</value></data>
+  <data name="settings.plus" xml:space="preserve"><value>HabitGrid Plus</value></data>
+  <data name="settings.plus.free" xml:space="preserve"><value>You're on the Free plan.</value></data>
+  <data name="settings.plus.active" xml:space="preserve"><value>Plus is active · {0}</value></data>
+  <data name="settings.plus.tier.Monthly" xml:space="preserve"><value>monthly</value></data>
+  <data name="settings.plus.tier.Yearly" xml:space="preserve"><value>yearly</value></data>
+  <data name="settings.plus.tier.Lifetime" xml:space="preserve"><value>lifetime</value></data>
+  <data name="settings.plus.tier.LegacyPro" xml:space="preserve"><value>lifetime (from Pro v1)</value></data>
+  <data name="settings.plus.recheck" xml:space="preserve"><value>It's been a while since we checked with the Microsoft Store. Connect to the internet and press Restore purchases.</value></data>
+  <data name="settings.plus.upgrade" xml:space="preserve"><value>Upgrade</value></data>
+  <data name="settings.plus.choose" xml:space="preserve"><value>Choose running habits</value></data>
+  <data name="theme.locked" xml:space="preserve"><value>🔒 Plus</value></data>
+  <data name="theme.locked.level" xml:space="preserve"><value>🔒 Plus · or level {0}</value></data>
+  <data name="plan.readonly" xml:space="preserve"><value>This habit is read-only (over the Free limit). Choose your running habits in Settings or upgrade to Plus.</value></data>
+  <data name="plan.choose.title" xml:space="preserve"><value>Choose {0} habits to keep running</value></data>
+  <data name="plan.choose.body" xml:space="preserve"><value>The Free plan allows up to {0} running habits. The others keep all their data and are only paused from check-ins. Upgrade again to continue as before.</value></data>
+  <data name="plan.choose.save" xml:space="preserve"><value>Save choice</value></data>
+  <data name="plan.choose.count" xml:space="preserve"><value>{0}/{1} selected</value></data>
+  <data name="today.state.readonly" xml:space="preserve"><value>🔒 Read-only</value></data>
 </root>

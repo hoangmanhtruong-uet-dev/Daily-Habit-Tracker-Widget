@@ -14,9 +14,11 @@ public sealed class FocusService
     private readonly IDayLogRepository _logs;
     private readonly IFocusRepository _focus;
     private readonly IDayProvider _days;
+    private readonly ISettingsStore? _settings;
 
-    public FocusService(IHabitRepository habits, IDayLogRepository logs, IFocusRepository focus, IDayProvider days)
+    public FocusService(IHabitRepository habits, IDayLogRepository logs, IFocusRepository focus, IDayProvider days, ISettingsStore? settings = null)
     {
+        _settings = settings;
         _habits = habits ?? throw new ArgumentNullException(nameof(habits));
         _logs = logs ?? throw new ArgumentNullException(nameof(logs));
         _focus = focus ?? throw new ArgumentNullException(nameof(focus));
@@ -43,7 +45,9 @@ public sealed class FocusService
         var record = new FocusRecord(Guid.CreateVersion7(), result.HabitId, result.StartedAtUtc, result.EndedAtUtc, result.Minutes, result.Mode);
         await _focus.AddAsync(record, ct);
 
-        if (result.HabitId is { } habitId && await _habits.GetByIdAsync(habitId, ct) is { Kind: HabitKind.Duration, DeletedAt: null } habit)
+        if (result.HabitId is { } habitId
+            && await _habits.GetByIdAsync(habitId, ct) is { Kind: HabitKind.Duration, DeletedAt: null } habit
+            && (_settings is null || !(await ReadOnlyHabits.LoadAsync(_settings, ct)).Contains(habitId)))
         {
             var day = _days.ToLogicalDate(result.EndedAtUtc.ToLocalTime());
             var existing = await _logs.GetAsync(habitId, day, ct);

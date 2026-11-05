@@ -22,6 +22,14 @@ public sealed class ThemeService
 
     public ThemeDefinition Theme { get; private set; } = Themes.CandyBento;
 
+    /// <summary>
+    /// Theme hiển thị thay thế khi theme đã chọn không còn quyền dùng (Plus hết hạn): hiện Candy Bento nhưng vẫn giữ lựa chọn
+    /// đã lưu để nâng cấp lại là dùng tiếp (SPEC-V2-10 §5).
+    /// </summary>
+    public ThemeDefinition? Override { get; set; }
+
+    public ThemeDefinition Effective => Override ?? Theme;
+
     public ThemeMode Mode { get; private set; } = ThemeMode.System;
 
     public ThemePalette Palette { get; private set; } = Themes.CandyBento.Dark!;
@@ -62,7 +70,7 @@ public sealed class ThemeService
 
     public void Apply(FrameworkElement? root)
     {
-        Palette = Theme.Resolve(Mode, SystemIsDark());
+        Palette = Effective.Resolve(Mode, SystemIsDark());
         var resources = Application.Current.Resources;
 
         void Set(string key, string hex)

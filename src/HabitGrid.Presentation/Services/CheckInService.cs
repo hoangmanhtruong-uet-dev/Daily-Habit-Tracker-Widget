@@ -10,9 +10,11 @@ public sealed class CheckInService
 {
     private readonly IHabitRepository _habits;
     private readonly IDayLogRepository _logs;
+    private readonly ISettingsStore? _settings;
 
-    public CheckInService(IHabitRepository habits, IDayLogRepository logs)
+    public CheckInService(IHabitRepository habits, IDayLogRepository logs, ISettingsStore? settings = null)
     {
+        _settings = settings;
         _habits = habits ?? throw new ArgumentNullException(nameof(habits));
         _logs = logs ?? throw new ArgumentNullException(nameof(logs));
     }
@@ -25,6 +27,12 @@ public sealed class CheckInService
         if (habit is null || habit.DeletedAt is not null || habit.Kind == HabitKind.Quit || day < habit.StartDate)
         {
             return null;
+        }
+
+        // Thói quen chỉ đọc sau khi hạ cấp: không ghi gì (dữ liệu cũ giữ nguyên).
+        if (_settings is not null && (await ReadOnlyHabits.LoadAsync(_settings, ct)).Contains(habitId))
+        {
+            return await _logs.GetAsync(habitId, day, ct);
         }
 
         var existing = await _logs.GetAsync(habitId, day, ct);
