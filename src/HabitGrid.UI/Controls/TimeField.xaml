@@ -1,0 +1,14 @@
+<UserControl x:Class="HabitGrid.UI.Controls.TimeField"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Orientation="Horizontal">
+        <TextBox x:Name="TimeText"
+                 Width="70"
+                 VerticalContentAlignment="Center"
+                 TextChanged="OnTimeTextChanged"
+                 ToolTip="Định dạng HH:mm" />
+
+        <Button Content="▲" Width="28" Margin="4,0,0,0" Click="OnIncreaseClick" ToolTip="Tăng 30 phút" />
+        <Button Content="▼" Width="28" Margin="4,0,0,0" Click="OnDecreaseClick" ToolTip="Giảm 30 phút" />
+    </StackPanel>
+</UserControl>

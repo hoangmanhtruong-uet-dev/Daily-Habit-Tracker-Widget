@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <data name="app.name" xml:space="preserve">
+    <value>HabitGrid</value>
+  </data>
+  <data name="app.tagline" xml:space="preserve">
+    <value>Minimal habit tracking right on your Windows desktop.</value>
+  </data>
+
+  <data name="habit.add" xml:space="preserve">
+    <value>Add habit</value>
+  </data>
+  <data name="habit.edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="habit.archive" xml:space="preserve">
+    <value>Archive</value>
+  </data>
+  <data name="habit.restore" xml:space="preserve">
+    <value>Restore</value>
+  </data>
+  <data name="habit.delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="habit.today" xml:space="preserve">
+    <value>Mark today</value>
+  </data>
+  <data name="habit.name" xml:space="preserve">
+    <value>Habit name</value>
+  </data>
+  <data name="habit.nameHint" xml:space="preserve">
+    <value>Up to 40 characters</value>
+  </data>
+  <data name="habit.icon" xml:space="preserve">
+    <value>Icon</value>
+  </data>
+  <data name="habit.kind" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="habit.kind.boolean" xml:space="preserve">
+    <value>Yes / No</value>
+  </data>
+  <data name="habit.kind.count" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="habit.target" xml:space="preserve">
+    <value>Daily target</value>
+  </data>
+  <data name="habit.schedule" xml:space="preserve">
+    <value>Weekly schedule</value>
+  </data>
+  <data name="habit.palette" xml:space="preserve">
+    <value>Heatmap palette</value>
+  </data>
+  <data name="habit.paletteProHint" xml:space="preserve">
+    <value>Custom colours are a Pro feature.</value>
+  </data>
+  <data name="habit.reminder" xml:space="preserve">
+    <value>Daily reminder</value>
+  </data>
+  <data name="habit.reminderTime" xml:space="preserve">
+    <value>Remind me at</value>
+  </data>
+  <data name="habit.locked" xml:space="preserve">
+    <value>Unlock Pro to edit this habit</value>
+  </data>
+  <data name="habit.deleteConfirm" xml:space="preserve">
+    <value>Press again to confirm deleting this habit.</value>
+  </data>
+
+  <data name="streak.current" xml:space="preserve">
+    <value>Current streak</value>
+  </data>
+  <data name="streak.longest" xml:space="preserve">
+    <value>Longest streak</value>
+  </data>
+  <data name="streak.none" xml:space="preserve">
+    <value>No streak yet</value>
+  </data>
+  <data name="rate.30days" xml:space="preserve">
+    <value>30-day rate</value>
+  </data>
+  <data name="total.completed" xml:space="preserve">
+    <value>Total completed</value>
+  </data>
+
+  <data name="nav.habits" xml:space="preserve">
+    <value>Habits</value>
+  </data>
+  <data name="nav.settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="empty.title" xml:space="preserve">
+    <value>No habits yet.</value>
+  </data>
+  <data name="empty.hint" xml:space="preserve">
+    <value>Click “Add habit” to get started.</value>
+  </data>
+  <data name="dashboard.history" xml:space="preserve">
+    <value>52-week history — click a cell to edit</value>
+  </data>
+  <data name="dashboard.monthly" xml:space="preserve">
+    <value>Completion rate over 12 months</value>
+  </data>
+
+  <data name="settings.title" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="settings.general" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="settings.appearance" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="settings.widget" xml:space="preserve">
+    <value>Desktop widget</value>
+  </data>
+  <data name="settings.data" xml:space="preserve">
+    <value>Data &amp; backup</value>
+  </data>
+  <data name="settings.license" xml:space="preserve">
+    <value>Licence</value>
+  </data>
+  <data name="settings.about" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="settings.language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="settings.language.vi" xml:space="preserve">
+    <value>Tiếng Việt</value>
+  </data>
+  <data name="settings.language.en" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="settings.weekStart" xml:space="preserve">
+    <value>Week starts on</value>
+  </data>
+  <data name="settings.weekStart.monday" xml:space="preserve">
+    <value>Monday</value>
+  </data>
+  <data name="settings.weekStart.sunday" xml:space="preserve">
+    <value>Sunday</value>
+  </data>
+  <data name="settings.dayCutoff" xml:space="preserve">
+    <value>Logical day cutoff</value>
+  </data>
+  <data name="settings.dayCutoff.hint" xml:space="preserve">
+    <value>After this hour the day still counts as the previous one.</value>
+  </data>
+  <data name="settings.runAtStartup" xml:space="preserve">
+    <value>Start with Windows</value>
+  </data>
+  <data name="settings.theme" xml:space="preserve">
+    <value>Colour mode</value>
+  </data>
+  <data name="settings.theme.system" xml:space="preserve">
+    <value>Follow system</value>
+  </data>
+  <data name="settings.theme.light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="settings.theme.dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="settings.backgroundStyle" xml:space="preserve">
+    <value>Widget background</value>
+  </data>
+  <data name="settings.background.acrylic" xml:space="preserve">
+    <value>Acrylic (translucent)</value>
+  </data>
+  <data name="settings.background.solid" xml:space="preserve">
+    <value>Solid</value>
+  </data>
+  <data name="settings.background.none" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="settings.opacity" xml:space="preserve">
+    <value>Background opacity</value>
+  </data>
+  <data name="settings.cornerRadius" xml:space="preserve">
+    <value>Widget corner radius</value>
+  </data>
+  <data name="settings.pinning" xml:space="preserve">
+    <value>Pinning mode</value>
+  </data>
+  <data name="settings.pinning.desktopLevel" xml:space="preserve">
+    <value>Desktop-level (on the wallpaper)</value>
+  </data>
+  <data name="settings.pinning.bottomMost" xml:space="preserve">
+    <value>Bottom-most (safe)</value>
+ </data>
+  <data name="settings.pinning.alwaysOnTop" xml:space="preserve">
+    <value>Always on top</value>
+  </data>
+  <data name="settings.defaultSize" xml:space="preserve">
+    <value>Default size</value>
+  </data>
+  <data name="settings.size.small" xml:space="preserve">
+    <value>Small (13 weeks)</value>
+  </data>
+  <data name="settings.size.medium" xml:space="preserve">
+    <value>Medium (26 weeks)</value>
+  </data>
+  <data name="settings.size.large" xml:space="preserve">
+    <value>Large (52 weeks)</value>
+  </data>
+  <data name="settings.editMode" xml:space="preserve">
+    <value>Edit mode</value>
+  </data>
+  <data name="settings.resetPositions" xml:space="preserve">
+    <value>Reset widget positions</value>
+  </data>
+  <data name="settings.dataFolder" xml:space="preserve">
+    <value>Open data folder</value>
+  </data>
+  <data name="settings.dataHint" xml:space="preserve">
+    <value>Your data is stored safely 100% offline on this computer at: %LocalAppData%\HabitGrid</value>
+  </data>
+  <data name="settings.exportJson" xml:space="preserve">
+    <value>Export backup (JSON)</value>
+  </data>
+  <data name="settings.exportCsv" xml:space="preserve">
+    <value>Export spreadsheet (CSV)</value>
+  </data>
+  <data name="settings.importJson" xml:space="preserve">
+    <value>Import backup (JSON)</value>
+  </data>
+  <data name="settings.license.free" xml:space="preserve">
+    <value>Free plan (2 habits)</value>
+  </data>
+  <data name="settings.license.pro" xml:space="preserve">
+    <value>Pro plan (lifetime)</value>
+  </data>
+  <data name="settings.upgrade" xml:space="preserve">
+    <value>Unlock Pro</value>
+  </data>
+  <data name="settings.restorePurchase" xml:space="preserve">
+    <value>Restore purchase</value>
+  </data>
+  <data name="settings.version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="settings.copyVersion" xml:space="preserve">
+    <value>Copy version info</value>
+  </data>
+  <data name="settings.privacy" xml:space="preserve">
+    <value>Privacy policy</value>
+  </data>
+  <data name="settings.support" xml:space="preserve">
+    <value>Support</value>
+  </data>
+
+  <data name="pro.title" xml:space="preserve">
+    <value>Unlock all of HabitGrid</value>
+  </data>
+  <data name="pro.benefit1" xml:space="preserve">
+    <value>Unlimited habits</value>
+  </data>
+  <data name="pro.benefit2" xml:space="preserve">
+    <value>Custom heatmap palettes</value>
+  </data>
+  <data name="pro.benefit3" xml:space="preserve">
+    <value>JSON &amp; CSV backup export / import</value>
+  </data>
+  <data name="pro.buy" xml:space="preserve">
+    <value>Unlock Pro</value>
+  </data>
+  <data name="pro.restore" xml:space="preserve">
+    <value>Restore purchase</value>
+  </data>
+  <data name="pro.price" xml:space="preserve">
+    <value>$4.99 — pay once, use forever</value>
+  </data>
+
+  <data name="toast.deleted" xml:space="preserve">
+    <value>Deleted habit “{0}”</value>
+  </data>
+  <data name="toast.undo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="toast.undone" xml:space="preserve">
+    <value>Restored habit “{0}”</value>
+  </data>
+  <data name="toast.committed" xml:space="preserve">
+    <value>Permanently deleted habit “{0}”</value>
+  </data>
+
+  <data name="onboarding.title" xml:space="preserve">
+    <value>Minimal habit tracking right on your Windows desktop.</value>
+  </data>
+  <data name="onboarding.subtitle" xml:space="preserve">
+    <value>Pick one habit to start — you can always add or edit later.</value>
+  </data>
+  <data name="onboarding.start" xml:space="preserve">
+    <value>Start now</value>
+  </data>
+  <data name="onboarding.custom" xml:space="preserve">
+    <value>Create my own habit</value>
+  </data>
+
+  <data name="edit.newTitle" xml:space="preserve">
+    <value>Add habit</value>
+  </data>
+  <data name="edit.editTitle" xml:space="preserve">
+    <value>Edit habit</value>
+  </data>
+  <data name="edit.save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="edit.cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+
+  <data name="common.ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="common.cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="common.close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="common.yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="common.later" xml:space="preserve">
+    <value>Later</value>
+  </data>
+
+  <data name="cell.accessibility" xml:space="preserve">
+    <value>{0}, status: {1}</value>
+  </data>
+  <data name="cell.completed" xml:space="preserve">
+    <value>Completed</value>
+  </data>
+  <data name="cell.notCompleted" xml:space="preserve">
+    <value>Not completed</value>
+  </data>
+  <data name="cell.future" xml:space="preserve">
+    <value>Future date</value>
+  </data>
+</root>

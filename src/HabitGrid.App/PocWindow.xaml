@@ -1,0 +1,175 @@
+<Window x:Class="HabitGrid.App.PocWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="HabitGrid — POC Ghim Widget Desktop"
+        Width="920"
+        Height="640"
+        MinWidth="760"
+        MinHeight="560"
+        WindowStartupLocation="CenterScreen"
+        Background="#F3F3F3">
+
+    <Window.Resources>
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="0,0,0,10" />
+            <Setter Property="Padding" Value="10" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+            <Setter Property="MinWidth" Value="120" />
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Margin" Value="0,4" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Tiêu đề -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,10">
+            <TextBlock Text="POC Ghim Widget Desktop" FontSize="20" FontWeight="SemiBold" />
+            <TextBlock x:Name="EnvironmentText"
+                       FontSize="11"
+                       Foreground="#666"
+                       TextWrapping="Wrap" />
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="380" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Cột trái: danh sách thói quen -->
+            <GroupBox Grid.Column="0" Header="Thói quen &amp; widget">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="HabitList">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <CheckBox Grid.Column="0"
+                                                  VerticalAlignment="Center"
+                                                  Checked="OnWidgetVisibilityChanged"
+                                                  Unchecked="OnWidgetVisibilityChanged"
+                                                  Tag="{Binding Id}" />
+
+                                        <TextBlock Grid.Column="1"
+                                                   Margin="8,0"
+                                                   VerticalAlignment="Center"
+                                                   Text="{Binding Name}" />
+
+                                        <ComboBox Grid.Column="2"
+                                                  Width="90"
+                                                  VerticalAlignment="Center"
+                                                  SelectionChanged="OnSizeChanged"
+                                                  Tag="{Binding Id}">
+                                            <ComboBoxItem Content="Nhỏ" Tag="0" />
+                                            <ComboBoxItem Content="Vừa" Tag="1" />
+                                            <ComboBoxItem Content="Lớn" Tag="2" />
+                                        </ComboBox>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,0">
+                        <Button Content="Tạo thói quen mẫu" Click="OnCreateDemoClick" />
+                        <Button Content="Tải lại" Click="OnReloadClick" />
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+
+            <!-- Cột phải: chế độ ghim + tiêu chí POC -->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <GroupBox Grid.Row="0" Header="Chế độ ghim">
+                    <StackPanel>
+                        <RadioButton x:Name="ModeDesktopLevel"
+                                     GroupName="PinningMode"
+                                     Content="1 — Desktop-level (WorkerW)"
+                                     IsChecked="True"
+                                     Margin="0,2"
+                                     Tag="0" />
+                        <RadioButton x:Name="ModeBottomMost"
+                                     GroupName="PinningMode"
+                                     Content="2 — Bottom-most (dự phòng)"
+                                     Margin="0,2"
+                                     Tag="1" />
+                        <RadioButton x:Name="ModeAlwaysOnTop"
+                                     GroupName="PinningMode"
+                                     Content="3 — Always-on-top"
+                                     Margin="0,2"
+                                     Tag="2" />
+
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                            <Button Content="Áp dụng" Click="OnApplyPinningClick" />
+                            <Button Content="Ghim lại" Click="OnReattachClick" />
+                        </StackPanel>
+
+                        <CheckBox x:Name="EditModeCheckBox"
+                                  Content="Chế độ chỉnh sửa (kéo &amp; căn chỉnh)"
+                                  Checked="OnEditModeChanged"
+                                  Unchecked="OnEditModeChanged"
+                                  Margin="0,8,0,0" />
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Grid.Row="1" Header="Trạng thái">
+                    <TextBlock x:Name="StatusText"
+                               TextWrapping="Wrap"
+                               MinHeight="34"
+                               Text="Chưa có trạng thái." />
+                </GroupBox>
+
+                <GroupBox Grid.Row="2" Header="7 tiêu chí POC (tự đánh dấu sau khi kiểm thử)">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <CheckBox x:Name="Criterion1" Tag="1" Content="1. Widget nằm trên hình nền, dưới cửa sổ khác" />
+                            <CheckBox x:Name="Criterion2" Tag="2" Content="2. Nhận được click / hover chính xác trên các ô" />
+                            <CheckBox x:Name="Criterion3" Tag="3" Content="3. Sống sót qua Win + D" />
+                            <CheckBox x:Name="Criterion4" Tag="4" Content="4. Tự ghim lại sau khi kill explorer.exe" />
+                            <CheckBox x:Name="Criterion5" Tag="5" Content="5. Đúng vị trí khi đổi DPI / đa màn hình" />
+                            <CheckBox x:Name="Criterion6" Tag="6" Content="6. Không hiện ở Alt+Tab / taskbar" />
+                            <CheckBox x:Name="Criterion7" Tag="7" Content="7. Không nhấp nháy, RAM &lt; 35MB" />
+
+                            <Button Content="Lưu báo cáo POC"
+                                    Margin="0,12,0,0"
+                                    Click="OnSaveReportClick" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </GroupBox>
+            </Grid>
+        </Grid>
+
+        <TextBlock Grid.Row="2"
+                   Margin="0,10,0,0"
+                   FontSize="11"
+                   Foreground="#666"
+                   Text="Kéo widget bằng vùng header. Vị trí được lưu tương đối theo màn hình nên không bị văng khi đổi độ phân giải." />
+    </Grid>
+</Window>

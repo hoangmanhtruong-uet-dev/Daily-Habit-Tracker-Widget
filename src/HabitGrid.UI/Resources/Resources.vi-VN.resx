@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <data name="app.name" xml:space="preserve">
+    <value>HabitGrid</value>
+  </data>
+  <data name="app.tagline" xml:space="preserve">
+    <value>Theo dõi thói quen tối giản ngay trên màn hình nền Windows của bạn.</value>
+  </data>
+
+  <data name="habit.add" xml:space="preserve">
+    <value>Thêm thói quen</value>
+  </data>
+  <data name="habit.edit" xml:space="preserve">
+    <value>Sửa</value>
+  </data>
+  <data name="habit.archive" xml:space="preserve">
+    <value>Lưu trữ</value>
+  </data>
+  <data name="habit.restore" xml:space="preserve">
+    <value>Khôi phục</value>
+  </data>
+  <data name="habit.delete" xml:space="preserve">
+    <value>Xóa</value>
+  </data>
+  <data name="habit.today" xml:space="preserve">
+    <value>Đánh dấu hôm nay</value>
+  </data>
+  <data name="habit.name" xml:space="preserve">
+    <value>Tên thói quen</value>
+  </data>
+  <data name="habit.nameHint" xml:space="preserve">
+    <value>Tối đa 40 ký tự</value>
+  </data>
+  <data name="habit.icon" xml:space="preserve">
+    <value>Biểu tượng</value>
+  </data>
+  <data name="habit.kind" xml:space="preserve">
+    <value>Loại</value>
+  </data>
+  <data name="habit.kind.boolean" xml:space="preserve">
+    <value>Đúng / Sai</value>
+  </data>
+  <data name="habit.kind.count" xml:space="preserve">
+    <value>Đếm số lượng</value>
+  </data>
+  <data name="habit.target" xml:space="preserve">
+    <value>Mục tiêu mỗi ngày</value>
+  </data>
+  <data name="habit.schedule" xml:space="preserve">
+    <value>Lịch lặp trong tuần</value>
+  </data>
+  <data name="habit.palette" xml:space="preserve">
+    <value>Bảng màu heatmap</value>
+  </data>
+  <data name="habit.paletteProHint" xml:space="preserve">
+    <value>Màu tùy chỉnh là tính năng Pro.</value>
+  </data>
+  <data name="habit.reminder" xml:space="preserve">
+    <value>Nhắc nhở hằng ngày</value>
+  </data>
+  <data name="habit.reminderTime" xml:space="preserve">
+    <value>Nhắc tôi vào lúc</value>
+  </data>
+  <data name="habit.locked" xml:space="preserve">
+    <value>Mở khóa Pro để chỉnh sửa thói quen này</value>
+  </data>
+  <data name="habit.deleteConfirm" xml:space="preserve">
+    <value>Nhấn lại để xác nhận xóa thói quen này.</value>
+  </data>
+
+  <data name="streak.current" xml:space="preserve">
+    <value>Chuỗi hiện tại</value>
+  </data>
+  <data name="streak.longest" xml:space="preserve">
+    <value>Kỷ lục</value>
+  </data>
+  <data name="streak.none" xml:space="preserve">
+    <value>Chưa có streak</value>
+  </data>
+  <data name="rate.30days" xml:space="preserve">
+    <value>Tỷ lệ 30 ngày</value>
+  </data>
+  <data name="total.completed" xml:space="preserve">
+    <value>Tổng hoàn thành</value>
+  </data>
+
+  <data name="nav.habits" xml:space="preserve">
+    <value>Thói quen</value>
+  </data>
+  <data name="nav.settings" xml:space="preserve">
+    <value>Cài đặt</value>
+  </data>
+  <data name="empty.title" xml:space="preserve">
+    <value>Chưa có thói quen nào.</value>
+  </data>
+  <data name="empty.hint" xml:space="preserve">
+    <value>Bấm “Thêm thói quen” để bắt đầu.</value>
+  </data>
+  <data name="dashboard.history" xml:space="preserve">
+    <value>Lịch sử 52 tuần — bấm vào ô để sửa dữ liệu</value>
+  </data>
+  <data name="dashboard.monthly" xml:space="preserve">
+    <value>Tỷ lệ hoàn thành 12 tháng</value>
+  </data>
+
+  <data name="settings.title" xml:space="preserve">
+    <value>Cài đặt</value>
+  </data>
+  <data name="settings.general" xml:space="preserve">
+    <value>Chung</value>
+  </data>
+  <data name="settings.appearance" xml:space="preserve">
+    <value>Giao diện</value>
+  </data>
+  <data name="settings.widget" xml:space="preserve">
+    <value>Widget trên desktop</value>
+  </data>
+  <data name="settings.data" xml:space="preserve">
+    <value>Dữ liệu &amp; sao lưu</value>
+  </data>
+  <data name="settings.license" xml:space="preserve">
+    <value>Giấy phép</value>
+  </data>
+  <data name="settings.about" xml:space="preserve">
+    <value>Giới thiệu</value>
+  </data>
+  <data name="settings.language" xml:space="preserve">
+    <value>Ngôn ngữ</value>
+  </data>
+  <data name="settings.language.vi" xml:space="preserve">
+    <value>Tiếng Việt</value>
+  </data>
+  <data name="settings.language.en" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="settings.weekStart" xml:space="preserve">
+    <value>Tuần bắt đầu từ</value>
+  </data>
+  <data name="settings.weekStart.monday" xml:space="preserve">
+    <value>Thứ Hai</value>
+  </data>
+  <data name="settings.weekStart.sunday" xml:space="preserve">
+    <value>Chủ Nhật</value>
+  </data>
+  <data name="settings.dayCutoff" xml:space="preserve">
+    <value>Mốc chuyển ngày mới</value>
+  </data>
+  <data name="settings.dayCutoff.hint" xml:space="preserve">
+    <value>Sau giờ này vẫn được tính là ngày hôm trước.</value>
+  </data>
+  <data name="settings.runAtStartup" xml:space="preserve">
+    <value>Khởi động cùng Windows</value>
+  </data>
+  <data name="settings.theme" xml:space="preserve">
+    <value>Chế độ màu</value>
+  </data>
+  <data name="settings.theme.system" xml:space="preserve">
+    <value>Theo hệ thống</value>
+  </data>
+  <data name="settings.theme.light" xml:space="preserve">
+    <value>Sáng</value>
+  </data>
+  <data name="settings.theme.dark" xml:space="preserve">
+    <value>Tối</value>
+  </data>
+  <data name="settings.backgroundStyle" xml:space="preserve">
+    <value>Kiểu nền widget</value>
+  </data>
+  <data name="settings.background.acrylic" xml:space="preserve">
+    <value>Acrylic (mờ trong suốt)</value>
+  </data>
+  <data name="settings.background.solid" xml:space="preserve">
+    <value>Đặc</value>
+  </data>
+  <data name="settings.background.none" xml:space="preserve">
+    <value>Không nền</value>
+  </data>
+  <data name="settings.opacity" xml:space="preserve">
+    <value>Độ mờ nền</value>
+  </data>
+  <data name="settings.cornerRadius" xml:space="preserve">
+    <value>Bo góc widget</value>
+  </data>
+  <data name="settings.pinning" xml:space="preserve">
+    <value>Chế độ ghim</value>
+  </data>
+  <data name="settings.pinning.desktopLevel" xml:space="preserve">
+    <value>Desktop-level (nằm trên hình nền)</value>
+  </data>
+  <data name="settings.pinning.bottomMost" xml:space="preserve">
+    <value>Dưới cùng (an toàn)</value>
+  </data>
+  <data name="settings.pinning.alwaysOnTop" xml:space="preserve">
+    <value>Luôn trên cùng</value>
+  </data>
+  <data name="settings.defaultSize" xml:space="preserve">
+    <value>Cỡ hiển thị mặc định</value>
+  </data>
+  <data name="settings.size.small" xml:space="preserve">
+    <value>Nhỏ (13 tuần)</value>
+  </data>
+  <data name="settings.size.medium" xml:space="preserve">
+    <value>Vừa (26 tuần)</value>
+  </data>
+  <data name="settings.size.large" xml:space="preserve">
+    <value>Lớn (52 tuần)</value>
+  </data>
+  <data name="settings.editMode" xml:space="preserve">
+    <value>Chế độ chỉnh sửa</value>
+  </data>
+  <data name="settings.resetPositions" xml:space="preserve">
+    <value>Đặt lại vị trí widget</value>
+  </data>
+  <data name="settings.dataFolder" xml:space="preserve">
+    <value>Mở thư mục dữ liệu</value>
+  </data>
+  <data name="settings.dataHint" xml:space="preserve">
+    <value>Dữ liệu của bạn được lưu trữ an toàn 100% ngoại tuyến trên máy tính này tại: %LocalAppData%\HabitGrid</value>
+  </data>
+  <data name="settings.exportJson" xml:space="preserve">
+    <value>Xuất file sao lưu (JSON)</value>
+  </data>
+  <data name="settings.exportCsv" xml:space="preserve">
+    <value>Xuất bảng tính (CSV)</value>
+  </data>
+  <data name="settings.importJson" xml:space="preserve">
+    <value>Nhập file sao lưu (JSON)</value>
+  </data>
+  <data name="settings.license.free" xml:space="preserve">
+    <value>Bản Free (2 thói quen)</value>
+  </data>
+  <data name="settings.license.pro" xml:space="preserve">
+    <value>Bản Pro vĩnh viễn</value>
+  </data>
+  <data name="settings.upgrade" xml:space="preserve">
+    <value>Mở khóa Pro</value>
+  </data>
+  <data name="settings.restorePurchase" xml:space="preserve">
+    <value>Khôi phục giao dịch</value>
+  </data>
+  <data name="settings.version" xml:space="preserve">
+    <value>Phiên bản</value>
+  </data>
+  <data name="settings.copyVersion" xml:space="preserve">
+    <value>Sao chép thông tin phiên bản</value>
+  </data>
+  <data name="settings.privacy" xml:space="preserve">
+    <value>Chính sách riêng tư</value>
+  </data>
+  <data name="settings.support" xml:space="preserve">
+    <value>Hỗ trợ</value>
+  </data>
+
+  <data name="pro.title" xml:space="preserve">
+    <value>Mở khóa toàn bộ HabitGrid</value>
+  </data>
+  <data name="pro.benefit1" xml:space="preserve">
+    <value>Không giới hạn số thói quen</value>
+  </data>
+  <data name="pro.benefit2" xml:space="preserve">
+    <value>Bảng màu heatmap tùy chỉnh theo ý bạn</value>
+  </data>
+  <data name="pro.benefit3" xml:space="preserve">
+    <value>Xuất / nhập sao lưu JSON &amp; CSV</value>
+  </data>
+  <data name="pro.buy" xml:space="preserve">
+    <value>Mở khóa Pro</value>
+  </data>
+  <data name="pro.restore" xml:space="preserve">
+    <value>Khôi phục giao dịch</value>
+  </data>
+  <data name="pro.price" xml:space="preserve">
+    <value>4,99 USD — mua một lần, dùng mãi mãi</value>
+  </data>
+
+  <data name="toast.deleted" xml:space="preserve">
+    <value>Đã xóa thói quen “{0}”</value>
+  </data>
+  <data name="toast.undo" xml:space="preserve">
+    <value>Hoàn tác</value>
+  </data>
+  <data name="toast.undone" xml:space="preserve">
+    <value>Đã khôi phục thói quen “{0}”</value>
+  </data>
+  <data name="toast.committed" xml:space="preserve">
+    <value>Đã xóa vĩnh viễn thói quen “{0}”</value>
+  </data>
+
+  <data name="onboarding.title" xml:space="preserve">
+    <value>Theo dõi thói quen tối giản ngay trên màn hình nền Windows của bạn.</value>
+  </data>
+  <data name="onboarding.subtitle" xml:space="preserve">
+    <value>Chọn một thói quen để bắt đầu — bạn luôn có thể thêm hoặc sửa sau.</value>
+  </data>
+  <data name="onboarding.start" xml:space="preserve">
+    <value>Bắt đầu ngay</value>
+  </data>
+  <data name="onboarding.custom" xml:space="preserve">
+    <value>Tự tạo thói quen riêng</value>
+  </data>
+
+  <data name="edit.newTitle" xml:space="preserve">
+    <value>Thêm thói quen</value>
+  </data>
+  <data name="edit.editTitle" xml:space="preserve">
+    <value>Sửa thói quen</value>
+  </data>
+  <data name="edit.save" xml:space="preserve">
+    <value>Lưu</value>
+  </data>
+  <data name="edit.cancel" xml:space="preserve">
+    <value>Hủy</value>
+  </data>
+
+  <data name="common.ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="common.cancel" xml:space="preserve">
+    <value>Hủy</value>
+  </data>
+  <data name="common.close" xml:space="preserve">
+    <value>Đóng</value>
+  </data>
+  <data name="common.yes" xml:space="preserve">
+    <value>Có</value>
+  </data>
+  <data name="common.later" xml:space="preserve">
+    <value>Để sau</value>
+  </data>
+
+  <data name="cell.accessibility" xml:space="preserve">
+    <value>Ngày {0}, trạng thái: {1}</value>
+  </data>
+  <data name="cell.completed" xml:space="preserve">
+    <value>Đã hoàn thành</value>
+  </data>
+  <data name="cell.notCompleted" xml:space="preserve">
+    <value>Chưa hoàn thành</value>
+  </data>
+  <data name="cell.future" xml:space="preserve">
+    <value>Ngày tương lai</value>
+  </data>
+</root>

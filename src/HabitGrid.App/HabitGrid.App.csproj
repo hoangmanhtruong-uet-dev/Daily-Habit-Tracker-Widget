@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>HabitGrid.App</RootNamespace>
+    <AssemblyName>HabitGrid.App</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HabitGrid.Core\HabitGrid.Core.csproj" />
+    <ProjectReference Include="..\HabitGrid.Data\HabitGrid.Data.csproj" />
+    <ProjectReference Include="..\HabitGrid.Platform\HabitGrid.Platform.csproj" />
+    <ProjectReference Include="..\HabitGrid.UI\HabitGrid.UI.csproj" />
+  </ItemGroup>
+
+</Project>

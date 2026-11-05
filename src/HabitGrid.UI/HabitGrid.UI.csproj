@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>HabitGrid.UI</RootNamespace>
+    <AssemblyName>HabitGrid.UI</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+    <PackageReference Include="WPF-UI" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Resource đa ngôn ngữ: Resources.resx là fallback (en-US), Resources.vi-VN.resx là bản dịch tiếng Việt -->
+    <EmbeddedResource Update="Resources\Resources.vi-VN.resx">
+      <DependentUpon>Resources.resx</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HabitGrid.Core\HabitGrid.Core.csproj" />
+    <ProjectReference Include="..\HabitGrid.Platform\HabitGrid.Platform.csproj" />
+
+  </ItemGroup>
+
+</Project>
