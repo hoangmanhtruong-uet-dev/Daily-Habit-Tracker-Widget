@@ -41,3 +41,28 @@ Ngân sách của SPEC-V2-05: 3 widget L + Today List < 60 MB, CPU nhàn rỗi <
 - **Quyết định:** WidgetHost v2.0 dùng WPF (đã ghi vào SPEC-V2-05 §1).
 - Core/Data/Platform/UI/App và 4 project test đã nâng lên **.NET 10**; 208 test pass; cảnh báo lỗ hổng SQLite (NU1903) đã xử lý bằng ghim `SQLitePCLRaw.lib.e_sqlite3` 2.1.14.
 - **Đo sơ bộ app v1 WPF (Debug, `--background`, 1 widget, cửa sổ chính dựng ẩn):** 156 MB working set / 91 MB private, CPU nhàn rỗi 0% trong 20 s. Đây là toàn bộ app, **không** đại diện cho WidgetHost. Cần đo lại khi `HabitGrid.WidgetHost` tồn tại (Release, chỉ widget, 3 widget L + Today List). Nếu vẫn > 60 MB thì cân nhắc phương án B.
+
+## Cập nhật 05/11/2026 (2) — đo WidgetHost WPF với 0/1/3/6 widget
+
+**Cách đo:** `tools/WidgetHostSpike` (WPF, Release, runtime .NET 10.0.14) dựng N widget v1 cỡ Large (52 tuần, 380 ngày dữ liệu giả), ghim DesktopLevel, lấy mẫu 5 s/lần trong 70 s. Chạy bằng `.github/workflows/widget-spike.yml` trên runner `windows-latest` (Windows 10.0.26100, 4 nhân). **Đây là máy CI, không phải máy người dùng**; cửa sổ không hiển thị trên một desktop thật nên chi phí vẽ/DWM không nằm trong số đo.
+
+| Cấu hình | Working set | Private | CPU nhàn rỗi (sau 15 s) |
+|---|---|---|---|
+| 0 widget (chỉ WPF + runtime) | 40,3 MB | 11,1 MB | 0,01% |
+| 1 widget | 101,1 MB | 44,8 MB | 0,01% |
+| 3 widget | 91,7 MB | 37,2 MB | 0,02% |
+| 6 widget | 100,1 MB | 43,4 MB | 0,00% |
+| 3 widget + thu gọn working set lúc nhàn rỗi | **14,4 MB** (đỉnh 91,5) | 34,3 MB | 0,07% |
+
+**Đọc số liệu**
+- Chi phí chủ yếu **cố định**: widget đầu tiên kéo thêm ~50–60 MB working set (nạp WPF/PresentationFramework, WPF-UI, render); thêm widget thứ 2–6 gần như không tốn thêm. Số widget không phải yếu tố quyết định.
+- CPU nhàn rỗi ≈ 0% (khác 3,4% của WinUI 3, vốn là 10 s đầu gồm cả khởi động) → **đạt**.
+- **Working set 92–101 MB không đạt** mức < 60 MB của SPEC-V2-05 §tiêu chí 3, và gần như bằng WinUI 3 (89 MB). Private 37–45 MB **đạt** nếu hiểu ngân sách theo bộ nhớ riêng.
+- Gọi `EmptyWorkingSet` khi nhàn rỗi đưa working set xuống 14 MB và giữ ổn định (lên lại ~0,5 MB/5 s khi tiến trình chạm trang), nhưng private commit vẫn ~34 MB. Cột "Bộ nhớ" trong tab Processes của Task Manager là private working set, nên người dùng sẽ thấy khoảng 14 MB sau khi thu gọn.
+
+**Giới hạn của phép đo (chưa biết)**
+- Chưa đo trên máy thật có hiển thị (DWM, độ phân giải/DPI cao), chưa đo Windows 10 22H2, chưa đo 10 phút liên tục theo tiêu chí gốc (chỉ 70 s).
+- Số của WidgetHost thật (có kho dữ liệu SQLite, đồng bộ, tray) sẽ cao hơn spike; spike chỉ gồm cửa sổ widget và dữ liệu giả.
+- `EmptyWorkingSet` làm tiến trình nạp lại trang khi có sự kiện (đổi ngày, check-in) → độ trễ nhỏ chưa đo.
+
+**Kết luận tạm:** giữ phương án C (WPF) cho v2.0 với hai điều kiện: (1) hiểu ngân sách RAM là **private working set** và thu gọn working set khi nhàn rỗi; (2) đo lại trên máy thật khi WidgetHost thật tồn tại. Nếu sau đó private vượt 60 MB thì mới cân nhắc phương án B (Win32 + Direct2D). Phương án B không được chọn vì số đo này, mà vì chi phí viết lại.
