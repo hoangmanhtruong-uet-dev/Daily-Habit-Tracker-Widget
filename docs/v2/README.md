@@ -10,6 +10,7 @@
 | 0 | [00-MASTER-PLAN.md](00-MASTER-PLAN.md) | Tầm nhìn, so sánh đối thủ, khoảng trống của v1, phạm vi, roadmap, KPI, rủi ro | Tất cả, đọc trước |
 | 1 | [01-DESIGN-SYSTEM.md](01-DESIGN-SYSTEM.md) | Thương hiệu, token màu/chữ/khoảng cách, chuyển động, âm thanh, linh vật, component | UI, mọi gói có giao diện |
 | 2 | [02-UX-SCREENS.md](02-UX-SCREENS.md) | Đặc tả từng màn hình và luồng người dùng | UI, QA |
+| 2b | [03-UI-REBUILD-GLOW2.md](03-UI-REBUILD-GLOW2.md) | Kế hoạch rebuild UI/UX "Glow 2": bento, thẻ gradient, dải tuần, chuyển động, theme | UI, chờ duyệt hướng |
 | 3 | [SPEC-V2-01-domain.md](SPEC-V2-01-domain.md) | Domain v2: loại thói quen mới, tần suất linh hoạt, streak freeze, ghi chú, mood | Core |
 | 4 | [SPEC-V2-02-local-data-sync-client.md](SPEC-V2-02-local-data-sync-client.md) | SQLite schema v3, migration từ v1, outbox, engine đồng bộ phía máy khách | Data |
 | 5 | [SPEC-V2-03-backend-api.md](SPEC-V2-03-backend-api.md) | Server ASP.NET Core + PostgreSQL: tài khoản, sync API, entitlement, bảo mật | Backend |
