@@ -283,7 +283,7 @@ public class CsvExporterTests
         var lines = csv.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
 
         lines[0].Should().Be("date,habit,kind,value,target,unit,status,note,mood");
-        csv.Should().Contain("2026-10-21,\"Uống nước, nhiều\",count,3,8,,partial,'=HYPERLINK(\"\"x\"\")");
+        csv.Should().Contain("2026-10-21,\"Uống nước, nhiều\",count,3,8,,partial,\"'=HYPERLINK(\"\"x\"\")\",");
         csv.Should().Contain("\"Nói \"\"tốt\"\"\nxuống dòng\",4");
         csv.IndexOf("2026-10-21", StringComparison.Ordinal).Should().BeLessThan(csv.IndexOf("2026-10-22", StringComparison.Ordinal));
     }
