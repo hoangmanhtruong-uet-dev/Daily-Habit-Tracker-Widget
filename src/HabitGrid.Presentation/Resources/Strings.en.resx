@@ -479,4 +479,28 @@
   <data name="mood.title.today" xml:space="preserve"><value>How are you feeling today?</value></data>
   <data name="mood.title.past" xml:space="preserve"><value>How did you feel that day?</value></data>
   <data name="mood.note" xml:space="preserve"><value>One line about the day (optional)</value></data>
+  <data name="routine.title" xml:space="preserve"><value>Routines</value></data>
+  <data name="routine.hint" xml:space="preserve"><value>Group habits into a sequence of steps like "Morning" or "Before bed", then do them one by one or tap Complete routine.</value></data>
+  <data name="routine.empty" xml:space="preserve"><value>No routines yet. Create your first one to do several habits in a row.</value></data>
+  <data name="routine.create" xml:space="preserve"><value>Create routine</value></data>
+  <data name="routine.edit" xml:space="preserve"><value>Edit routine</value></data>
+  <data name="routine.steps" xml:space="preserve"><value>{0} steps</value></data>
+  <data name="routine.limit" xml:space="preserve"><value>Routine limit: {0}. Plus is unlimited.</value></data>
+  <data name="routine.name" xml:space="preserve"><value>Routine name</value></data>
+  <data name="routine.name.placeholder" xml:space="preserve"><value>For example: Morning, Before bed</value></data>
+  <data name="routine.pick" xml:space="preserve"><value>Pick habits (each habit belongs to one routine)</value></data>
+  <data name="routine.order" xml:space="preserve"><value>Order of steps</value></data>
+  <data name="routine.selected" xml:space="preserve"><value>{0}/{1} selected</value></data>
+  <data name="routine.nohabits" xml:space="preserve"><value>No habits left to add. Each habit belongs to one routine and quit habits can't be added.</value></data>
+  <data name="routine.progress" xml:space="preserve"><value>{0}/{1} steps</value></data>
+  <data name="routine.complete" xml:space="preserve"><value>Routine complete 🎉</value></data>
+  <data name="routine.completeAll" xml:space="preserve"><value>Complete routine</value></data>
+  <data name="routine.pending" xml:space="preserve"><value>not done</value></data>
+  <data name="routine.err.NameRequired" xml:space="preserve"><value>Give the routine a name.</value></data>
+  <data name="routine.err.NameTooLong" xml:space="preserve"><value>Routine names are limited to 30 characters.</value></data>
+  <data name="routine.err.TooFewHabits" xml:space="preserve"><value>A routine needs at least 2 habits.</value></data>
+  <data name="routine.err.TooManyHabits" xml:space="preserve"><value>A routine can have at most 12 habits.</value></data>
+  <data name="routine.err.LimitReached" xml:space="preserve"><value>The Free plan allows 2 routines. Upgrade to Plus for more.</value></data>
+  <data name="routine.err.UnknownHabit" xml:space="preserve"><value>A habit is invalid or already in another routine.</value></data>
+  <data name="routine.err.NotFound" xml:space="preserve"><value>That routine wasn't found.</value></data>
 </root>

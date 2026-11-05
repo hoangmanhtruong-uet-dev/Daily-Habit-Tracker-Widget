@@ -103,7 +103,8 @@ public class RoutineTests
         routine.Name.Should().Be("Sáng sớm");
         routine.HabitIds.Should().Equal(c.Id, a.Id);
         (await f.Habits.GetByIdAsync(b.Id))!.RoutineId.Should().BeNull("B bị gỡ khỏi routine");
-        (await service.AvailableHabitsAsync(created.Id)).Select(h => h.Id).Should().BeEquivalentTo([b.Id]);
+        (await service.AvailableHabitsAsync(created.Id)).Select(h => h.Id).Should().BeEquivalentTo([a.Id, b.Id, c.Id], "đang sửa: thành viên hiện tại cộng thói quen chưa thuộc routine nào");
+        (await service.AvailableHabitsAsync()).Select(h => h.Id).Should().Equal(b.Id);
         (await service.UpdateAsync(Guid.NewGuid(), Draft("X", a, b))).Error.Should().Be(RoutineError.NotFound);
     }
 

@@ -29,6 +29,8 @@ public sealed partial class HabitsPage : Page
         {
             TitleText.Text = Ui.T("habits.title");
             AddButtonText.Text = Ui.T("habits.add");
+            RoutineButton.Content = "🔗 " + Ui.T("routine.title");
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(RoutineButton, Ui.T("routine.title"));
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(AddButton, AddButtonText.Text);
             EmptyText.Text = Ui.T("habits.empty");
             UndoButton.Content = Ui.T("today.undo");
@@ -78,6 +80,19 @@ public sealed partial class HabitsPage : Page
         catch (Exception ex)
         {
             Log(ex, "Thêm thói quen lỗi");
+        }
+    }
+
+    private async void OnRoutineClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await RoutineManagerDialog.ShowAsync(XamlRoot);
+            await ViewModel.LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            Log(ex, "Quản lý routine lỗi");
         }
     }
 

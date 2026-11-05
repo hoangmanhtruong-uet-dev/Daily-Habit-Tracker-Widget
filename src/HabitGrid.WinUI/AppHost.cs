@@ -176,6 +176,13 @@ public sealed class AppHost : IDisposable
         services.AddSingleton<DailyMoodService>(sp => new DailyMoodService(
             sp.GetRequiredService<ISettingsStore>(),
             sp.GetRequiredService<IDayProvider>()));
+        services.AddSingleton<RoutineService>(sp => new RoutineService(
+            sp.GetRequiredService<IHabitRepository>(),
+            sp.GetRequiredService<IDayLogRepository>(),
+            sp.GetRequiredService<IRoutineRepository>(),
+            sp.GetRequiredService<IEntitlements>(),
+            sp.GetRequiredService<IDayProvider>(),
+            sp.GetRequiredService<ISettingsStore>()));
         services.AddSingleton<BackupManager>(sp => new BackupManager(
             new SnapshotBackupService(
                 database,

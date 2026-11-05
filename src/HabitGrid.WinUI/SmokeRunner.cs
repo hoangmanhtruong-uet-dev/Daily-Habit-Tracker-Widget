@@ -56,6 +56,7 @@ public static class SmokeRunner
             await PlusJourneyAsync(window, logger);
             await InsightsJourneyAsync(window, logger);
             await MomentsJourneyAsync(window, logger);
+            await BatchOneJourneyAsync(window, logger);
             await AccessibilityAuditAsync(window, logger);
 
             // Mọi theme × sáng/tối phải dựng được (ảnh để duyệt giao diện).
@@ -351,6 +352,57 @@ public static class SmokeRunner
         Require(Ui.T("settings.title") == before, "Không trả lại được ngôn ngữ ban đầu.");
 
         logger.Info("SMOKE settings OK");
+    }
+
+    /// <summary>Đợt 1: sao lưu, tạm nghỉ, cảm xúc, routine — chạy thật trên dữ liệu smoke rồi dọn lại.</summary>
+    private static async Task BatchOneJourneyAsync(MainWindow window, IAppLogger logger)
+    {
+        // F5 Sao lưu: sao lưu ngay phải tạo file đọc lại được; sao lưu tự động chỉ một lần mỗi ngày.
+        var backups = App.Host.Get<HabitGrid.Data.V3.BackupManager>();
+        var file = await backups.BackupNowAsync();
+        Require(File.Exists(file.Path) && file.SizeBytes > 100, "Sao lưu ngay không tạo được file.");
+        var manifest = await HabitGrid.Data.V3.SnapshotBackupService.ReadManifestAsync(file.Path);
+        Require(manifest.Habits > 0 && manifest.DayLogs > 0, "File sao lưu không chứa dữ liệu.");
+        Require(await backups.RunIfDueAsync() is not null && await backups.RunIfDueAsync() is null, "Tự sao lưu phải chạy đúng một lần mỗi ngày.");
+
+        // F3 Tạm nghỉ: đánh dấu rồi kết thúc sớm phải trả dữ liệu về như cũ.
+        var vacation = App.Host.Get<VacationService>();
+        var habits = (await App.Host.Get<IHabitRepository>().GetAllActiveAsync()).Where(h => h.Kind == HabitKind.Boolean).ToList();
+        var paused = habits.Last();
+        var today = App.Host.Get<IDayProvider>().GetToday();
+        var logs = App.Host.Get<IDayLogRepository>();
+        var before = await logs.GetAsync(paused.Id, today.AddDays(1));
+        var (check, marked) = await vacation.StartAsync(today.AddDays(1), today.AddDays(2), [paused.Id]);
+        Require(check.IsValid && marked > 0, $"Không bắt đầu được tạm nghỉ: {check.Error}");
+        Require((await logs.GetAsync(paused.Id, today.AddDays(1)))?.Status == DayStatus.Frozen, "Ngày nghỉ không được đánh dấu.");
+        Require(await vacation.EndAsync() == marked, "Kết thúc tạm nghỉ không gỡ hết ngày đã đánh dấu.");
+        Require((await logs.GetAsync(paused.Id, today.AddDays(1)))?.Status == before?.Status, "Dữ liệu không trở về như cũ sau khi kết thúc tạm nghỉ.");
+
+        // F1 Routine: tạo từ hai thói quen, dải routine hiện trên Hôm nay, "xong cả routine" hoàn thành mọi bước.
+        var routines = App.Host.Get<RoutineService>();
+        var members = habits.Where(h => h.RoutineId is null).Take(2).ToList();
+        Require(members.Count == 2, "Không đủ hai thói quen để tạo routine.");
+        var created = await routines.CreateAsync(new RoutineDraft("Sáng", HabitIcon.Emoji("🌅"), TimeOfDay.Morning, members.Select(m => m.Id).ToList()));
+        Require(created.Succeeded, $"Không tạo được routine: {created.Error}");
+
+        await GoToAsync(window, PageKeys.Today);
+        await Task.Delay(900);
+        var strip = FindAll<RoutineStrip>(window.Content).FirstOrDefault() ?? throw new InvalidOperationException("Không thấy dải routine.");
+        Require(strip.HasItems, "Dải routine trống dù đã có routine.");
+
+        // F4 Cảm xúc: chọn một mức, kiểm tra đã lưu, rồi bỏ chọn.
+        var mood = FindAll<MoodBar>(window.Content).FirstOrDefault() ?? throw new InvalidOperationException("Không thấy thanh cảm xúc.");
+        await mood.PickForTestAsync(4);
+        Require((await App.Host.Get<DailyMoodService>().GetAsync(today))?.Mood == 4, "Cảm xúc không được lưu.");
+        await SnapAsync(window, "today-routine-mood");
+        await mood.PickForTestAsync(4);
+        Require(await App.Host.Get<DailyMoodService>().GetAsync(today) is null, "Bỏ chọn cảm xúc không xóa dữ liệu.");
+
+        var done = await routines.CompleteAllAsync(created.Routine!.Id);
+        Require((await routines.ProgressAsync()).Single(p => p.Routine.Id == created.Routine.Id).IsComplete, "Xong cả routine nhưng chưa hoàn thành mọi bước.");
+        await routines.DeleteAsync(created.Routine.Id);
+        Require(!(await routines.ListAsync()).Any(), "Xóa routine không thành công.");
+        logger.Info($"SMOKE batch1 OK (backup {file.SizeBytes} bytes, vacation {marked} days, routine steps done {done}, mood saved)");
     }
 
     private static async Task MomentsJourneyAsync(MainWindow window, IAppLogger logger)

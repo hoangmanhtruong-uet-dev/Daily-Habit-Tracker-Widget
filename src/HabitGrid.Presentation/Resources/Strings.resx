@@ -479,4 +479,28 @@
   <data name="mood.title.today" xml:space="preserve"><value>Hôm nay bạn thấy sao?</value></data>
   <data name="mood.title.past" xml:space="preserve"><value>Hôm đó bạn thấy sao?</value></data>
   <data name="mood.note" xml:space="preserve"><value>Một câu về ngày hôm nay (tùy chọn)</value></data>
+  <data name="routine.title" xml:space="preserve"><value>Routine</value></data>
+  <data name="routine.hint" xml:space="preserve"><value>Gom các thói quen thành một chuỗi bước, ví dụ "Sáng" hay "Trước khi ngủ", rồi làm lần lượt hoặc bấm Xong cả routine.</value></data>
+  <data name="routine.empty" xml:space="preserve"><value>Chưa có routine nào. Tạo routine đầu tiên để làm nhiều thói quen liền một mạch.</value></data>
+  <data name="routine.create" xml:space="preserve"><value>Tạo routine</value></data>
+  <data name="routine.edit" xml:space="preserve"><value>Sửa routine</value></data>
+  <data name="routine.steps" xml:space="preserve"><value>{0} bước</value></data>
+  <data name="routine.limit" xml:space="preserve"><value>Số routine tối đa: {0}. Plus không giới hạn.</value></data>
+  <data name="routine.name" xml:space="preserve"><value>Tên routine</value></data>
+  <data name="routine.name.placeholder" xml:space="preserve"><value>Ví dụ: Sáng, Trước khi ngủ</value></data>
+  <data name="routine.pick" xml:space="preserve"><value>Chọn thói quen (mỗi thói quen chỉ thuộc một routine)</value></data>
+  <data name="routine.order" xml:space="preserve"><value>Thứ tự các bước</value></data>
+  <data name="routine.selected" xml:space="preserve"><value>Đã chọn {0}/{1}</value></data>
+  <data name="routine.nohabits" xml:space="preserve"><value>Chưa có thói quen nào để thêm. Mỗi thói quen chỉ thuộc một routine và thói quen cần bỏ không thêm được.</value></data>
+  <data name="routine.progress" xml:space="preserve"><value>{0}/{1} bước</value></data>
+  <data name="routine.complete" xml:space="preserve"><value>Xong cả routine 🎉</value></data>
+  <data name="routine.completeAll" xml:space="preserve"><value>Xong cả routine</value></data>
+  <data name="routine.pending" xml:space="preserve"><value>chưa làm</value></data>
+  <data name="routine.err.NameRequired" xml:space="preserve"><value>Hãy đặt tên cho routine.</value></data>
+  <data name="routine.err.NameTooLong" xml:space="preserve"><value>Tên routine tối đa 30 ký tự.</value></data>
+  <data name="routine.err.TooFewHabits" xml:space="preserve"><value>Routine cần ít nhất 2 thói quen.</value></data>
+  <data name="routine.err.TooManyHabits" xml:space="preserve"><value>Routine tối đa 12 thói quen.</value></data>
+  <data name="routine.err.LimitReached" xml:space="preserve"><value>Gói Free tối đa 2 routine. Nâng cấp Plus để tạo thêm.</value></data>
+  <data name="routine.err.UnknownHabit" xml:space="preserve"><value>Có thói quen không hợp lệ hoặc đã thuộc routine khác.</value></data>
+  <data name="routine.err.NotFound" xml:space="preserve"><value>Không tìm thấy routine này.</value></data>
 </root>

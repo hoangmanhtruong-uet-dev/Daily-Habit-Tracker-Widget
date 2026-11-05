@@ -22,10 +22,31 @@ public sealed partial class TodayPage : Page
         {
             await ViewModel.SelectDayAsync(day);
             await LoadMoodAsync();
+            await LoadRoutinesAsync();
         });
     }
 
     public TodayViewModel ViewModel { get; }
+
+    /// <summary>Dải routine cho ngày đang xem; check một bước hoặc "xong cả routine" thì nạp lại thẻ thói quen.</summary>
+    private async Task LoadRoutinesAsync()
+    {
+        var day = ViewModel.SelectedDay == default ? DateOnly.FromDateTime(DateTime.Today) : ViewModel.SelectedDay;
+
+        if (!_routinesWired)
+        {
+            _routinesWired = true;
+            Routines.Changed += async (_, _) => await Guard(async () =>
+            {
+                await ViewModel.LoadAsync();
+                await LoadRoutinesAsync();
+            });
+        }
+
+        await Routines.ReloadAsync(day);
+    }
+
+    private bool _routinesWired;
 
     /// <summary>Thanh cảm xúc cho ngày đang xem (ẩn khi xem ngày tương lai).</summary>
     private async Task LoadMoodAsync()
@@ -57,7 +78,7 @@ public sealed partial class TodayPage : Page
             await App.Host.Get<VacationService>().EndAsync();
             await ViewModel.LoadAsync();
             await UpdateVacationBarAsync();
-            await LoadMoodAsync();
+            await LoadRoutinesAsync();
         }
         catch (Exception ex)
         {
@@ -87,6 +108,8 @@ public sealed partial class TodayPage : Page
             _wasAllDone = ViewModel.AllDone;
             ApplyTexts();
             await UpdateVacationBarAsync();
+            await LoadMoodAsync();
+            await LoadRoutinesAsync();
         }
         catch (Exception ex)
         {
@@ -122,6 +145,8 @@ public sealed partial class TodayPage : Page
         switch (e.PropertyName)
         {
             case nameof(TodayViewModel.DoneCount):
+                _ = Guard(LoadRoutinesAsync);
+                goto case nameof(TodayViewModel.TotalCount);
             case nameof(TodayViewModel.TotalCount):
             case nameof(TodayViewModel.BuddyMood):
             case nameof(TodayViewModel.BuddyName):
