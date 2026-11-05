@@ -29,6 +29,15 @@ jobs:
           if (-not $p.WaitForExit(90000)) { $p.Kill(); Write-Error 'smoke timed out'; exit 1 }
           Get-Content "$env:HABITGRID_DATA_DIR/logs/*.log" -ErrorAction SilentlyContinue
           exit $p.ExitCode
+      - name: WidgetHost self-test (reads the smoke database, check-in round trip)
+        shell: pwsh
+        run: |
+          $env:HABITGRID_DATA_DIR = Join-Path $env:RUNNER_TEMP 'hg-smoke'
+          $exe = Get-ChildItem src/HabitGrid.WidgetHost/bin -Recurse -Filter HabitGrid.WidgetHost.exe | Select-Object -First 1
+          $p = Start-Process $exe.FullName -ArgumentList '--selftest' -PassThru
+          if (-not $p.WaitForExit(60000)) { $p.Kill(); Write-Error 'widget host self-test timed out'; exit 1 }
+          Get-Content "$env:HABITGRID_DATA_DIR/widgethost-selftest.log" -ErrorAction SilentlyContinue
+          exit $p.ExitCode
       - name: Upload smoke screenshots
         if: always()
         uses: actions/upload-artifact@v4

@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="HabitGrid.App" />
+    <InternalsVisibleTo Include="HabitGrid.WidgetHost" />
     <InternalsVisibleTo Include="HabitGrid.Platform.Tests" />
   </ItemGroup>
 
