@@ -58,3 +58,16 @@ Lý do nâng giới hạn Free từ 2 (v1) lên 5: GenZ thường thử 3–5 th
 3. Offline 6 ngày với subscription: vẫn Plus; ngày 8: hỏi kiểm tra lại, không khóa dữ liệu.
 4. Hạ cấp với 9 thói quen: người dùng chọn được 5, 4 còn lại chỉ đọc, không mất dòng dữ liệu nào.
 5. Không có đường nào trong UI gọi mua hàng khi người dùng chưa bấm nút mua (test).
+
+## Tiến độ triển khai (06/11/2026)
+**Đã có**
+- Lõi thuần có test: `LicensePolicy` (thuê bao: ≤ 7 ngày offline vẫn Plus, 7–14 ngày vẫn Plus nhưng hỏi kiểm tra lại, quá 14 ngày về Free không khóa dữ liệu; hết hạn đã biết thì dừng ngay; gói vĩnh viễn và Pro v1 luôn Plus, chỉ nhắc kiểm tra sau 30 ngày), `LicensePolicy.FromOwned` (ưu tiên trọn đời > Pro v1 > năm > tháng), `LiveEntitlements` (đổi Free/Plus tức thì cho mọi dịch vụ), `ThemeAccess`, `HabitAllowance` (hạ cấp: người dùng chọn 5 thói quen chạy, còn lại chỉ đọc).
+- `PlusService`: cache offline (DPAPI theo người dùng Windows, file `.plus.dat` trong thư mục dữ liệu), xác minh với Store khi mở app, khôi phục mua hàng, cập nhật danh sách chỉ đọc khi quyền hoặc thói quen đổi.
+- `WindowsPlusStore`: `StoreContext` (`GetAssociatedStoreProductsAsync`, `GetAppLicenseAsync`, `RequestPurchaseAsync` với HWND qua `InitializeWithWindow`). Chỉ hoạt động khi app có danh tính gói MSIX; bản không đóng gói thì nút Mua bị vô hiệu kèm giải thích — **không bao giờ tự cấp quyền** (bản v1 `StoreLicenseService` có đường "giả lập" mở Pro miễn phí khi không đóng gói; v2 không giữ đường này). Store giả chỉ có trong bản Debug với `HABITGRID_FAKE_STORE=1`.
+- Paywall: lợi ích, 3 gói với giá từ Store (không có Store thì giá tham khảo có nhãn), "Tiết kiệm 44%" và "Dùng thử 7 ngày" ở gói năm, điều khoản tự gia hạn và cách hủy, nút "Để sau" rõ ràng, khôi phục mua hàng. Chỉ mở khi người dùng chạm giới hạn 5 thói quen (sau khi bấm Lưu), chọn theme khóa, hoặc tự bấm Nâng cấp.
+- Hạ cấp: thói quen chỉ đọc bị chặn ghi ở mọi đường (trang Hôm nay, widget, Quick check-in, toast nhắc, palette, Focus), không nhận nhắc nhở, hiện nhãn "🔒 Chỉ đọc"; hộp chọn thói quen đang chạy (hỏi một lần mỗi phiên và trong Cài đặt). Theme Plus đang dùng thì hiển thị Candy Bento nhưng giữ lựa chọn để nâng cấp lại là dùng tiếp.
+- Quyết định theme: Candy Bento và Neon Night miễn phí; Soft Pastel thuộc Plus hoặc mở ở cấp 10 (thay cho "Classic Glow, Midnight" của bản spec cũ, vốn không còn tồn tại).
+
+**Tiêu chí nghiệm thu:** 2 (Pro v1 → Plus), 3 (offline 6 / 8 ngày), 4 (9 thói quen → chọn 5, 4 chỉ đọc, không mất dữ liệu), 5 (test quét mã nguồn: chỉ nút Mua trên paywall gọi mua) có test tự động. **Tiêu chí 1 (mua thật bằng tài khoản test Store) chưa làm được**: cần tạo add-on trên Partner Center và đóng gói MSIX (SPEC-V2-12).
+
+**Chưa làm:** add-on trên Partner Center, đóng gói MSIX cho app WinUI, mã khuyến mãi sinh viên / giảm giá ra mắt (cấu hình trên Partner Center), xác minh phía server [v2.1], đo phễu paywall (telemetry opt-in, SPEC-V2-11), các quyền Plus chưa có tính năng tương ứng (Insights toàn lịch sử, nền ảnh widget, theme mùa, âm thanh Focus, chọn thư mục sao lưu).
