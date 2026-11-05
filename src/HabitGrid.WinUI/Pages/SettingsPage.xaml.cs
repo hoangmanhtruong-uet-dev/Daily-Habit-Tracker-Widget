@@ -145,6 +145,15 @@ public sealed partial class SettingsPage : Page
         widgetsCard.Children.Add(autostart);
         Wrap(widgetsCard);
 
+        // Hỗ trợ: phiên bản, thư mục log và báo lỗi (người dùng tự gửi, app không tải gì lên).
+        var supportCard = Card(Ui.T("settings.support"));
+        supportCard.Children.Add(new TextBlock { Text = Ui.Loc.Format("settings.support.version", CrashReporting.AppVersion), Style = Res("BodySecondaryTextStyle") });
+        supportCard.Children.Add(new TextBlock { Text = Ui.T("settings.support.hint"), Style = Res("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap });
+        var logs = new Button { Content = Ui.T("settings.support.logs"), Style = Res("GhostButtonStyle") };
+        logs.Click += (_, _) => CrashReporting.OpenFolder();
+        supportCard.Children.Add(logs);
+        Wrap(supportCard);
+
         // Ngôn ngữ
         var languageCard = Card(Ui.T("settings.language"));
         var language = new ChipGroup { MinChipWidth = 130, MaxWidth = 320, HorizontalAlignment = HorizontalAlignment.Left };
@@ -182,9 +191,11 @@ public sealed partial class SettingsPage : Page
         void Render()
         {
             var s = plus.Status;
-            status.Text = s.IsPlus ? Ui.Loc.Format("settings.plus.active", Ui.T("settings.plus.tier." + s.Tier)) : Ui.T("settings.plus.free");
+            status.Text = s.Tier == PlusTier.Promo
+                ? Ui.Loc.Format("settings.plus.promo", plus.PromoDaysLeft)
+                : s.IsPlus ? Ui.Loc.Format("settings.plus.active", Ui.T("settings.plus.tier." + s.Tier)) : Ui.T("settings.plus.free");
             recheck.Visibility = s.NeedsRecheck ? Visibility.Visible : Visibility.Collapsed;
-            upgrade.Visibility = s.IsPlus ? Visibility.Collapsed : Visibility.Visible;
+            upgrade.Visibility = s.IsPlus && s.Tier != PlusTier.Promo ? Visibility.Collapsed : Visibility.Visible;
         }
 
         upgrade.Click += async (_, _) =>

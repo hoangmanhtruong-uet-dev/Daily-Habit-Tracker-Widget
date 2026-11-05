@@ -81,6 +81,11 @@ public sealed partial class MainWindow : Window
             Navigate(PageKeys.Today);
             _ = _gamification.StartAsync();
             _ = AskToChooseRunningIfNeededAsync();
+
+            if (GamificationCoordinator.DialogsEnabled)
+            {
+                _ = CrashReporting.PromptIfNeededAsync(Root.XamlRoot);
+            }
         }
     }
 
@@ -124,6 +129,9 @@ public sealed partial class MainWindow : Window
                 break;
             case PageKeys.Habits:
                 ContentFrame.Navigate(typeof(HabitsPage), null, transition);
+                break;
+            case PageKeys.Insights:
+                ContentFrame.Navigate(typeof(InsightsPage), null, transition);
                 break;
             case PageKeys.Buddy:
                 ContentFrame.Navigate(typeof(BuddyPage), null, transition);

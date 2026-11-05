@@ -321,9 +321,9 @@
   <data name="plus.name" xml:space="preserve"><value>HabitGrid Plus</value></data>
   <data name="plus.tagline" xml:space="preserve"><value>Nhiều thói quen hơn, đẹp hơn, Buddy xịn hơn.</value></data>
   <data name="plus.benefit.habits" xml:space="preserve"><value>Không giới hạn số thói quen (Free: 5)</value></data>
-  <data name="plus.benefit.themes" xml:space="preserve"><value>Mọi chủ đề màu, kể cả theme mùa</value></data>
+  <data name="plus.benefit.themes" xml:space="preserve"><value>Mở ngay theme Soft Pastel (Free: đạt cấp 10)</value></data>
   <data name="plus.benefit.freeze" xml:space="preserve"><value>Giữ tối đa 5 freeze (Free: 3)</value></data>
-  <data name="plus.benefit.insights" xml:space="preserve"><value>Thống kê toàn bộ lịch sử, xuất CSV</value></data>
+  <data name="plus.benefit.insights" xml:space="preserve"><value>Insights 90 ngày và toàn bộ lịch sử, xuất CSV (Free: 30 ngày)</value></data>
   <data name="plus.benefit.sounds" xml:space="preserve"><value>Âm thanh nền khi Focus</value></data>
   <data name="plus.benefit.support" xml:space="preserve"><value>Ủng hộ một nhà phát triển độc lập ❤</value></data>
   <data name="plus.plan.monthly" xml:space="preserve"><value>Tháng</value></data>
@@ -366,4 +366,49 @@
   <data name="plan.choose.save" xml:space="preserve"><value>Lưu lựa chọn</value></data>
   <data name="plan.choose.count" xml:space="preserve"><value>Đã chọn {0}/{1}</value></data>
   <data name="today.state.readonly" xml:space="preserve"><value>🔒 Chỉ đọc</value></data>
+  <data name="insights.title" xml:space="preserve"><value>Insights</value></data>
+  <data name="insights.range.30" xml:space="preserve"><value>30 ngày</value></data>
+  <data name="insights.range.90" xml:space="preserve"><value>90 ngày</value></data>
+  <data name="insights.range.all" xml:space="preserve"><value>Toàn bộ</value></data>
+  <data name="insights.rate" xml:space="preserve"><value>Tỷ lệ hoàn thành</value></data>
+  <data name="insights.perfect" xml:space="preserve"><value>Ngày hoàn hảo</value></data>
+  <data name="insights.checkins" xml:space="preserve"><value>Lần check-in</value></data>
+  <data name="insights.beststreak" xml:space="preserve"><value>Chuỗi dài nhất</value></data>
+  <data name="insights.trend" xml:space="preserve"><value>Xu hướng theo tuần</value></data>
+  <data name="insights.weekdays" xml:space="preserve"><value>Theo thứ trong tuần</value></data>
+  <data name="insights.hours" xml:space="preserve"><value>Giờ bạn hay check-in</value></data>
+  <data name="insights.habits" xml:space="preserve"><value>Từng thói quen</value></data>
+  <data name="insights.mood" xml:space="preserve"><value>Tâm trạng</value></data>
+  <data name="insights.mood.avg" xml:space="preserve"><value>Trung bình {0}/5</value></data>
+  <data name="insights.mood.compare" xml:space="preserve"><value>Ngày có làm: {0}/5 · Ngày không làm: {1}/5</value></data>
+  <data name="insights.mood.none" xml:space="preserve"><value>Chưa có dữ liệu tâm trạng. Thêm mood khi sửa một ngày trong lịch.</value></data>
+  <data name="insights.auto" xml:space="preserve"><value>Gợi ý cho bạn</value></data>
+  <data name="insights.auto.none" xml:space="preserve"><value>Chưa đủ dữ liệu để gợi ý. Cứ check-in đều, vài tuần nữa sẽ có.</value></data>
+  <data name="insights.export" xml:space="preserve"><value>Xuất CSV</value></data>
+  <data name="insights.export.done" xml:space="preserve"><value>Đã lưu {0}</value></data>
+  <data name="insights.export.failed" xml:space="preserve"><value>Không lưu được file.</value></data>
+  <data name="insights.empty" xml:space="preserve"><value>Thêm thói quen và check-in vài ngày để xem thống kê.</value></data>
+  <data name="insights.plus" xml:space="preserve"><value>Plus</value></data>
+  <data name="insights.row.rate" xml:space="preserve"><value>{0}% hoàn thành</value></data>
+  <data name="insights.row.total" xml:space="preserve"><value>Tổng {0} {1} · TB {2}/ngày · cao nhất {3}</value></data>
+  <data name="insight.weak_weekday" xml:space="preserve"><value>Bạn hay lỡ {habit} vào {weekday}. Thử dời giờ nhắc ngày đó?</value></data>
+  <data name="insight.golden_hour" xml:space="preserve"><value>Giờ vàng của bạn là {start}–{end}.</value></data>
+  <data name="insight.momentum_up" xml:space="preserve"><value>{habit} đang lên phong độ: +{delta}%!</value></data>
+  <data name="insight.slipping" xml:space="preserve"><value>{habit} hơi chững lại (−{delta}%). Thử giảm mục tiêu còn {suggested} trong một tuần?</value></data>
+  <data name="insight.slipping.plain" xml:space="preserve"><value>{habit} hơi chững lại (−{delta}%). Thử dời giờ nhắc hoặc bỏ bớt ngày khó?</value></data>
+  <data name="insight.mood_link" xml:space="preserve"><value>Những ngày làm {habit}, tâm trạng của bạn tốt hơn rõ rệt.</value></data>
+  <data name="insight.stack_suggestion" xml:space="preserve"><value>{a} và {b} thường làm cùng lúc. Gộp thành một routine?</value></data>
+  <data name="insight.near_milestone" xml:space="preserve"><value>Còn {n} ngày nữa là {milestone} ngày {habit}!</value></data>
+  <data name="plus.promo.active" xml:space="preserve"><value>🎁 Bạn đang dùng Plus miễn phí, còn {0} ngày. Hết hạn bạn vẫn giữ toàn bộ dữ liệu.</value></data>
+  <data name="settings.plus.tier.Promo" xml:space="preserve"><value>tặng miễn phí</value></data>
+  <data name="settings.plus.promo" xml:space="preserve"><value>🎁 Plus miễn phí · còn {0} ngày. Hết hạn bạn vẫn giữ toàn bộ dữ liệu.</value></data>
+  <data name="settings.data.openFolder" xml:space="preserve"><value>Mở thư mục</value></data>
+  <data name="crash.title" xml:space="preserve"><value>HabitGrid gặp lỗi ở lần chạy trước</value></data>
+  <data name="crash.body" xml:space="preserve"><value>Có {0} báo lỗi được lưu trên máy bạn. App không gửi chúng đi đâu. Nếu muốn giúp sửa nhanh hơn, bạn có thể mở thư mục hoặc sao chép nội dung rồi gửi cho nhà phát triển.</value></data>
+  <data name="crash.open" xml:space="preserve"><value>Mở thư mục báo lỗi</value></data>
+  <data name="crash.copy" xml:space="preserve"><value>Sao chép báo lỗi</value></data>
+  <data name="settings.support" xml:space="preserve"><value>Hỗ trợ</value></data>
+  <data name="settings.support.version" xml:space="preserve"><value>Phiên bản {0}</value></data>
+  <data name="settings.support.logs" xml:space="preserve"><value>Mở thư mục log và báo lỗi</value></data>
+  <data name="settings.support.hint" xml:space="preserve"><value>Log và báo lỗi chỉ nằm trên máy bạn. Khi cần hỗ trợ, gửi file trong thư mục này cho nhà phát triển.</value></data>
 </root>

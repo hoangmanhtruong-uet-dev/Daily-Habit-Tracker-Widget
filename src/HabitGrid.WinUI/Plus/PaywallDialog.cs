@@ -58,13 +58,21 @@ public static class PaywallDialog
                 _ => null
             };
 
+            var plus = App.Host.Get<PlusService>();
+
+            if (plus.Status.Tier == HabitGrid.Core.Domain.Monetization.PlusTier.Promo)
+            {
+                panel.Children.Add(new InfoBar { IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Success, Message = Ui.Loc.Format("plus.promo.active", plus.PromoDaysLeft) });
+            }
+
             if (reason is not null)
             {
                 panel.Children.Add(new InfoBar { IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Informational, Message = reason });
             }
 
             var benefits = new StackPanel { Spacing = 4 };
-            foreach (var (emoji, key) in new[] { ("♾️", "plus.benefit.habits"), ("🎨", "plus.benefit.themes"), ("❄️", "plus.benefit.freeze"), ("📊", "plus.benefit.insights"), ("🎧", "plus.benefit.sounds"), ("💜", "plus.benefit.support") })
+            // Chỉ liệt kê quyền lợi đã thật sự có trong app (không bán thứ chưa làm).
+            foreach (var (emoji, key) in new[] { ("♾️", "plus.benefit.habits"), ("📊", "plus.benefit.insights"), ("🎨", "plus.benefit.themes"), ("❄️", "plus.benefit.freeze"), ("💜", "plus.benefit.support") })
             {
                 benefits.Children.Add(new TextBlock { Text = $"{emoji}  {Ui.T(key)}", TextWrapping = TextWrapping.Wrap });
             }
