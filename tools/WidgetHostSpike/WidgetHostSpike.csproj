@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Đo RAM/CPU của phương án WPF cho WidgetHost (SPEC-V2-05). Không thuộc sản phẩm, không nằm trong solution. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\HabitGrid.Core\HabitGrid.Core.csproj" />
+    <ProjectReference Include="..\..\src\HabitGrid.Platform\HabitGrid.Platform.csproj" />
+    <ProjectReference Include="..\..\src\HabitGrid.UI\HabitGrid.UI.csproj" />
+  </ItemGroup>
+
+</Project>

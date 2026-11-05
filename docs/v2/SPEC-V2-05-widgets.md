@@ -71,3 +71,8 @@ Menu: Hôm nay (check trực tiếp tối đa 8 thói quen) • Bắt đầu Foc
 4. Check-in từ widget hiện trên app chính và Widgets Board < 1 s.
 5. Rút màn hình phụ khi widget nằm ở đó → widget về màn hình chính; cắm lại → về vị trí cũ.
 6. Quick check-in: từ lúc bấm phím tắt tới lúc check xong một thói quen ≤ 2 s (đo tay 10 lần).
+
+## Tiến độ triển khai (05/11/2026)
+Đã có `HabitGrid.WidgetHost` (WPF, tiến trình riêng): widget lưới (tối đa 3, đọc CSDL v3), widget **Today List**, **Quick check-in** (`Win+Alt+H`, dự phòng `Ctrl+Alt+H`; lọc không dấu, Enter/+/−/↑↓/Esc), tray, nhớ vị trí, làm mới theo `PRAGMA data_version` và khi qua ngày/thức dậy từ sleep, **tự chạy cùng Windows** (khóa Run, tắt/bật từ Cài đặt app chính), **dựng lại và ghim lại sau khi Explorer khởi động lại** (đã kiểm chứng trên CI bằng cách kết thúc `explorer.exe` thật), đưa widget ngoài vùng nhìn thấy về màn hình chính khi đổi màn hình.
+Ghi chú kỹ thuật: v1 dùng cửa sổ message-only để nghe `TaskbarCreated` nên **không bao giờ nhận được** thông điệp broadcast này; WidgetHost dùng cửa sổ top-level ẩn và có thêm kiểm tra handle còn sống.
+**Chưa làm:** widget Buddy / Multi Grid / Focus, Windows 11 Widgets Board, nền Acrylic thật, popover sửa ngày cũ, thông minh theo hình nền, snap lưới, đo tiêu chí 3–6 trên máy thật.

@@ -59,3 +59,16 @@ Phím tắt toàn cục đổi/tắt được trong Cài đặt; xung đột th�
 4. Nhắc thông minh: test với dữ liệu giả lập cho ra giờ đúng công thức; < 7 mẫu dùng giờ mặc định.
 5. Focus 25 phút → `DayLog.Value` của thói quen Thời lượng tăng 25, XP +5.
 6. Giờ yên lặng chặn mọi toast nhắc (trừ khi người dùng tắt giờ yên lặng).
+
+## Tiến độ triển khai (06/11/2026)
+**Đã có**
+- Lõi thuần có test: `ReminderPlanner` (cố định, thông minh, nhắc lần 2 +2 giờ ≤ 22:30, cứu streak 21:00 chỉ cho hôm nay, tổng kết sáng, bỏ thói quen đã xong/bỏ qua/đóng băng, giờ yên lặng qua nửa đêm, gộp cùng giờ, tối đa 6 toast/ngày, cửa sổ 48 giờ), `SmartReminder` (phân vị 40% − 15 phút, ≥ 7 mẫu trong 21 ngày), `FocusTimer` (Pomodoro/đếm ngược/bấm giờ, tạm dừng, khôi phục trạng thái), XP +5 cho phiên ≥ 25 phút, huy hiệu `focus_10h`.
+- WidgetHost lên lịch `ScheduledToastNotification` (CommunityToolkit.WinUI.Notifications 7.1.2) nên Windows tự hiện toast kể cả khi app và WidgetHost tắt; nút Xong / +1 / Nhắc lại 30 phút / Bỏ qua hôm nay ghi thẳng vào CSDL (Windows khởi động WidgetHost nếu cần). Lập lại lịch khi dữ liệu đổi, qua ngày, khởi động, đổi giờ/múi giờ.
+- Focus: mini-player nổi luôn trên cùng (thu gọn được), `Win+Alt+F` (dự phòng `Ctrl+Alt+F`), phiên sống qua khởi động lại, tạm dừng khi máy ngủ và hiện lại khi thức dậy, cộng phút vào thói quen Thời lượng; bắt đầu từ trang chi tiết thói quen hoặc command palette (lệnh gửi qua bảng settings).
+- Trình sửa thói quen đã có sẵn giờ nhắc kèm ô "Thông minh" và "Nhắc lần 2"; planner dùng đúng các cờ này.
+- Phím tắt trong app: `Ctrl+K` command palette (lọc không dấu), `Ctrl+N`, `Ctrl+Z` (Hôm nay / xóa thói quen), `Ctrl+,`, `1`–`9` trên trang Hôm nay. Cài đặt: bật/tắt nhắc, giờ yên lặng, cứu streak, tổng kết sáng, bật/tắt hai phím toàn cục và hiện phím thực tế đã đăng ký.
+- Lưu phiên Focus: dùng bảng `xp_events` có sẵn (`kind = "focus"`, `amount` = phút) thay vì thêm migration v4 (tránh phải sửa importer/backup đang khóa phiên bản lược đồ v3).
+
+**Đã kiểm chứng trên CI:** Windows nhận đủ toast đã lên lịch (4/4), nút Xong ghi check-in và gỡ nhắc hôm nay, phiên Focus 1 phút được ghi. Trên runner `Win+Alt+F` bị chiếm nên dùng `Ctrl+Alt+F`.
+**Chưa kiểm chứng:** toast hiện thật đúng giờ khi mọi tiến trình đã tắt (tiêu chí 1) và bấm nút khi WidgetHost chưa chạy (tiêu chí 2) — CI chỉ kiểm tra lịch đã được Windows nhận và bộ xử lý nút; cần thử tay trên máy thật. Tôn trọng Do Not Disturb dựa vào Windows (không tự kiểm tra).
+**Chưa làm:** thời gian còn lại trên icon tray, widget Focus, bật Focus session/DND của Windows, âm thanh nền (Plus), đổi tổ hợp phím (mới chỉ bật/tắt), xuất ICS / nhập CSV [v3].

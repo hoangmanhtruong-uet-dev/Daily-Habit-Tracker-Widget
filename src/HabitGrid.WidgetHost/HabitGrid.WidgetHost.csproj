@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Tiến trình riêng cho widget ghim desktop (SPEC-V2-05): WPF, tái dùng control/widget v1, đọc CSDL v3. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>HabitGrid.WidgetHost</RootNamespace>
+    <AssemblyName>HabitGrid.WidgetHost</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Tên hiển thị trên toast của Windows (ToastNotificationManagerCompat lấy từ thông tin sản phẩm). -->
+    <Product>HabitGrid</Product>
+    <AssemblyTitle>HabitGrid</AssemblyTitle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HabitGrid.Core\HabitGrid.Core.csproj" />
+    <ProjectReference Include="..\HabitGrid.Data\HabitGrid.Data.csproj" />
+    <ProjectReference Include="..\HabitGrid.Platform\HabitGrid.Platform.csproj" />
+    <ProjectReference Include="..\HabitGrid.Presentation\HabitGrid.Presentation.csproj" />
+    <ProjectReference Include="..\HabitGrid.UI\HabitGrid.UI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Dùng lại khay hệ thống Win32 của v1 (không phụ thuộc WinForms). -->
+    <Compile Include="..\HabitGrid.App\SystemTrayManager.cs" Link="Shared\SystemTrayManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.WinUI.Notifications" Version="7.1.2" />
+  </ItemGroup>
+
+</Project>

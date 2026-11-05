@@ -23,6 +23,17 @@ public sealed partial class TodayPage : Page
 
     public TodayViewModel ViewModel { get; }
 
+    /// <summary>Phím 1–9: check dòng thứ <paramref name="index"/> (đếm từ 0) theo đúng thứ tự đang hiển thị.</summary>
+    public async Task CheckRowAsync(int index)
+    {
+        var items = ViewModel.Groups.SelectMany(g => g.Items).ToList();
+
+        if (index >= 0 && index < items.Count)
+        {
+            await ViewModel.CheckInAsync(items[index]);
+        }
+    }
+
     protected override async void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);

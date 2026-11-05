@@ -36,6 +36,7 @@ public sealed partial class HabitDetailPage : Page
 
         BackText.Text = Ui.T("detail.back");
         EditText.Text = Ui.T("habits.edit");
+        FocusText.Text = Ui.T("detail.focus");
         BestLabel.Text = Ui.T("detail.streak.best");
         RateLabel.Text = Ui.T("detail.rate30");
         TotalLabel.Text = Ui.T("detail.total");
@@ -233,6 +234,27 @@ public sealed partial class HabitDetailPage : Page
         else
         {
             Frame.Navigate(typeof(HabitsPage));
+        }
+    }
+
+    /// <summary>Bắt đầu Focus gắn với thói quen này (WidgetHost chạy đồng hồ và cộng phút khi xong).</summary>
+    private async void OnFocusClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (ViewModel.Habit is { } habit && !await HostLink.StartFocusAsync(habit.Id))
+            {
+                await new ContentDialog
+                {
+                    XamlRoot = XamlRoot,
+                    Content = Ui.T("focus.host.missing"),
+                    CloseButtonText = Ui.T("celebrate.close")
+                }.ShowAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            App.Host.Get<IAppLogger>().Error("Bắt đầu Focus từ trang chi tiết lỗi", ex);
         }
     }
 

@@ -35,6 +35,9 @@ public static class SmokeRunner
             }
 
             await Task.Delay(800);
+            GamificationCoordinator.DialogsEnabled = false;
+            var celebrations = 0;
+            App.Host.Get<GamificationService>().Celebrated += (_, _) => celebrations++;
 
             await OnboardingJourneyAsync(window, logger);
             await CheckInRoundTripAsync(window, logger);
@@ -48,6 +51,8 @@ public static class SmokeRunner
             }
 
             await DetailJourneyAsync(window, logger);
+            await BuddyJourneyAsync(window, logger, () => celebrations);
+            await ShortcutsJourneyAsync(window, logger);
 
             // Mọi theme × sáng/tối phải dựng được (ảnh để duyệt giao diện).
             var variants = new (ThemeDefinition Theme, ThemeMode Mode, string Name)[]
@@ -342,6 +347,57 @@ public static class SmokeRunner
         Require(Ui.T("settings.title") == before, "Không trả lại được ngôn ngữ ban đầu.");
 
         logger.Info("SMOKE settings OK");
+    }
+
+    private static async Task ShortcutsJourneyAsync(MainWindow window, IAppLogger logger)
+    {
+        // Lệnh palette: chuyển trang.
+        await window.RunCommandAsync(new PaletteCommand(PaletteKind.Page, "settings", PageKeys.Settings));
+        await Task.Delay(500);
+        Require(window.CurrentPage is SettingsPage, "Lệnh palette không mở được Cài đặt.");
+
+        // Phím 1 trên trang Hôm nay: check dòng đầu tiên.
+        await GoToAsync(window, PageKeys.Today);
+        var today = App.Host.Get<TodayViewModel>();
+        await today.LoadAsync();
+        var first = today.Groups.SelectMany(g => g.Items).First();
+        var wasDone = first.IsDone;
+        var value = first.Value;
+        await ((TodayPage)window.CurrentPage!).CheckRowAsync(0);
+        await Task.Delay(400);
+        var after = today.Groups.SelectMany(g => g.Items).First(i => i.Id == first.Id);
+        Require(after.IsDone != wasDone || after.Value != value, "Phím 1 không check được dòng đầu tiên.");
+
+        // Lệnh palette: check một thói quen theo tên.
+        var target = today.Groups.SelectMany(g => g.Items).First(i => i.Kind == HabitKind.Boolean && i.Id != first.Id);
+        var before = target.IsDone;
+        await window.RunCommandAsync(new PaletteCommand(PaletteKind.CheckHabit, target.Name, target.Id.ToString()));
+        await Task.Delay(400);
+        Require(today.Groups.SelectMany(g => g.Items).First(i => i.Id == target.Id).IsDone != before, "Lệnh palette Check không đổi trạng thái thói quen.");
+
+        // Lệnh palette: mở chi tiết thói quen.
+        await window.RunCommandAsync(new PaletteCommand(PaletteKind.OpenHabit, target.Name, target.Id.ToString()));
+        await Task.Delay(700);
+        Require(window.CurrentPage is HabitDetailPage, "Lệnh palette không mở được trang chi tiết.");
+        logger.Info("SMOKE shortcuts OK");
+    }
+
+    private static async Task BuddyJourneyAsync(MainWindow window, IAppLogger logger, Func<int> celebrations)
+    {
+        await GoToAsync(window, PageKeys.Buddy);
+        var page = window.CurrentPage as BuddyPage ?? throw new InvalidOperationException("Không mở được trang Buddy.");
+        await page.Ready;
+        await Task.Delay(500);
+
+        var vm = page.ViewModel;
+        Require(vm.ErrorMessage is null, "Trang Buddy báo lỗi: " + vm.ErrorMessage);
+        Require(vm.Badges.Count == HabitGrid.Core.Domain.Gamification.AchievementCatalog.Default.Count, "Trang Buddy thiếu huy hiệu.");
+        Require(vm.Level >= 1 && vm.TotalXp > 0, "Buddy không có XP dù đã check-in nhiều lần.");
+        Require(vm.Badges.Any(b => b.Id == "first_checkin" && b.Unlocked), "Huy hiệu 'first_checkin' chưa mở dù đã check-in.");
+        Require(vm.Badges.Where(b => b.Hidden).All(b => b.Group == "secret"), "Có huy hiệu thường bị ẩn.");
+        Require(celebrations() >= 1, "Không có lần ăn mừng nào dù đã mở khóa huy hiệu sau lần tính đầu.");
+        await SnapAsync(window, "buddy");
+        logger.Info($"SMOKE buddy OK (level {vm.Level}, xp {vm.TotalXp}, badges {vm.UnlockedCount}/{vm.TotalCount}, celebrations {celebrations()})");
     }
 
     /// <summary>Lùi ngày bắt đầu của các thói quen có/không và ghi lịch sử mẫu để ảnh chụp có heatmap thật.</summary>

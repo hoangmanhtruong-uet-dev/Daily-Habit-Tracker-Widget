@@ -211,4 +211,111 @@
   <data name="settings.lang.vi" xml:space="preserve"><value>Tiếng Việt</value></data>
   <data name="settings.lang.en" xml:space="preserve"><value>English</value></data>
   <data name="settings.pastel.note" xml:space="preserve"><value>This theme is light only.</value></data>
+  <data name="settings.widgets" xml:space="preserve"><value>Desktop widgets</value></data>
+  <data name="settings.autostart" xml:space="preserve"><value>Start widgets with Windows</value></data>
+  <data name="settings.autostart.hint" xml:space="preserve"><value>Widgets appear when you sign in, without opening the main app. Turn off to run them only when you open them.</value></data>
+  <data name="buddy.title" xml:space="preserve"><value>Buddy</value></data>
+  <data name="buddy.level" xml:space="preserve"><value>Level {0}</value></data>
+  <data name="buddy.xp" xml:space="preserve"><value>{0}/{1} XP</value></data>
+  <data name="buddy.maxlevel" xml:space="preserve"><value>Max level</value></data>
+  <data name="buddy.freeze" xml:space="preserve"><value>Freeze: {0}</value></data>
+  <data name="buddy.streak" xml:space="preserve"><value>{0}-day overall streak</value></data>
+  <data name="buddy.badges" xml:space="preserve"><value>Badges</value></data>
+  <data name="buddy.badges.count" xml:space="preserve"><value>{0}/{1} unlocked</value></data>
+  <data name="badge.secret.name" xml:space="preserve"><value>???</value></data>
+  <data name="badge.secret.desc" xml:space="preserve"><value>A secret badge.</value></data>
+  <data name="badge.progress" xml:space="preserve"><value>{0}/{1}</value></data>
+  <data name="badge.tier.1" xml:space="preserve"><value>Bronze</value></data>
+  <data name="badge.tier.2" xml:space="preserve"><value>Silver</value></data>
+  <data name="badge.tier.3" xml:space="preserve"><value>Gold</value></data>
+  <data name="stage.egg" xml:space="preserve"><value>Egg</value></data>
+  <data name="stage.baby" xml:space="preserve"><value>Baby</value></data>
+  <data name="stage.teen" xml:space="preserve"><value>Teen</value></data>
+  <data name="stage.adult" xml:space="preserve"><value>Adult</value></data>
+  <data name="stage.legend" xml:space="preserve"><value>Legend</value></data>
+  <data name="celebrate.level.title" xml:space="preserve"><value>Level {0}!</value></data>
+  <data name="celebrate.level.body" xml:space="preserve"><value>Your Buddy grew. You earned 1 freeze.</value></data>
+  <data name="celebrate.badge.title" xml:space="preserve"><value>New badge</value></data>
+  <data name="celebrate.close" xml:space="preserve"><value>Awesome!</value></data>
+  <data name="freeze.ask.title" xml:space="preserve"><value>Use a freeze to keep your streak?</value></data>
+  <data name="freeze.ask.body" xml:space="preserve"><value>You missed {0} day(s). Spend {0} freeze to keep your overall streak?</value></data>
+  <data name="freeze.use" xml:space="preserve"><value>Use freeze</value></data>
+  <data name="freeze.skip" xml:space="preserve"><value>Let it break</value></data>
+  <data name="settings.freeze.auto" xml:space="preserve"><value>Use freezes automatically</value></data>
+  <data name="settings.freeze.hint" xml:space="preserve"><value>Keeps your streak with a freeze when you have tokens; turn off to be asked first.</value></data>
+  <data name="badge.first_checkin.name" xml:space="preserve"><value>First step</value></data>
+  <data name="badge.first_checkin.desc" xml:space="preserve"><value>Check in for the first time.</value></data>
+  <data name="badge.first_perfect_day.name" xml:space="preserve"><value>First perfect day</value></data>
+  <data name="badge.first_perfect_day.desc" xml:space="preserve"><value>Finish every scheduled habit in one day.</value></data>
+  <data name="badge.three_habits.name" xml:space="preserve"><value>Trio</value></data>
+  <data name="badge.three_habits.desc" xml:space="preserve"><value>Track 3 habits at the same time.</value></data>
+  <data name="badge.first_note.name" xml:space="preserve"><value>Note taker</value></data>
+  <data name="badge.first_note.desc" xml:space="preserve"><value>Write your first note.</value></data>
+  <data name="badge.streak_7.name" xml:space="preserve"><value>A full week</value></data>
+  <data name="badge.streak_7.desc" xml:space="preserve"><value>Keep a 7-day streak.</value></data>
+  <data name="badge.streak_30.name" xml:space="preserve"><value>A month strong</value></data>
+  <data name="badge.streak_30.desc" xml:space="preserve"><value>Keep a 30-day streak.</value></data>
+  <data name="badge.streak_100.name" xml:space="preserve"><value>Hundred days</value></data>
+  <data name="badge.streak_100.desc" xml:space="preserve"><value>Keep a 100-day streak.</value></data>
+  <data name="badge.streak_365.name" xml:space="preserve"><value>A whole year</value></data>
+  <data name="badge.streak_365.desc" xml:space="preserve"><value>Keep a 365-day streak.</value></data>
+  <data name="badge.comeback.name" xml:space="preserve"><value>Comeback</value></data>
+  <data name="badge.comeback.desc" xml:space="preserve"><value>Lose a 7-day streak, then build another one.</value></data>
+  <data name="badge.checkins_100.name" xml:space="preserve"><value>100 check-ins</value></data>
+  <data name="badge.checkins_100.desc" xml:space="preserve"><value>Complete 100 check-ins.</value></data>
+  <data name="badge.checkins_1000.name" xml:space="preserve"><value>1000 check-ins</value></data>
+  <data name="badge.checkins_1000.desc" xml:space="preserve"><value>Complete 1000 check-ins.</value></data>
+  <data name="badge.focus_10h.name" xml:space="preserve"><value>10 hours of focus</value></data>
+  <data name="badge.focus_10h.desc" xml:space="preserve"><value>Focus for 10 hours in total.</value></data>
+  <data name="badge.water_100_glasses.name" xml:space="preserve"><value>100 glasses of water</value></data>
+  <data name="badge.water_100_glasses.desc" xml:space="preserve"><value>Drink 100 glasses (habit tagged water).</value></data>
+  <data name="badge.early_bird.name" xml:space="preserve"><value>Early bird</value></data>
+  <data name="badge.early_bird.desc" xml:space="preserve"><value>Check in before 7 AM ten times.</value></data>
+  <data name="badge.night_owl.name" xml:space="preserve"><value>Night owl</value></data>
+  <data name="badge.night_owl.desc" xml:space="preserve"><value>Check in after 11 PM ten times.</value></data>
+  <data name="badge.weekend_warrior.name" xml:space="preserve"><value>Weekend warrior</value></data>
+  <data name="badge.weekend_warrior.desc" xml:space="preserve"><value>A perfect Saturday and Sunday.</value></data>
+  <data name="badge.widget_pinned.name" xml:space="preserve"><value>Pinned to desktop</value></data>
+  <data name="badge.widget_pinned.desc" xml:space="preserve"><value>Pin a widget to your desktop.</value></data>
+  <data name="badge.quick_checkin_used.name" xml:space="preserve"><value>Quick hands</value></data>
+  <data name="badge.quick_checkin_used.desc" xml:space="preserve"><value>Use the Quick check-in hotkey.</value></data>
+  <data name="badge.theme_changed.name" xml:space="preserve"><value>Your own style</value></data>
+  <data name="badge.theme_changed.desc" xml:space="preserve"><value>Change the app theme.</value></data>
+  <data name="badge.shared_card.name" xml:space="preserve"><value>Show off</value></data>
+  <data name="badge.shared_card.desc" xml:space="preserve"><value>Share an achievement card.</value></data>
+  <data name="badge.midnight_checkin.name" xml:space="preserve"><value>Midnight</value></data>
+  <data name="badge.midnight_checkin.desc" xml:space="preserve"><value>Check in at exactly 00:00.</value></data>
+  <data name="badge.perfect_week.name" xml:space="preserve"><value>Perfect week</value></data>
+  <data name="badge.perfect_week.desc" xml:space="preserve"><value>Seven perfect days in a row.</value></data>
+  <data name="badge.marathon_day.name" xml:space="preserve"><value>Marathon day</value></data>
+  <data name="badge.marathon_day.desc" xml:space="preserve"><value>Complete 10 check-ins in one day.</value></data>
+  <data name="palette.title" xml:space="preserve"><value>Command palette</value></data>
+  <data name="palette.placeholder" xml:space="preserve"><value>Type to find pages, actions, habits…</value></data>
+  <data name="palette.empty" xml:space="preserve"><value>No matching command</value></data>
+  <data name="cmd.new" xml:space="preserve"><value>New habit</value></data>
+  <data name="cmd.focus" xml:space="preserve"><value>Start Focus</value></data>
+  <data name="cmd.focus.stop" xml:space="preserve"><value>Stop Focus</value></data>
+  <data name="cmd.quick" xml:space="preserve"><value>Quick check-in</value></data>
+  <data name="cmd.open" xml:space="preserve"><value>Open: {0}</value></data>
+  <data name="cmd.check" xml:space="preserve"><value>Check: {0}</value></data>
+  <data name="cmd.undo" xml:space="preserve"><value>Undo</value></data>
+  <data name="detail.focus" xml:space="preserve"><value>Focus</value></data>
+  <data name="focus.sent" xml:space="preserve"><value>Focus command sent to the widgets</value></data>
+  <data name="focus.host.missing" xml:space="preserve"><value>HabitGrid Widgets was not found, so Focus can't start.</value></data>
+  <data name="settings.reminders" xml:space="preserve"><value>Reminders</value></data>
+  <data name="settings.reminders.enabled" xml:space="preserve"><value>Enable reminders</value></data>
+  <data name="settings.reminders.hint" xml:space="preserve"><value>Reminder toasts appear on time even when the app is closed. Set reminder times per habit in the editor.</value></data>
+  <data name="settings.quiet" xml:space="preserve"><value>Quiet hours</value></data>
+  <data name="settings.quiet.from" xml:space="preserve"><value>From</value></data>
+  <data name="settings.quiet.to" xml:space="preserve"><value>To</value></data>
+  <data name="settings.rescue" xml:space="preserve"><value>Streak rescue at 9 PM</value></data>
+  <data name="settings.morning" xml:space="preserve"><value>Morning summary</value></data>
+  <data name="settings.morning.at" xml:space="preserve"><value>At</value></data>
+  <data name="settings.hotkeys" xml:space="preserve"><value>Shortcuts</value></data>
+  <data name="settings.hotkey.quick" xml:space="preserve"><value>Quick check-in (Win+Alt+H)</value></data>
+  <data name="settings.hotkey.focus" xml:space="preserve"><value>Start/pause Focus (Win+Alt+F)</value></data>
+  <data name="settings.hotkeys.hint" xml:space="preserve"><value>Global shortcuts are registered by HabitGrid Widgets. If another app already uses one, Ctrl+Alt is used instead.</value></data>
+  <data name="settings.hotkey.registered" xml:space="preserve"><value>In use: {0}</value></data>
+  <data name="settings.hotkey.none" xml:space="preserve"><value>Not registered (widgets not running or the key is taken)</value></data>
+  <data name="settings.shortcuts.inapp" xml:space="preserve"><value>In the app: Ctrl+K commands · Ctrl+N new habit · Ctrl+Z undo · Ctrl+, settings · 1–9 check on Today</value></data>
 </root>

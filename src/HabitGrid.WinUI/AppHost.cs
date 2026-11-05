@@ -167,12 +167,27 @@ public sealed class AppHost : IDisposable
         services.AddSingleton<IDayLogRepository>(_ => new DayLogRepository(database, clock, bus));
         services.AddSingleton<IRoutineRepository>(_ => new RoutineRepository(database, clock, bus));
         services.AddSingleton<IProfileRepository>(_ => new ProfileRepository(database, clock, bus));
+        services.AddSingleton<IAchievementRepository>(_ => new AchievementRepository(database, clock, bus));
+        services.AddSingleton<IFocusRepository>(_ => new FocusRepository(database, clock, bus));
         services.AddSingleton<ISettingsStore>(settings);
         services.AddSingleton(new ThemeService(settings));
         services.AddSingleton<IEntitlements>(entitlements);
         services.AddSingleton<IDayProvider>(_ => new DayProvider(TimeSpan.FromHours(dayStartHour)));
         services.AddSingleton<IStreakCalculator>(new StreakCalculator());
         services.AddSingleton<IStatsCalculator>(new StatsCalculator());
+        services.AddSingleton<GamificationService>(sp => new GamificationService(
+            sp.GetRequiredService<IHabitRepository>(),
+            sp.GetRequiredService<IDayLogRepository>(),
+            sp.GetRequiredService<IProfileRepository>(),
+            sp.GetRequiredService<IAchievementRepository>(),
+            sp.GetRequiredService<ISettingsStore>(),
+            sp.GetRequiredService<IDayProvider>(),
+            sp.GetRequiredService<IEntitlements>(),
+            sp.GetRequiredService<IFocusRepository>()));
+        services.AddTransient<BuddyViewModel>(sp => new BuddyViewModel(
+            sp.GetRequiredService<GamificationService>(),
+            sp.GetRequiredService<IProfileRepository>(),
+            sp.GetRequiredService<IAchievementRepository>()));
         services.AddSingleton<HabitCreationService>(sp => new HabitCreationService(
             sp.GetRequiredService<IHabitRepository>(),
             sp.GetRequiredService<IDayProvider>(),

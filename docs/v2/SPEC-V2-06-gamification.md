@@ -70,3 +70,8 @@ Tôn trọng "Giảm chuyển động" và tắt âm.
 3. 30 huy hiệu có test điều kiện; huy hiệu bí mật không lộ điều kiện trong UI.
 4. Freeze: các kịch bản lỡ 1 ngày, lỡ 2 ngày với 1 token, tự dùng/hỏi đều có test.
 5. Animation ăn mừng không làm rớt khung hình trang Hôm nay (< 16 ms/khung trung bình).
+
+## Tiến độ triển khai (05/11/2026)
+Đã có (lõi thuần, có test): `XpEngine` (XP tính lại được từ nhật ký, trần 200/ngày, sửa muộn > 2 ngày không có XP, mốc streak 7/30/100/365), `LevelCurve`, `AchievementEngine` đọc **23 huy hiệu từ `achievements.json`** (3 bí mật), `FreezeEngine` (chỉ dùng token khi cứu được chuỗi). `GamificationService` lưu XP/level/huy hiệu, thưởng freeze (mỗi 7 ngày chuỗi tổng, mỗi lần lên level), áp freeze (một token/ngày cho mọi thói quen), lần tính đầu không ăn mừng. UI: trang **Buddy** (tiến hóa theo level 5/15/30/50, XP, freeze, lưới huy hiệu, bí mật không lộ điều kiện), hộp thoại lên cấp/huy hiệu mới/hỏi dùng freeze, công tắc "Tự dùng freeze".
+Quyết định diễn giải: "XP cần cho level n = round(50·n^1.6)" được hiểu là **tổng XP để đạt level n** (level 100 ≈ 79 nghìn XP); cộng dồn từng bậc cần ~3 triệu XP, không đạt được với trần 200 XP/ngày.
+**Chưa làm:** huy hiệu 3 bậc chỉ có dữ liệu bậc (chưa có huy hiệu đồng/bạc/vàng riêng cho nhóm khối lượng), 3 huy hiệu xã hội [v2.2] và Focus (focus_10h luôn 0 cho tới khi có Focus), Buddy dùng emoji (chưa có Rive/Lottie), cosmetics, biểu cảm theo năng lượng hôm nay ở trang Buddy, animation ăn mừng riêng (số XP bay, confetti theo mốc), widget Buddy, Wrapped [v2.2], đo khung hình (tiêu chí 5).
