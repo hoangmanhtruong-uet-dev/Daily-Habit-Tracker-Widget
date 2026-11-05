@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using HabitGrid.Presentation.Services;
+using HabitGrid.WinUI.Controls;
 using HabitGrid.Presentation.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -14,6 +15,8 @@ public sealed partial class HabitsPage : Page
         ViewModel = App.Host.Get<HabitsViewModel>();
         InitializeComponent();
         ViewModel.PropertyChanged += OnViewModelChanged;
+        // Không dùng hiệu ứng vào/ra mặc định của GridView: nó làm thẻ chớp mờ khi tải lại danh sách.
+        List.ItemContainerTransitions = new Microsoft.UI.Xaml.Media.Animation.TransitionCollection();
     }
 
     public HabitsViewModel ViewModel { get; }
@@ -28,6 +31,7 @@ public sealed partial class HabitsPage : Page
             AddButtonText.Text = Ui.T("habits.add");
             EmptyText.Text = Ui.T("habits.empty");
             UndoButton.Content = Ui.T("today.undo");
+            UpdateChips();
             await ViewModel.LoadAsync();
             UpdateEmpty();
         }
@@ -39,9 +43,14 @@ public sealed partial class HabitsPage : Page
 
     private void OnViewModelChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(HabitsViewModel.IsEmpty))
+        if (e.PropertyName is nameof(HabitsViewModel.IsEmpty) or nameof(HabitsViewModel.ShowArchived))
         {
+            UpdateChips();
             UpdateEmpty();
+        }
+        else if (e.PropertyName == nameof(HabitsViewModel.ArchivedCount))
+        {
+            UpdateChips();
         }
         else if (e.PropertyName == nameof(HabitsViewModel.LastDeletedId))
         {
@@ -71,49 +80,67 @@ public sealed partial class HabitsPage : Page
         }
     }
 
-    private async void OnEditClick(object sender, RoutedEventArgs e)
+    private void UpdateChips()
     {
-        try
-        {
-            if (sender is FrameworkElement { Tag: HabitListItem item } &&
-                await HabitEditorDialog.ShowAsync(XamlRoot, item.Habit) is not null)
-            {
-                await ViewModel.LoadAsync();
-            }
-        }
-        catch (Exception ex)
-        {
-            Log(ex, "Sửa thói quen lỗi");
-        }
+        ActiveChip.Content = Ui.T("habits.filter.active");
+        ArchivedChip.Content = ViewModel.ArchivedCount > 0
+            ? $"{Ui.T("habits.filter.archived")} · {ViewModel.ArchivedCount}"
+            : Ui.T("habits.filter.archived");
+        ActiveChip.IsChecked = !ViewModel.ShowArchived;
+        ArchivedChip.IsChecked = ViewModel.ShowArchived;
+        EmptyText.Text = Ui.T(ViewModel.ShowArchived ? "habits.empty.archived" : "habits.empty");
+        List.CanReorderItems = !ViewModel.ShowArchived;
+        AddButton.Visibility = ViewModel.ShowArchived ? Visibility.Collapsed : Visibility.Visible;
     }
 
-    private async void OnArchiveClick(object sender, RoutedEventArgs e)
+    private void OnActiveChipClick(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            if (sender is FrameworkElement { Tag: HabitListItem item })
-            {
-                await ViewModel.ArchiveAsync(item);
-            }
-        }
-        catch (Exception ex)
-        {
-            Log(ex, "Lưu trữ lỗi");
-        }
+        ViewModel.ShowArchived = false;
+        UpdateChips();
     }
 
-    private async void OnDeleteClick(object sender, RoutedEventArgs e)
+    private void OnArchivedChipClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ShowArchived = true;
+        UpdateChips();
+    }
+
+    private async void OnCardAction(object? sender, CardActionEventArgs e)
     {
         try
         {
-            if (sender is FrameworkElement { Tag: HabitListItem item })
+            switch (e.Action)
             {
-                await ViewModel.DeleteAsync(item);
+                case CardAction.Open:
+                    Frame.Navigate(typeof(HabitDetailPage), e.Item.Id);
+                    break;
+                case CardAction.Edit:
+                    if (await HabitEditorDialog.ShowAsync(XamlRoot, e.Item.Habit) is not null)
+                    {
+                        await ViewModel.LoadAsync();
+                    }
+
+                    break;
+                case CardAction.MoveUp:
+                    await ViewModel.MoveByAsync(e.Item, -1);
+                    break;
+                case CardAction.MoveDown:
+                    await ViewModel.MoveByAsync(e.Item, 1);
+                    break;
+                case CardAction.Archive:
+                    await ViewModel.ArchiveAsync(e.Item);
+                    break;
+                case CardAction.Unarchive:
+                    await ViewModel.UnarchiveAsync(e.Item);
+                    break;
+                case CardAction.Delete:
+                    await ViewModel.DeleteAsync(e.Item);
+                    break;
             }
         }
         catch (Exception ex)
         {
-            Log(ex, "Xóa lỗi");
+            Log(ex, "Thao tác thẻ thói quen lỗi");
         }
     }
 

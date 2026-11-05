@@ -165,4 +165,35 @@
   <data name="today.relax" xml:space="preserve"><value>Nothing due today 😴</value></data>
   <data name="skip.limit" xml:space="preserve"><value>Each habit can be skipped at most twice a week.</value></data>
   <data name="week.today" xml:space="preserve"><value>Today</value></data>
+  <data name="habits.filter.active" xml:space="preserve"><value>Active</value></data>
+  <data name="habits.filter.archived" xml:space="preserve"><value>Archived</value></data>
+  <data name="habits.unarchive" xml:space="preserve"><value>Restore</value></data>
+  <data name="habits.moveup" xml:space="preserve"><value>Move up</value></data>
+  <data name="habits.movedown" xml:space="preserve"><value>Move down</value></data>
+  <data name="habits.open" xml:space="preserve"><value>View details</value></data>
+  <data name="habits.empty.archived" xml:space="preserve"><value>No archived habits yet</value></data>
+  <data name="detail.back" xml:space="preserve"><value>Back</value></data>
+  <data name="detail.streak.current" xml:space="preserve"><value>Current streak</value></data>
+  <data name="detail.streak.best" xml:space="preserve"><value>Best</value></data>
+  <data name="detail.rate30" xml:space="preserve"><value>30-day rate</value></data>
+  <data name="detail.total" xml:space="preserve"><value>Total completions</value></data>
+  <data name="detail.delta.up" xml:space="preserve"><value>▲ {0}% vs previous period</value></data>
+  <data name="detail.delta.down" xml:space="preserve"><value>▼ {0}% vs previous period</value></data>
+  <data name="detail.delta.same" xml:space="preserve"><value>Same as previous period</value></data>
+  <data name="detail.heatmap" xml:space="preserve"><value>Last 52 weeks</value></data>
+  <data name="detail.months" xml:space="preserve"><value>By month</value></data>
+  <data name="detail.weekdays" xml:space="preserve"><value>By weekday</value></data>
+  <data name="detail.journal" xml:space="preserve"><value>Journal</value></data>
+  <data name="detail.journal.empty" xml:space="preserve"><value>No notes yet. Tap a day in the calendar to add one.</value></data>
+  <data name="detail.notfound" xml:space="preserve"><value>Habit not found</value></data>
+  <data name="detail.day.value" xml:space="preserve"><value>Value</value></data>
+  <data name="detail.day.done" xml:space="preserve"><value>Done</value></data>
+  <data name="detail.day.skip" xml:space="preserve"><value>Skip this day</value></data>
+  <data name="detail.day.note" xml:space="preserve"><value>Note</value></data>
+  <data name="detail.day.mood" xml:space="preserve"><value>Mood</value></data>
+  <data name="detail.day.save" xml:space="preserve"><value>Save</value></data>
+  <data name="detail.day.cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="day.invalid" xml:space="preserve"><value>This day can't be edited.</value></data>
+  <data name="detail.legend.less" xml:space="preserve"><value>Less</value></data>
+  <data name="detail.legend.more" xml:space="preserve"><value>More</value></data>
 </root>

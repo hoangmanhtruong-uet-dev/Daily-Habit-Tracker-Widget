@@ -46,6 +46,8 @@ public static class SmokeRunner
                 logger.Info($"SMOKE page {key} OK");
             }
 
+            await DetailJourneyAsync(window, logger);
+
             // Mọi theme × sáng/tối phải dựng được (ảnh để duyệt giao diện).
             var variants = new (ThemeDefinition Theme, ThemeMode Mode, string Name)[]
             {
@@ -262,7 +264,73 @@ public static class SmokeRunner
         logger.Info("SMOKE editor edit OK");
     }
 
+    // ------------------------------------------------------------------ trang Thói quen + chi tiết
+
+    private static async Task DetailJourneyAsync(MainWindow window, IAppLogger logger)
+    {
+        await GoToAsync(window, PageKeys.Habits);
+        await Task.Delay(500);
+
+        var cards = FindAll<HabitCollectionCard>(window.Content).Where(c => c.Item is not null).ToList();
+        var habits = App.Host.Get<HabitsViewModel>();
+        Require(cards.Count > 0 && cards.Count == habits.Items.Count,
+            $"Trang Thói quen hiển thị {cards.Count} thẻ nhưng view model có {habits.Items.Count}.");
+        Require(cards.All(c => c.Item!.Heatmap is { Weeks.Count: HabitsViewModel.HeatmapWeeks }), "Thẻ thiếu heatmap 12 tuần.");
+        await SnapAsync(window, "habits-collection");
+
+        cards[0].Open();
+        await Task.Delay(900);
+
+        var page = window.CurrentPage as HabitDetailPage
+                   ?? throw new InvalidOperationException("Bấm thẻ thói quen không mở trang chi tiết.");
+        await page.Loaded2;
+        await Task.Delay(300);
+
+        var vm = page.ViewModel;
+        Require(vm.Habit?.Id == cards[0].Item!.Id, "Trang chi tiết mở sai thói quen.");
+        Require(vm.Heatmap is { Weeks.Count: HabitDetailViewModel.HeatmapWeeks }, "Chi tiết thiếu heatmap 52 tuần.");
+        Require(FindAll<HeatmapGrid>(window.Content).Any(h => h.IsInteractive && h.Data is not null), "Heatmap chi tiết chưa được vẽ.");
+
+        var day = vm.Today.AddDays(-1);
+
+        if (day >= vm.Habit!.StartDate)
+        {
+            var ok = await vm.SaveDayAsync(day, Math.Max(1, vm.Habit.EffectiveTarget), false, "Ghi chú từ smoke test", 4);
+            Require(ok, "Không lưu được ngày trong trang chi tiết: " + vm.ErrorMessage);
+            page.Render();
+            Require(vm.Journal.Any(j => j.Note == "Ghi chú từ smoke test"), "Nhật ký không hiện ghi chú vừa lưu.");
+            await Task.Delay(300);
+        }
+
+        await SnapAsync(window, "habit-detail");
+        logger.Info("SMOKE habit detail OK");
+    }
+
     // ------------------------------------------------------------------ tiện ích
+
+    private static IEnumerable<T> FindAll<T>(DependencyObject? parent) where T : DependencyObject
+    {
+        if (parent is null)
+        {
+            yield break;
+        }
+
+        var count = VisualTreeHelper.GetChildrenCount(parent);
+        for (var i = 0; i < count; i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+
+            if (child is T match)
+            {
+                yield return match;
+            }
+
+            foreach (var nested in FindAll<T>(child))
+            {
+                yield return nested;
+            }
+        }
+    }
 
     private static async Task GoToAsync(MainWindow window, string key)
     {

@@ -3,12 +3,13 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:HabitGrid.WinUI"
+    xmlns:controls="using:HabitGrid.WinUI.Controls"
     xmlns:vm="using:HabitGrid.Presentation.ViewModels"
     NavigationCacheMode="Required">
 
-    <Grid Padding="36,28,36,16" RowDefinitions="Auto,*,Auto">
+    <Grid Padding="36,28,36,16" RowDefinitions="Auto,Auto,*,Auto">
         <Grid ColumnDefinitions="*,Auto">
-            <TextBlock x:Name="TitleText" Style="{StaticResource TitleLargeTextBlockStyle}" VerticalAlignment="Center" />
+            <TextBlock x:Name="TitleText" Style="{StaticResource TitleDisplayTextStyle}" VerticalAlignment="Center" />
             <Button Grid.Column="1" x:Name="AddButton" Click="OnAddClick" Style="{StaticResource GradientButtonStyle}">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE710;" FontSize="14" />
@@ -17,65 +18,35 @@
             </Button>
         </Grid>
 
-        <ListView Grid.Row="1" x:Name="List" Margin="0,16,0,0" ItemsSource="{x:Bind ViewModel.Items}"
-                  CanReorderItems="True" AllowDrop="True" SelectionMode="None"
-                  DragItemsCompleted="OnDragItemsCompleted">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Padding" Value="0" />
-                    <Setter Property="Margin" Value="0,0,0,8" />
-                </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="vm:HabitListItem">
-                    <Border Style="{StaticResource CardBorder}">
-                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="14">
-                            <Border Width="42" Height="42" CornerRadius="12"
-                                    Background="{x:Bind local:Ui.SoftBrush(ColorHue)}">
-                                <TextBlock Text="{x:Bind local:Ui.IconText(Icon)}" FontSize="21"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
-                            </Border>
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                                <TextBlock Text="{x:Bind Name}" Style="{StaticResource BodyStrongTextBlockStyle}"
-                                           TextTrimming="CharacterEllipsis" />
-                                <TextBlock Text="{x:Bind local:Ui.HabitSubText(Streak, StreakUnit, Rate30), Mode=OneWay}"
-                                           Style="{StaticResource CaptionTextBlockStyle}"
-                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                            </StackPanel>
-                            <Button Grid.Column="3" Tag="{x:Bind}" Padding="8,6" Background="Transparent" BorderThickness="0"
-                                    AutomationProperties.Name="..." >
-                                <FontIcon Glyph="&#xE712;" FontSize="16" />
-                                <Button.Flyout>
-                                    <MenuFlyout>
-                                        <MenuFlyoutItem Tag="{x:Bind}" Click="OnEditClick"
-                                                        Text="{x:Bind local:Ui.T('habits.edit')}">
-                                            <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE70F;" /></MenuFlyoutItem.Icon>
-                                        </MenuFlyoutItem>
-                                        <MenuFlyoutItem Tag="{x:Bind}" Click="OnArchiveClick"
-                                                        Text="{x:Bind local:Ui.T('habits.archive')}">
-                                            <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE7B8;" /></MenuFlyoutItem.Icon>
-                                        </MenuFlyoutItem>
-                                        <MenuFlyoutItem Tag="{x:Bind}" Click="OnDeleteClick"
-                                                        Text="{x:Bind local:Ui.T('habits.delete')}">
-                                            <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE74D;" /></MenuFlyoutItem.Icon>
-                                        </MenuFlyoutItem>
-                                    </MenuFlyout>
-                                </Button.Flyout>
-                            </Button>
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" Margin="0,16,0,0">
+            <ToggleButton x:Name="ActiveChip" Style="{StaticResource ChipStyle}" IsChecked="True" Click="OnActiveChipClick" />
+            <ToggleButton x:Name="ArchivedChip" Style="{StaticResource ChipStyle}" Click="OnArchivedChipClick" />
+        </StackPanel>
 
-        <StackPanel x:Name="EmptyPanel" Grid.Row="1" Visibility="Collapsed" HorizontalAlignment="Center"
+        <GridView Grid.Row="2" x:Name="List" Margin="-6,12,-6,0" ItemsSource="{x:Bind ViewModel.Items}"
+                  CanReorderItems="True" AllowDrop="True" SelectionMode="None" IsItemClickEnabled="False"
+                  DragItemsCompleted="OnDragItemsCompleted">
+            <GridView.ItemContainerStyle>
+                <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
+                    <Setter Property="Margin" Value="6" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="IsTabStop" Value="False" />
+                </Style>
+            </GridView.ItemContainerStyle>
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="vm:HabitListItem">
+                    <controls:HabitCollectionCard Item="{x:Bind}" Width="272" ActionRequested="OnCardAction" />
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+
+        <StackPanel x:Name="EmptyPanel" Grid.Row="2" Visibility="Collapsed" HorizontalAlignment="Center"
                     VerticalAlignment="Center" Spacing="10">
             <TextBlock Text="🌱" FontSize="56" HorizontalAlignment="Center" />
             <TextBlock x:Name="EmptyText" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" />
         </StackPanel>
 
-        <InfoBar Grid.Row="2" x:Name="UndoBar" Severity="Informational" IsClosable="True" IsOpen="False">
+        <InfoBar Grid.Row="3" x:Name="UndoBar" Severity="Informational" IsClosable="True" IsOpen="False">
             <InfoBar.ActionButton>
                 <Button x:Name="UndoButton" Click="OnUndoDeleteClick" />
             </InfoBar.ActionButton>

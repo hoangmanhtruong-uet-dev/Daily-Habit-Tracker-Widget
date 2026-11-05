@@ -206,6 +206,14 @@ public sealed class AppHost : IDisposable
             sp.GetRequiredService<IStatsCalculator>(),
             sp.GetRequiredService<IUiDispatcher>(),
             sp.GetRequiredService<IAppLogger>()));
+        services.AddTransient<HabitDetailViewModel>(sp => new HabitDetailViewModel(
+            sp.GetRequiredService<IHabitRepository>(),
+            sp.GetRequiredService<IDayLogRepository>(),
+            sp.GetRequiredService<IDayProvider>(),
+            sp.GetRequiredService<IStreakCalculator>(),
+            sp.GetRequiredService<IStatsCalculator>(),
+            sp.GetRequiredService<IUiDispatcher>(),
+            sp.GetRequiredService<IAppLogger>()));
 
         return new AppHost(services.BuildServiceProvider(), importNote);
     }

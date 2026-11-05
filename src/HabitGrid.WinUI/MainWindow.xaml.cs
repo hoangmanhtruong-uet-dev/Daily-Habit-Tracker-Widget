@@ -44,6 +44,9 @@ public sealed partial class MainWindow : Window
     /// <summary>Đang ở luồng làm quen (ẩn dock điều hướng).</summary>
     public bool IsOnboarding { get; private set; }
 
+    /// <summary>Trang đang hiển thị trong khung nội dung (smoke test).</summary>
+    public Microsoft.UI.Xaml.Controls.Page? CurrentPage => ContentFrame.Content as Microsoft.UI.Xaml.Controls.Page;
+
     public OnboardingPage? CurrentOnboardingPage => ContentFrame.Content as OnboardingPage;
 
     /// <summary>Áp theme, rồi quyết định hiện onboarding hay vào thẳng trang Hôm nay.</summary>

@@ -165,4 +165,35 @@
   <data name="today.relax" xml:space="preserve"><value>Hôm nay nghỉ nhé 😴</value></data>
   <data name="skip.limit" xml:space="preserve"><value>Mỗi thói quen chỉ bỏ qua tối đa 2 lần mỗi tuần.</value></data>
   <data name="week.today" xml:space="preserve"><value>Hôm nay</value></data>
+  <data name="habits.filter.active" xml:space="preserve"><value>Đang theo dõi</value></data>
+  <data name="habits.filter.archived" xml:space="preserve"><value>Đã lưu trữ</value></data>
+  <data name="habits.unarchive" xml:space="preserve"><value>Khôi phục</value></data>
+  <data name="habits.moveup" xml:space="preserve"><value>Đưa lên</value></data>
+  <data name="habits.movedown" xml:space="preserve"><value>Đưa xuống</value></data>
+  <data name="habits.open" xml:space="preserve"><value>Xem chi tiết</value></data>
+  <data name="habits.empty.archived" xml:space="preserve"><value>Chưa lưu trữ thói quen nào</value></data>
+  <data name="detail.back" xml:space="preserve"><value>Quay lại</value></data>
+  <data name="detail.streak.current" xml:space="preserve"><value>Chuỗi hiện tại</value></data>
+  <data name="detail.streak.best" xml:space="preserve"><value>Dài nhất</value></data>
+  <data name="detail.rate30" xml:space="preserve"><value>Tỷ lệ 30 ngày</value></data>
+  <data name="detail.total" xml:space="preserve"><value>Tổng lần hoàn thành</value></data>
+  <data name="detail.delta.up" xml:space="preserve"><value>▲ {0}% so với kỳ trước</value></data>
+  <data name="detail.delta.down" xml:space="preserve"><value>▼ {0}% so với kỳ trước</value></data>
+  <data name="detail.delta.same" xml:space="preserve"><value>Không đổi so với kỳ trước</value></data>
+  <data name="detail.heatmap" xml:space="preserve"><value>52 tuần gần nhất</value></data>
+  <data name="detail.months" xml:space="preserve"><value>Theo tháng</value></data>
+  <data name="detail.weekdays" xml:space="preserve"><value>Theo thứ trong tuần</value></data>
+  <data name="detail.journal" xml:space="preserve"><value>Nhật ký</value></data>
+  <data name="detail.journal.empty" xml:space="preserve"><value>Chưa có ghi chú. Chạm vào một ô trong lịch để thêm.</value></data>
+  <data name="detail.notfound" xml:space="preserve"><value>Không tìm thấy thói quen này</value></data>
+  <data name="detail.day.value" xml:space="preserve"><value>Giá trị</value></data>
+  <data name="detail.day.done" xml:space="preserve"><value>Đã làm</value></data>
+  <data name="detail.day.skip" xml:space="preserve"><value>Bỏ qua ngày này</value></data>
+  <data name="detail.day.note" xml:space="preserve"><value>Ghi chú</value></data>
+  <data name="detail.day.mood" xml:space="preserve"><value>Tâm trạng</value></data>
+  <data name="detail.day.save" xml:space="preserve"><value>Lưu</value></data>
+  <data name="detail.day.cancel" xml:space="preserve"><value>Hủy</value></data>
+  <data name="day.invalid" xml:space="preserve"><value>Không thể sửa ngày này.</value></data>
+  <data name="detail.legend.less" xml:space="preserve"><value>Ít</value></data>
+  <data name="detail.legend.more" xml:space="preserve"><value>Nhiều</value></data>
 </root>

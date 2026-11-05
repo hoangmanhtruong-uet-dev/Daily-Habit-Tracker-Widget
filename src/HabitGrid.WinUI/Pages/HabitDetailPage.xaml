@@ -1,0 +1,104 @@
+<Page
+    x:Class="HabitGrid.WinUI.Pages.HabitDetailPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:HabitGrid.WinUI.Controls">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Padding="36,24,36,32" Spacing="16" MaxWidth="1040" HorizontalAlignment="Stretch">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button x:Name="BackButton" Click="OnBackClick" Style="{StaticResource GhostButtonStyle}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE72B;" FontSize="14" />
+                        <TextBlock x:Name="BackText" />
+                    </StackPanel>
+                </Button>
+                <Button Grid.Column="2" x:Name="EditButton" Click="OnEditClick" Style="{StaticResource GhostButtonStyle}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE70F;" FontSize="14" />
+                        <TextBlock x:Name="EditText" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <TextBlock x:Name="NotFoundText" Visibility="Collapsed" Style="{StaticResource CardTitleTextStyle}" />
+
+            <StackPanel x:Name="Body" Spacing="16">
+                <!-- Hero -->
+                <Grid x:Name="Hero" CornerRadius="32" MinHeight="190">
+                    <Border x:Name="HeroFill" CornerRadius="32" />
+                    <Border x:Name="HeroScrim" CornerRadius="32" Background="Black" />
+                    <Grid Padding="28,24" ColumnDefinitions="*,Auto">
+                        <StackPanel VerticalAlignment="Bottom" Spacing="2">
+                            <TextBlock x:Name="HeroName" Style="{StaticResource TitleDisplayTextStyle}" Foreground="White" TextTrimming="CharacterEllipsis" />
+                            <TextBlock x:Name="HeroCaption" Foreground="#E6FFFFFF" />
+                            <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,6,0,0">
+                                <TextBlock x:Name="HeroStreak" FontFamily="{StaticResource DisplayFont}" FontWeight="ExtraBold" FontSize="76" LineHeight="80" Foreground="White" />
+                                <TextBlock x:Name="HeroUnit" FontFamily="{StaticResource DisplayBoldFont}" FontSize="20" Foreground="#F2FFFFFF" VerticalAlignment="Bottom" Margin="0,0,0,14" />
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" x:Name="HeroEmoji" FontSize="64" VerticalAlignment="Top" />
+                    </Grid>
+                </Grid>
+
+                <!-- Thẻ số liệu -->
+                <Grid ColumnSpacing="12" ColumnDefinitions="*,*,*">
+                    <Border Style="{StaticResource CardBorder}">
+                        <StackPanel Spacing="2">
+                            <TextBlock x:Name="BestLabel" Style="{StaticResource BodySecondaryTextStyle}" />
+                            <TextBlock x:Name="BestValue" Style="{StaticResource TitleDisplayTextStyle}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource CardBorder}">
+                        <StackPanel Spacing="2">
+                            <TextBlock x:Name="RateLabel" Style="{StaticResource BodySecondaryTextStyle}" />
+                            <TextBlock x:Name="RateValue" Style="{StaticResource TitleDisplayTextStyle}" />
+                            <TextBlock x:Name="RateDelta" Style="{StaticResource BodySecondaryTextStyle}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="2" Style="{StaticResource CardBorder}">
+                        <StackPanel Spacing="2">
+                            <TextBlock x:Name="TotalLabel" Style="{StaticResource BodySecondaryTextStyle}" />
+                            <TextBlock x:Name="TotalValue" Style="{StaticResource TitleDisplayTextStyle}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Heatmap 52 tuần -->
+                <Border Style="{StaticResource CardBorder}">
+                    <StackPanel Spacing="12">
+                        <TextBlock x:Name="HeatmapTitle" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <Grid x:Name="HeatmapHost" SizeChanged="OnHeatmapHostSizeChanged">
+                            <controls:HeatmapGrid x:Name="Heatmap" IsInteractive="True" CellTapped="OnCellTapped" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Theo tháng + theo thứ -->
+                <Grid ColumnSpacing="12" ColumnDefinitions="*,*">
+                    <Border Style="{StaticResource CardBorder}">
+                        <StackPanel Spacing="12">
+                            <TextBlock x:Name="MonthsTitle" Style="{StaticResource SectionHeader}" Margin="0" />
+                            <Grid x:Name="MonthsChart" Height="140" ColumnSpacing="10" />
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource CardBorder}">
+                        <StackPanel Spacing="12">
+                            <TextBlock x:Name="WeekdaysTitle" Style="{StaticResource SectionHeader}" Margin="0" />
+                            <Grid x:Name="WeekdaysChart" Height="140" ColumnSpacing="10" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Nhật ký -->
+                <Border Style="{StaticResource CardBorder}">
+                    <StackPanel Spacing="10">
+                        <TextBlock x:Name="JournalTitle" Style="{StaticResource SectionHeader}" Margin="0" />
+                        <TextBlock x:Name="JournalEmpty" Style="{StaticResource BodySecondaryTextStyle}" TextWrapping="Wrap" />
+                        <StackPanel x:Name="JournalList" Spacing="10" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
