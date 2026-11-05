@@ -16,16 +16,17 @@ jobs:
           dotnet-version: 10.0.x
       - name: Build spike (Release)
         run: dotnet build tools/WidgetHostSpike -c Release
-      - name: Measure 0, 1, 3 and 6 widgets
+      - name: Measure 0, 1, 3, 6 widgets and 3 with trim
         shell: pwsh
         run: |
           $exe = Get-ChildItem tools/WidgetHostSpike/bin -Recurse -Filter WidgetHostSpike.exe | Select-Object -First 1
           New-Item -ItemType Directory -Force -Path spike-out | Out-Null
-          foreach ($n in 0, 1, 3, 6) {
-            $out = Join-Path (Get-Location) "spike-out/widgets-$n.md"
-            $p = Start-Process $exe.FullName -ArgumentList "$n", "70", $out, "Large" -PassThru
+          foreach ($cfg in @(@(0,''), @(1,''), @(3,''), @(6,''), @(3,'trim'))) {
+            $n = $cfg[0]; $mode = $cfg[1]
+            $out = Join-Path (Get-Location) "spike-out/widgets-$n$mode.md"
+            $p = Start-Process $exe.FullName -ArgumentList "$n", "70", $out, "Large", $(if ($mode) { $mode } else { "none" }) -PassThru
             if (-not $p.WaitForExit(150000)) { $p.Kill(); Write-Error "spike $n timed out"; exit 1 }
-            Get-Content $out | Select-Object -First 8
+            Get-Content $out | Select-Object -First 9
           }
       - uses: actions/upload-artifact@v4
         if: always()

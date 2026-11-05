@@ -23,6 +23,8 @@ public static class Program
         var seconds = args.Length > 1 ? int.Parse(args[1], CultureInfo.InvariantCulture) : 60;
         var output = args.Length > 2 ? args[2] : "spike-result.md";
         var size = args.Length > 3 ? Enum.Parse<WidgetSize>(args[3], true) : WidgetSize.Large;
+        var trim = args.Length > 4 && args[4] == "trim";
+        var trimmed = false;
 
         var app = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
         var process = Process.GetCurrentProcess();
@@ -73,6 +75,14 @@ public static class Program
             var cpu = (cpuNow - lastCpu).TotalSeconds / (now - lastAt).TotalSeconds / Environment.ProcessorCount * 100;
             lastCpu = cpuNow;
             lastAt = now;
+            if (trim && !trimmed && now.TotalSeconds >= 20)
+            {
+                // Thu gọn working set khi nhàn rỗi: trả lại trang mã/runtime dùng chung, trang cần sẽ nạp lại khi dùng.
+                GC.Collect(2, GCCollectionMode.Aggressive, true, true);
+                EmptyWorkingSet(process.Handle);
+                trimmed = true;
+            }
+
             samples.Add((now.TotalSeconds, process.WorkingSet64 / 1048576.0, process.PrivateMemorySize64 / 1048576.0, cpu));
 
             if (now.TotalSeconds >= seconds)
@@ -88,12 +98,15 @@ public static class Program
         return 0;
     }
 
+    [System.Runtime.InteropServices.DllImport("psapi.dll")]
+    private static extern bool EmptyWorkingSet(IntPtr process);
+
     private static void Write(string path, int count, WidgetSize size, int seconds, List<(double T, double Ws, double Priv, double Cpu)> samples, List<string> pinNotes)
     {
         // Bỏ 15 giây đầu (khởi động/JIT) khi tính CPU nhàn rỗi.
         var steady = samples.Where(s => s.T >= 15).DefaultIfEmpty(samples[^1]).ToList();
         var sb = new StringBuilder();
-        sb.AppendLine($"# WPF widget spike: {count} widget {size}, {seconds}s");
+        sb.AppendLine($"# WPF widget spike: {count} widget {size}, {seconds}s{(samples.Count > 0 && Environment.GetCommandLineArgs().Contains("trim") ? " (trim)" : string.Empty)}");
         sb.AppendLine();
         sb.AppendLine($"- OS: {Environment.OSVersion}, CPU cores: {Environment.ProcessorCount}, runtime: {System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription}");
         sb.AppendLine($"- Cuối: working set {samples[^1].Ws:F1} MB, private {samples[^1].Priv:F1} MB");
