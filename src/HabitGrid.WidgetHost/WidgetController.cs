@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Runtime.InteropServices;
+using System.Windows.Interop;
 using System.Windows.Threading;
 using HabitGrid.Core.Domain;
 using HabitGrid.Core.Services;
@@ -38,6 +40,14 @@ public sealed class WidgetController : IDisposable
     private readonly QuickCheckInModel _quick;
     private TodayListWindow? _todayList;
     private HotKey? _hotKey;
+    private ShellEvents? _shell;
+    private readonly AutoStart _autoStart = new("HabitGridWidgets");
+    private bool _rebuildRequested;
+    private bool _replaceRequested;
+    private bool _needsRepin;
+    private int _pinRetries;
+    private int _pollCount;
+    private DateTime _rebuildNotBefore = DateTime.MinValue;
 
     public WidgetController(HabitGridDatabase database)
     {
@@ -78,9 +88,23 @@ public sealed class WidgetController : IDisposable
         await _quick.LoadAsync(_today);
         await CreateAuxiliaryWindowsAsync();
         await RefreshAsync();
+
+        _shell = new ShellEvents();
+        _shell.ExplorerRestarted += (_, _) =>
+        {
+            // Explorer vừa dựng lại WorkerW; chờ vài giây cho xong rồi dựng lại toàn bộ widget (cái cũ đã bị hủy cùng WorkerW).
+            _rebuildRequested = true;
+            _rebuildNotBefore = DateTime.UtcNow.AddSeconds(2);
+        };
+        _shell.DisplayChanged += (_, _) => _replaceRequested = true;
+        await ApplyAutoStartAsync();
+
         _dataVersion = ReadDataVersion();
         _timer.Start();
     }
+
+    /// <summary>Giả lập Explorer khởi động lại (tự kiểm tra trên CI): coi như nhận được TaskbarCreated.</summary>
+    public void SimulateExplorerRestart() => _rebuildRequested = true;
 
     public void ToggleVisibility()
     {
@@ -111,19 +135,170 @@ public sealed class WidgetController : IDisposable
         }
     }
 
-    public void ReattachAll()
+    /// <summary>Ghim lại mọi widget; trả về true nếu tất cả ghim đúng lớp desktop (không phải dự phòng).</summary>
+    public bool ReattachAll()
     {
+        var ok = true;
+
         foreach (var (window, _) in _widgets.Values)
         {
-            window.ApplyPinning(DesktopPinningMode.DesktopLevel);
+            ok &= !window.ApplyPinning(DesktopPinningMode.DesktopLevel).UsedFallback;
         }
 
-        _todayList?.Pin(_desktop, DesktopPinningMode.DesktopLevel);
+        if (_todayList is not null)
+        {
+            ok &= !_todayList.Pin(_desktop, DesktopPinningMode.DesktopLevel).UsedFallback;
+        }
+
+        _needsRepin = !ok;
+        return ok;
     }
+
+    /// <summary>Số cửa sổ widget còn sống trên tổng số đang quản lý (gồm Today List).</summary>
+    public (int Alive, int Total) WindowHealth()
+    {
+        var handles = _widgets.Values.Select(w => new WindowInteropHelper(w.Window).Handle).ToList();
+
+        if (_todayList is not null)
+        {
+            handles.Add(new WindowInteropHelper(_todayList).Handle);
+        }
+
+        return (handles.Count(h => h != IntPtr.Zero && IsWindow(h)), handles.Count);
+    }
+
+    /// <summary>Mọi widget lưới đều là cửa sổ con của lớp desktop (WorkerW/Progman).</summary>
+    public bool AllPinnedToDesktop() =>
+        _widgets.Values.Select(w => new WindowInteropHelper(w.Window).Handle)
+            .All(h => h != IntPtr.Zero && GetParent(h) != IntPtr.Zero);
+
+    /// <summary>Dựng lại toàn bộ widget từ đầu: dùng khi Explorer khởi động lại làm các cửa sổ con bị hủy.</summary>
+    public async Task RebuildAllAsync()
+    {
+        _rebuildRequested = false;
+
+        foreach (var (window, _) in _widgets.Values)
+        {
+            TryClose(window);
+        }
+
+        _widgets.Clear();
+
+        if (_todayList is not null)
+        {
+            TryClose(_todayList);
+            _todayList = null;
+        }
+
+        await CreateTodayListAsync();
+        await RefreshAsync();
+        _pinRetries = 0;
+        ReattachAll();
+    }
+
+    private static void TryClose(System.Windows.Window window)
+    {
+        try
+        {
+            window.Close();
+        }
+        catch (Exception)
+        {
+            // Cửa sổ đã bị hủy cùng Explorer.
+        }
+    }
+
+    /// <summary>Đưa widget ngoài vùng nhìn thấy (rút màn hình phụ) về màn hình chính; cắm lại thì về vị trí đã lưu.</summary>
+    private async Task ReplaceAllAsync()
+    {
+        _replaceRequested = false;
+
+        foreach (var (habitId, entry) in _widgets.ToList())
+        {
+            var saved = await _settings.GetAsync(PositionKey(habitId));
+            var window = entry.Window;
+            var handle = new WindowInteropHelper(window).Handle;
+
+            if (saved?.Split(',') is [var left, var top] && int.TryParse(left, out var l) && int.TryParse(top, out var t) && IsPointVisible(l, t))
+            {
+                window.SetScreenPosition(l, t);
+            }
+            else if (!IsOnAnyScreen(handle))
+            {
+                window.SetScreenPosition(60, 80);
+            }
+        }
+
+        if (_todayList is { } list)
+        {
+            var saved = await _settings.GetAsync(TodayListKey);
+
+            if (saved?.Split(',') is [var left, var top] && double.TryParse(left, CultureInfo.InvariantCulture, out var l) && double.TryParse(top, CultureInfo.InvariantCulture, out var t) && IsPointVisible((int)l, (int)t))
+            {
+                list.Left = l;
+                list.Top = t;
+            }
+            else if (!IsOnAnyScreen(new WindowInteropHelper(list).Handle))
+            {
+                list.Left = System.Windows.SystemParameters.WorkArea.Right - list.Width - 40;
+                list.Top = 80;
+            }
+        }
+    }
+
+    private async Task ApplyAutoStartAsync()
+    {
+        try
+        {
+            // Mặc định bật; cài đặt "widgets.autostart" = "0" (do app chính ghi) thì gỡ.
+            var enabled = await _settings.GetAsync("widgets.autostart") != "0";
+            var exe = Environment.ProcessPath;
+
+            if (exe is not null)
+            {
+                _autoStart.Apply(enabled, exe);
+            }
+        }
+        catch (Exception)
+        {
+            // Đăng ký khởi động là tiện ích, không được làm hỏng widget.
+        }
+    }
+
+    private static bool IsOnAnyScreen(IntPtr hwnd) =>
+        hwnd != IntPtr.Zero && GetWindowRect(hwnd, out var rect) && MonitorFromRect(ref rect, 0) != IntPtr.Zero;
+
+    private static bool IsPointVisible(int x, int y)
+    {
+        var rect = new NativeRect { Left = x, Top = y, Right = x + 40, Bottom = y + 40 };
+        return MonitorFromRect(ref rect, 0) != IntPtr.Zero;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct NativeRect
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+    }
+
+    [DllImport("user32.dll")]
+    private static extern bool IsWindow(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetParent(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    private static extern bool GetWindowRect(IntPtr hWnd, out NativeRect rect);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr MonitorFromRect(ref NativeRect rect, uint flags);
 
     public void Dispose()
     {
         _timer.Stop();
+        _shell?.Dispose();
         _hotKey?.Dispose();
         _todayList?.Close();
         QuickWindow?.Close();
@@ -212,28 +387,37 @@ public sealed class WidgetController : IDisposable
         await RefreshAsync();
     }
 
-    private async Task CreateAuxiliaryWindowsAsync()
+    private async Task CreateTodayListAsync()
     {
-        _todayList = new TodayListWindow(_quick, ActAsync);
-        _todayList.ApplyTheme(IsSystemDark());
-        _todayList.Show();
-        _todayList.Moved += async (_, _) =>
-            await _settings.SetAsync(TodayListKey, string.Create(CultureInfo.InvariantCulture, $"{(int)_todayList.Left},{(int)_todayList.Top}"));
+        var list = new TodayListWindow(_quick, ActAsync);
+        _todayList = list;
+        list.ApplyTheme(IsSystemDark());
+        list.Show();
+        list.Moved += async (_, _) =>
+            await _settings.SetAsync(TodayListKey, string.Create(CultureInfo.InvariantCulture, $"{(int)list.Left},{(int)list.Top}"));
 
         var saved = await _settings.GetAsync(TodayListKey);
 
         if (saved?.Split(',') is [var left, var top] && double.TryParse(left, CultureInfo.InvariantCulture, out var l) && double.TryParse(top, CultureInfo.InvariantCulture, out var t))
         {
-            _todayList.Left = l;
-            _todayList.Top = t;
+            list.Left = l;
+            list.Top = t;
         }
         else
         {
-            _todayList.Left = System.Windows.SystemParameters.WorkArea.Right - _todayList.Width - 40;
-            _todayList.Top = 80;
+            list.Left = System.Windows.SystemParameters.WorkArea.Right - list.Width - 40;
+            list.Top = 80;
         }
 
-        _todayList.Pin(_desktop, DesktopPinningMode.DesktopLevel);
+        if (list.Pin(_desktop, DesktopPinningMode.DesktopLevel).UsedFallback)
+        {
+            _needsRepin = true;
+        }
+    }
+
+    private async Task CreateAuxiliaryWindowsAsync()
+    {
+        await CreateTodayListAsync();
 
         QuickWindow = new QuickCheckInWindow(_quick, day => _quick.LoadAsync(day), ActAsync);
         QuickWindow.ApplyTheme(IsSystemDark());
@@ -289,7 +473,11 @@ public sealed class WidgetController : IDisposable
             window.SetScreenPosition(60 + index * 36, 80 + index * 160);
         }
 
-        window.ApplyPinning(DesktopPinningMode.DesktopLevel);
+        if (window.ApplyPinning(DesktopPinningMode.DesktopLevel).UsedFallback)
+        {
+            _needsRepin = true;
+        }
+
         _widgets[habit.Id] = (window, model);
     }
 
@@ -312,6 +500,36 @@ public sealed class WidgetController : IDisposable
                 {
                     _todayList.EditMode = edit;
                 }
+            }
+
+            _pollCount++;
+
+            // Explorer khởi động lại: widget (con của WorkerW cũ) đã bị hủy → dựng lại. Cũng bắt trường hợp
+            // không nhận được TaskbarCreated bằng cách kiểm tra handle còn sống.
+            var (alive, total) = WindowHealth();
+
+            if ((_rebuildRequested && DateTime.UtcNow >= _rebuildNotBefore) || alive < total)
+            {
+                await RebuildAllAsync();
+                return;
+            }
+
+            // WorkerW chưa sẵn sàng lúc ghim (Explorer vừa khởi động): thử lại vài lần.
+            if (_needsRepin && _pinRetries < 15)
+            {
+                _pinRetries++;
+                ReattachAll();
+            }
+
+            if (_replaceRequested)
+            {
+                await ReplaceAllAsync();
+            }
+
+            // Cài đặt chạy cùng Windows có thể đổi từ app chính: kiểm tra mỗi ~30 giây.
+            if (_pollCount % 15 == 0)
+            {
+                await ApplyAutoStartAsync();
             }
 
             var version = ReadDataVersion();

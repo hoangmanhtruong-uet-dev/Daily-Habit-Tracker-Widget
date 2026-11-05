@@ -211,4 +211,7 @@
   <data name="settings.lang.vi" xml:space="preserve"><value>Tiếng Việt</value></data>
   <data name="settings.lang.en" xml:space="preserve"><value>English</value></data>
   <data name="settings.pastel.note" xml:space="preserve"><value>This theme is light only.</value></data>
+  <data name="settings.widgets" xml:space="preserve"><value>Desktop widgets</value></data>
+  <data name="settings.autostart" xml:space="preserve"><value>Start widgets with Windows</value></data>
+  <data name="settings.autostart.hint" xml:space="preserve"><value>Widgets appear when you sign in, without opening the main app. Turn off to run them only when you open them.</value></data>
 </root>

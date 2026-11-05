@@ -1,3 +1,4 @@
+using HabitGrid.Core.Domain;
 using HabitGrid.Presentation.Services;
 using HabitGrid.Presentation.Theming;
 using HabitGrid.WinUI.Controls;
@@ -90,6 +91,28 @@ public sealed partial class SettingsPage : Page
         motionCard.Children.Add(new TextBlock { Text = Ui.T("settings.motion.hint"), Style = Res("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap });
         motionCard.Children.Add(motion);
         Wrap(motionCard);
+
+        // Widget chạy cùng Windows (WidgetHost đọc khóa này và tự đăng ký/gỡ)
+        var widgetsCard = Card(Ui.T("settings.widgets"));
+        var autostart = new ToggleSwitch { OnContent = Ui.T("settings.autostart"), OffContent = Ui.T("settings.autostart") };
+        AutomationProperties.SetName(autostart, Ui.T("settings.autostart"));
+        var settingsStore = App.Host.Get<ISettingsStore>();
+        _ = LoadAutostartAsync();
+        async Task LoadAutostartAsync()
+        {
+            autostart.IsOn = await settingsStore.GetAsync(SettingKeys.WidgetsAutoStart) != "0";
+        }
+
+        autostart.Toggled += async (_, _) =>
+        {
+            if (!_building)
+            {
+                await settingsStore.SetAsync(SettingKeys.WidgetsAutoStart, autostart.IsOn ? "1" : "0");
+            }
+        };
+        widgetsCard.Children.Add(new TextBlock { Text = Ui.T("settings.autostart.hint"), Style = Res("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap });
+        widgetsCard.Children.Add(autostart);
+        Wrap(widgetsCard);
 
         // Ngôn ngữ
         var languageCard = Card(Ui.T("settings.language"));

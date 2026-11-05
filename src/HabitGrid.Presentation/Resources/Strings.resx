@@ -211,4 +211,7 @@
   <data name="settings.lang.vi" xml:space="preserve"><value>Tiếng Việt</value></data>
   <data name="settings.lang.en" xml:space="preserve"><value>English</value></data>
   <data name="settings.pastel.note" xml:space="preserve"><value>Chủ đề này chỉ có chế độ sáng.</value></data>
+  <data name="settings.widgets" xml:space="preserve"><value>Widget trên desktop</value></data>
+  <data name="settings.autostart" xml:space="preserve"><value>Chạy widget cùng Windows</value></data>
+  <data name="settings.autostart.hint" xml:space="preserve"><value>Widget tự hiện khi đăng nhập, không cần mở app chính. Tắt đi thì widget chỉ chạy khi bạn mở.</value></data>
 </root>

@@ -20,6 +20,9 @@ public static class SettingKeys
     public const string Theme = "theme";
     public const string ThemeMode = "themeMode";
     public const string ReduceMotion = "reduceMotion";
+
+    /// <summary>"0" tắt, còn lại (hoặc chưa có) = WidgetHost chạy cùng Windows.</summary>
+    public const string WidgetsAutoStart = "widgets.autostart";
 }
 
 /// <summary>Giới hạn của gói Free (SPEC-V2-10 §1). Plus có hiện thực riêng ở tầng Platform.</summary>

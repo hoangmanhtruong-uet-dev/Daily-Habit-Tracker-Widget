@@ -33,7 +33,8 @@ public static class Program
     [STAThread]
     public static int Main(string[] args)
     {
-        var selfTest = args.Contains("--selftest", StringComparer.OrdinalIgnoreCase);
+        var explorerTest = args.Contains("--selftest-explorer", StringComparer.OrdinalIgnoreCase);
+        var selfTest = explorerTest || args.Contains("--selftest", StringComparer.OrdinalIgnoreCase);
         var customDir = Environment.GetEnvironmentVariable(DataDirVariable);
         var dataDir = string.IsNullOrWhiteSpace(customDir)
             ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HabitGrid")
@@ -69,7 +70,9 @@ public static class Program
 
                 if (selfTest)
                 {
-                    exitCode = await SelfTest.RunAsync(controller, dbPath);
+                    exitCode = explorerTest
+                        ? await SelfTest.RunExplorerRestartAsync(controller, dbPath)
+                        : await SelfTest.RunAsync(controller, dbPath);
                     app.Shutdown();
                     return;
                 }

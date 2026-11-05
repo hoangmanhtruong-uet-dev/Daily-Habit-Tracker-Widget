@@ -85,6 +85,72 @@ public static class SelfTest
         }
     }
 
+    /// <summary>
+    /// Kết thúc Explorer thật rồi chờ widget tự dựng lại và ghim lại. Trả 0 nếu đạt, 2 nếu hỏng, 5 nếu điều kiện đầu
+    /// không có (máy không có desktop shell nên widget không ghim được ngay từ đầu, không đánh giá được).
+    /// </summary>
+    public static async Task<int> RunExplorerRestartAsync(WidgetController controller, string dbPath)
+    {
+        var log = Path.Combine(Path.GetDirectoryName(dbPath)!, "widgethost-selftest.log");
+
+        void Note(string text) => File.AppendAllText(log, $"{DateTime.Now:HH:mm:ss} {text}{Environment.NewLine}");
+
+        try
+        {
+            await Task.Delay(2000);
+            var before = controller.WindowHealth();
+            Note($"before: alive={before.Alive}/{before.Total}, pinned={controller.AllPinnedToDesktop()}");
+
+            if (before.Total == 0 || !controller.AllPinnedToDesktop())
+            {
+                Note("precondition failed: widgets not pinned to the desktop layer before the test");
+                return 5;
+            }
+
+            Run("taskkill", "/f /im explorer.exe");
+            Note("explorer killed");
+            await Task.Delay(4000);
+
+            if (System.Diagnostics.Process.GetProcessesByName("explorer").Length == 0)
+            {
+                Note("shell did not restart by itself; starting explorer.exe");
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe") { UseShellExecute = true });
+            }
+
+            var recovered = false;
+
+            for (var second = 0; second < 40 && !recovered; second++)
+            {
+                await Task.Delay(1000);
+                var (alive, total) = controller.WindowHealth();
+                recovered = total > 0 && alive == total && controller.AllPinnedToDesktop();
+
+                if (second % 5 == 0)
+                {
+                    Note($"t+{second}s alive={alive}/{total} pinned={controller.AllPinnedToDesktop()}");
+                }
+            }
+
+            Note(recovered ? "RECOVERED" : "NOT RECOVERED");
+            return recovered ? 0 : 2;
+        }
+        catch (Exception ex)
+        {
+            Note("FAILED: " + ex);
+            return 2;
+        }
+    }
+
+    private static void Run(string file, string arguments)
+    {
+        using var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(file, arguments)
+        {
+            UseShellExecute = false,
+            CreateNoWindow = true
+        });
+        process?.WaitForExit(10000);
+    }
+
     private static void Require(bool condition, string message)
     {
         if (!condition)
