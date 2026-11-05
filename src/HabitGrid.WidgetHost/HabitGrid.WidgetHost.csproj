@@ -10,6 +10,9 @@
     <RootNamespace>HabitGrid.WidgetHost</RootNamespace>
     <AssemblyName>HabitGrid.WidgetHost</AssemblyName>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- Tên hiển thị trên toast của Windows (ToastNotificationManagerCompat lấy từ thông tin sản phẩm). -->
+    <Product>HabitGrid</Product>
+    <AssemblyTitle>HabitGrid</AssemblyTitle>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +26,10 @@
   <ItemGroup>
     <!-- Dùng lại khay hệ thống Win32 của v1 (không phụ thuộc WinForms). -->
     <Compile Include="..\HabitGrid.App\SystemTrayManager.cs" Link="Shared\SystemTrayManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.WinUI.Notifications" Version="7.1.2" />
   </ItemGroup>
 
 </Project>

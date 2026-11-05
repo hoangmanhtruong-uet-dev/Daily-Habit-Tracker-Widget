@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Text;
 using System.Windows;
+using CommunityToolkit.WinUI.Notifications;
 using HabitGrid.Core.Repositories;
 using HabitGrid.Core.Settings;
 using HabitGrid.Data.V3;
@@ -59,7 +60,26 @@ public static class Program
         var app = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
         var database = HabitGridV3.Open(dbPath);
         var settings = new AppSettings(new MemorySettings());
-        var controller = new WidgetController(database) { EditMode = () => settings.EditMode };
+        var controller = new WidgetController(database) { EditMode = () => settings.EditMode, OpenMainApp = OpenMainApp };
+        var started = false;
+        var pendingToasts = new List<ToastArguments>();
+
+        // Nút trên toast: Windows gọi vào tiến trình đang chạy, hoặc khởi động WidgetHost chỉ để xử lý (khi đó làm sau khi sẵn sàng).
+        ToastNotificationManagerCompat.OnActivated += e =>
+        {
+            var parsed = ToastArguments.Parse(e.Argument);
+            app.Dispatcher.InvokeAsync(async () =>
+            {
+                if (started)
+                {
+                    await controller.HandleToastAsync(parsed);
+                }
+                else
+                {
+                    pendingToasts.Add(parsed);
+                }
+            });
+        };
         var exitCode = 0;
 
         app.Startup += async (_, _) =>
@@ -67,6 +87,14 @@ public static class Program
             try
             {
                 await controller.StartAsync();
+                started = true;
+
+                foreach (var pending in pendingToasts)
+                {
+                    await controller.HandleToastAsync(pending);
+                }
+
+                pendingToasts.Clear();
 
                 if (selfTest)
                 {
@@ -87,10 +115,22 @@ public static class Program
 
                 Microsoft.Win32.SystemEvents.PowerModeChanged += (_, e) =>
                 {
-                    if (e.Mode == Microsoft.Win32.PowerModes.Resume)
+                    if (e.Mode == Microsoft.Win32.PowerModes.Suspend)
                     {
-                        app.Dispatcher.InvokeAsync(controller.RefreshAsync);
+                        app.Dispatcher.InvokeAsync(controller.OnSuspendAsync);
                     }
+                    else if (e.Mode == Microsoft.Win32.PowerModes.Resume)
+                    {
+                        app.Dispatcher.InvokeAsync(controller.OnResumeAsync);
+                    }
+                };
+
+                // Đổi giờ hệ thống / múi giờ: tính lại ngày logic và lịch nhắc (SPEC-V2-09 §4).
+                Microsoft.Win32.SystemEvents.TimeChanged += (_, _) =>
+                {
+                    System.Globalization.CultureInfo.CurrentCulture.ClearCachedData();
+                    TimeZoneInfo.ClearCachedData();
+                    app.Dispatcher.InvokeAsync(controller.RefreshAsync);
                 };
             }
             catch (Exception ex)

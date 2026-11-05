@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using System.Windows.Threading;
+using CommunityToolkit.WinUI.Notifications;
 using HabitGrid.Core.Domain;
 using HabitGrid.Core.Services;
 using HabitGrid.Data;
@@ -40,6 +41,7 @@ public sealed class WidgetController : IDisposable
     private readonly QuickCheckInModel _quick;
     private TodayListWindow? _todayList;
     private HotKey? _hotKey;
+    private HotKey? _focusHotKey;
     private ShellEvents? _shell;
     private readonly AutoStart _autoStart = new("HabitGridWidgets");
     private bool _rebuildRequested;
@@ -62,7 +64,29 @@ public sealed class WidgetController : IDisposable
         _desktop = new DesktopHostService(_screen);
         _watch = database.OpenConnection();
         _timer.Tick += async (_, _) => await PollAsync();
+
+        Toasts = new ToastScheduler(_habits, _logs, _settings);
+        var focusService = new FocusService(_habits, _logs, new FocusRepository(database, clock, bus), new DayProvider(TimeSpan.Zero));
+        FocusService = focusService;
+        Focus = new FocusController(focusService, _settings);
+        Focus.Completed += async (_, _) => await RefreshAsync();
     }
+
+    /// <summary>Lịch toast nhắc nhở (SPEC-V2-09 §1).</summary>
+    public ToastScheduler Toasts { get; }
+
+    /// <summary>Bộ hẹn giờ Focus (SPEC-V2-09 §2).</summary>
+    public FocusController Focus { get; }
+
+    public FocusService FocusService { get; }
+
+    public FocusWindow? FocusWindow { get; private set; }
+
+    /// <summary>Phím tắt Focus đã đăng ký (Win+Alt+F hoặc Ctrl+Alt+F); null nếu tắt hoặc bị chiếm.</summary>
+    public string? FocusHotKeyDescription => _focusHotKey?.Description;
+
+    /// <summary>Mở app chính (nút "Mở HabitGrid" trên toast).</summary>
+    public Action? OpenMainApp { get; init; }
 
     public IReadOnlyCollection<WidgetWindow> Windows => _widgets.Values.Select(w => w.Window).ToList();
 
@@ -98,6 +122,19 @@ public sealed class WidgetController : IDisposable
         };
         _shell.DisplayChanged += (_, _) => _replaceRequested = true;
         await ApplyAutoStartAsync();
+
+        await Focus.LoadAsync();
+        FocusWindow = new FocusWindow(Focus, () => FocusService.CandidatesAsync());
+        FocusWindow.ApplyTheme(IsSystemDark());
+
+        if (Focus.Timer is { Phase: HabitGrid.Core.Domain.Focus.FocusPhase.Work })
+        {
+            // Đang có phiên dở (WidgetHost vừa khởi động lại): hiện lại mini-player.
+            await FocusWindow.PresentAsync();
+        }
+
+        await ApplyHotKeysAsync();
+        await Toasts.ReplanAsync(DateTime.Now);
 
         _dataVersion = ReadDataVersion();
         _timer.Start();
@@ -300,6 +337,9 @@ public sealed class WidgetController : IDisposable
         _timer.Stop();
         _shell?.Dispose();
         _hotKey?.Dispose();
+        _focusHotKey?.Dispose();
+        Focus.Dispose();
+        FocusWindow?.Close();
         _todayList?.Close();
         QuickWindow?.Close();
 
@@ -365,6 +405,9 @@ public sealed class WidgetController : IDisposable
 
                 await CreateAsync(habit, values, dark, index);
             }
+
+            // Dữ liệu đổi (check-in, sửa thói quen, qua ngày): lập lại lịch nhắc; xong trước giờ nhắc thì toast bị gỡ.
+            await Toasts.ReplanAsync(DateTime.Now);
         }
         finally
         {
@@ -430,19 +473,139 @@ public sealed class WidgetController : IDisposable
         });
         QuickWindow.ApplyTheme(IsSystemDark());
         QuickWindow.Prewarm();
+    }
 
-        _hotKey = new HotKey();
-        _hotKey.Pressed += async (_, _) =>
+    /// <summary>Đăng ký/gỡ phím tắt toàn cục theo cài đặt (tắt được trong Cài đặt của app chính).</summary>
+    private async Task ApplyHotKeysAsync()
+    {
+        var quick = await _settings.GetAsync(ReminderSettingsStore.QuickHotKeyEnabledKey) != "0";
+        var focus = await _settings.GetAsync(ReminderSettingsStore.FocusHotKeyEnabledKey) != "0";
+
+        if (quick && _hotKey is null)
         {
-            try
+            _hotKey = new HotKey('H');
+            _hotKey.Pressed += async (_, _) =>
             {
-                await QuickWindow.PresentAsync(CurrentDay());
-            }
-            catch (Exception)
+                try
+                {
+                    if (QuickWindow is not null)
+                    {
+                        await QuickWindow.PresentAsync(CurrentDay());
+                    }
+                }
+                catch (Exception)
+                {
+                    // Không để lỗi hiển thị làm sập tiến trình nền.
+                }
+            };
+        }
+        else if (!quick && _hotKey is not null)
+        {
+            _hotKey.Dispose();
+            _hotKey = null;
+        }
+
+        if (focus && _focusHotKey is null)
+        {
+            _focusHotKey = new HotKey('F');
+            _focusHotKey.Pressed += async (_, _) => await ToggleFocusAsync();
+        }
+        else if (!focus && _focusHotKey is not null)
+        {
+            _focusHotKey.Dispose();
+            _focusHotKey = null;
+        }
+
+        await _settings.SetAsync("hotkey.quick.registered", _hotKey?.Description ?? string.Empty);
+        await _settings.SetAsync("hotkey.focus.registered", _focusHotKey?.Description ?? string.Empty);
+    }
+
+    /// <summary>Win+Alt+F: hiện mini-player và bắt đầu/tạm dừng/tiếp tục.</summary>
+    public async Task ToggleFocusAsync()
+    {
+        try
+        {
+            await Focus.ToggleAsync();
+
+            if (FocusWindow is not null)
             {
-                // Không để lỗi hiển thị làm sập tiến trình nền.
+                await FocusWindow.PresentAsync();
             }
-        };
+        }
+        catch (Exception)
+        {
+            // Không để lỗi Focus làm sập tiến trình nền.
+        }
+    }
+
+    /// <summary>Nút bấm trên toast (kể cả khi Windows vừa khởi động WidgetHost chỉ để xử lý nút).</summary>
+    public async Task HandleToastAsync(ToastArguments args)
+    {
+        if (await Toasts.HandleAsync(args, OpenMainApp))
+        {
+            await RefreshAsync();
+        }
+    }
+
+    public Task OnSuspendAsync() => Focus.OnSuspendAsync();
+
+    public async Task OnResumeAsync()
+    {
+        await RefreshAsync();
+
+        if (Focus.PausedBySleep && FocusWindow is not null)
+        {
+            await FocusWindow.PresentAsync();
+        }
+    }
+
+    /// <summary>Lệnh từ app chính qua bảng settings (đơn giản, không cần named pipe): đọc rồi xóa.</summary>
+    private async Task ProcessHostCommandAsync()
+    {
+        var command = await _settings.GetAsync(ReminderSettingsStore.HostCommandKey);
+
+        if (string.IsNullOrWhiteSpace(command))
+        {
+            return;
+        }
+
+        await _settings.RemoveAsync(ReminderSettingsStore.HostCommandKey);
+        var parts = command.Split('|');
+
+        switch (parts[0])
+        {
+            case "focus.start":
+                Guid? habit = parts.Length > 1 && Guid.TryParse(parts[1], out var id) ? id : null;
+                int? minutes = parts.Length > 2 && int.TryParse(parts[2], CultureInfo.InvariantCulture, out var m) ? m : null;
+                await Focus.StartAsync(minutes: minutes, habitId: habit, keepHabit: false);
+
+                if (FocusWindow is not null)
+                {
+                    await FocusWindow.PresentAsync();
+                }
+
+                break;
+            case "focus.toggle":
+                await ToggleFocusAsync();
+                break;
+            case "focus.stop":
+                await Focus.StopAsync();
+                break;
+            case "focus.show":
+                if (FocusWindow is not null)
+                {
+                    await FocusWindow.PresentAsync();
+                }
+
+                break;
+            case "quick.show":
+                if (QuickWindow is not null)
+                {
+                    await QuickWindow.PresentAsync(CurrentDay());
+                }
+
+                break;
+        }
     }
 
     private const string TodayListKey = "widget.pos.todaylist";
@@ -538,7 +701,10 @@ public sealed class WidgetController : IDisposable
             if (_pollCount % 15 == 0)
             {
                 await ApplyAutoStartAsync();
+                await ApplyHotKeysAsync();
             }
+
+            await ProcessHostCommandAsync();
 
             var version = ReadDataVersion();
 

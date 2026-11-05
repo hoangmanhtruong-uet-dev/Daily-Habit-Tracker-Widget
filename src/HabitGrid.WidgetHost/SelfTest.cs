@@ -73,6 +73,49 @@ public static class SelfTest
                 Require((log?.Value ?? 0) > target.Value, "Enter trong Quick check-in không ghi vào CSDL.");
             }
 
+            // 5) Nhắc nhở: gắn giờ nhắc 10:00 hằng ngày cho một thói quen, lập lịch, kiểm tra Windows nhận toast.
+            var reminderHabitId = Guid.Empty;
+
+            using (var db = HabitGridV3.Open(dbPath))
+            {
+                var clock = new HlcClock("selftest5");
+                var habits = new HabitRepository(db, clock, null);
+                var habit = (await habits.GetAllActiveAsync()).First(h => h.Kind != HabitKind.Quit);
+                habit.Reminders = [new Reminder(new TimeOnly(10, 0))];
+                await habits.UpdateAsync(habit);
+                reminderHabitId = habit.Id;
+            }
+
+            await controller.Toasts.ReplanAsync(DateTime.Now);
+            var plan = controller.Toasts.LastPlan;
+            Require(plan.Any(p => p.HabitIds.Contains(reminderHabitId)), "Lập lịch không tạo toast cho thói quen có giờ nhắc.");
+            var scheduled = controller.Toasts.ScheduledCount();
+            Note(dbPath, $"toasts planned={plan.Count} scheduled={scheduled} error={controller.Toasts.LastError ?? "none"}");
+            Require(scheduled == plan.Count, $"Windows không nhận đủ toast đã lên lịch ({scheduled}/{plan.Count}): {controller.Toasts.LastError}");
+
+            // 6) Nút "Xong" trên toast ghi đúng; đã xong thì toast hôm nay của thói quen đó bị gỡ.
+            var args = CommunityToolkit.WinUI.Notifications.ToastArguments.Parse(
+                $"action=done;ids={reminderHabitId};day={today:yyyy-MM-dd}");
+            await controller.HandleToastAsync(args);
+
+            using (var db = HabitGridV3.Open(dbPath))
+            {
+                var log = await new DayLogRepository(db, new HlcClock("selftest6"), null).GetAsync(reminderHabitId, today);
+                Require(log?.Status == DayStatus.Done, "Nút Xong trên toast không ghi được check-in.");
+            }
+
+            Require(!controller.Toasts.LastPlan.Any(p => DateOnly.FromDateTime(p.At) == today && p.HabitIds.Contains(reminderHabitId)),
+                "Đã xong nhưng toast nhắc hôm nay vẫn còn trong lịch.");
+            Require(controller.Toasts.ScheduledCount() == controller.Toasts.LastPlan.Count, "Lịch của Windows không khớp kế hoạch sau khi check-in.");
+
+            // 7) Focus: phiên đếm ngược 1 phút tự kết thúc và được ghi vào nhật ký.
+            var before2 = (await controller.FocusService.HistoryAsync()).Count;
+            await controller.Focus.StartAsync(HabitGrid.Core.Domain.Focus.FocusMode.Countdown, 1, null, keepHabit: false);
+            await controller.Focus.TickAsync(DateTime.UtcNow.AddMinutes(1).AddSeconds(2));
+            var after2 = (await controller.FocusService.HistoryAsync()).Count;
+            Require(after2 == before2 + 1, "Phiên Focus hết giờ nhưng không được ghi.");
+            Note(dbPath, $"focus sessions={after2} focusHotkey={controller.FocusHotKeyDescription ?? "none"}");
+
             File.AppendAllText(Path.Combine(Path.GetDirectoryName(dbPath)!, "widgethost-selftest.log"),
                 $"hotkey={controller.HotKeyDescription ?? "none"}{Environment.NewLine}");
             return 0;
@@ -150,6 +193,9 @@ public static class SelfTest
         });
         process?.WaitForExit(10000);
     }
+
+    private static void Note(string dbPath, string text) =>
+        File.AppendAllText(Path.Combine(Path.GetDirectoryName(dbPath)!, "widgethost-selftest.log"), $"{DateTime.Now:HH:mm:ss} {text}{Environment.NewLine}");
 
     private static void Require(bool condition, string message)
     {
