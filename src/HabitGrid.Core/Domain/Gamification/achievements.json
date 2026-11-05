@@ -1,0 +1,30 @@
+[
+  { "id": "first_checkin",        "group": "start",     "rule": "totalCheckins",   "tiers": [1] },
+  { "id": "first_perfect_day",    "group": "start",     "rule": "perfectDays",     "tiers": [1] },
+  { "id": "three_habits",         "group": "start",     "rule": "activeHabits",    "tiers": [3] },
+  { "id": "first_note",           "group": "start",     "rule": "notes",           "tiers": [1] },
+
+  { "id": "streak_7",             "group": "streak",    "rule": "bestStreak",      "tiers": [7] },
+  { "id": "streak_30",            "group": "streak",    "rule": "bestStreak",      "tiers": [30] },
+  { "id": "streak_100",           "group": "streak",    "rule": "bestStreak",      "tiers": [100] },
+  { "id": "streak_365",           "group": "streak",    "rule": "bestStreak",      "tiers": [365] },
+  { "id": "comeback",             "group": "streak",    "rule": "comeback",        "tiers": [1] },
+
+  { "id": "checkins_100",         "group": "volume",    "rule": "totalCheckins",   "tiers": [100] },
+  { "id": "checkins_1000",        "group": "volume",    "rule": "totalCheckins",   "tiers": [1000] },
+  { "id": "focus_10h",            "group": "volume",    "rule": "focusMinutes",    "tiers": [600] },
+  { "id": "water_100_glasses",    "group": "volume",    "rule": "tagValue",        "tag": "water", "tiers": [100] },
+
+  { "id": "early_bird",           "group": "time",      "rule": "checkinsBeforeHour", "hour": 7,  "tiers": [10] },
+  { "id": "night_owl",            "group": "time",      "rule": "checkinsFromHour",   "hour": 23, "tiers": [10] },
+  { "id": "weekend_warrior",      "group": "time",      "rule": "weekendWarrior",  "tiers": [1] },
+
+  { "id": "widget_pinned",        "group": "discovery", "rule": "flag", "flag": "widget_pinned",        "tiers": [1] },
+  { "id": "quick_checkin_used",   "group": "discovery", "rule": "flag", "flag": "quick_checkin_used",   "tiers": [1] },
+  { "id": "theme_changed",        "group": "discovery", "rule": "flag", "flag": "theme_changed",        "tiers": [1] },
+  { "id": "shared_card",          "group": "discovery", "rule": "flag", "flag": "shared_card",          "tiers": [1] },
+
+  { "id": "midnight_checkin",     "group": "secret",    "rule": "midnightCheckin", "tiers": [1], "secret": true },
+  { "id": "perfect_week",         "group": "secret",    "rule": "perfectStreak",   "tiers": [7], "secret": true },
+  { "id": "marathon_day",         "group": "secret",    "rule": "maxCheckinsInDay","tiers": [10], "secret": true }
+]
