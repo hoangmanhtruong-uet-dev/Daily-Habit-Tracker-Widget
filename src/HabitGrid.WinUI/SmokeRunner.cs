@@ -495,7 +495,10 @@ public static class SmokeRunner
         Require(vm.Advanced is { YearHeatmap.Weeks.Count: 52 }, "Plus mà Insights nâng cao trống.");
         Require(vm.Habits.Count >= 2 && vm.Compare(vm.Habits[0].Id, vm.Habits[1].Id) is not null, "So sánh hai thói quen không chạy.");
         await Task.Delay(200);
+        page.ScrollToAdvancedForTest(toEnd: true);
+        await Task.Delay(400);
         await SnapAsync(window, "insights-advanced");
+        page.ScrollToAdvancedForTest(toEnd: false);
 
         // P5: màu nhấn tùy chỉnh áp ngay khi đang Plus, bỏ khi đặt lại.
         var themeService = App.Host.Get<ThemeService>();

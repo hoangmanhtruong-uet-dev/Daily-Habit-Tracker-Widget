@@ -13,6 +13,13 @@ namespace HabitGrid.WinUI.Pages;
 /// <summary>Insights nâng cao (P2, Plus): tháng so với tháng, tương quan thói quen, so sánh hai thói quen, lịch năm gộp.</summary>
 public sealed partial class InsightsPage
 {
+    /// <summary>Cuộn tới phần nâng cao (smoke chụp ảnh phần nằm dưới màn hình).</summary>
+    public void ScrollToAdvancedForTest(bool toEnd)
+    {
+        Scroll.UpdateLayout();
+        Scroll.ChangeView(null, toEnd ? Scroll.ScrollableHeight : 0, null, disableAnimation: true);
+    }
+
     private Guid? _compareA;
     private Guid? _compareB;
 
