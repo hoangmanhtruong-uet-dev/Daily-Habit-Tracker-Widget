@@ -662,4 +662,11 @@
   <data name="wrapped.locked" xml:space="preserve"><value>Các slide còn lại và xuất ảnh dành cho Plus.</value></data>
   <data name="wrapped.unlock" xml:space="preserve"><value>Mở khóa với Plus</value></data>
   <data name="plus.benefit.wrapped" xml:space="preserve"><value>Wrapped tháng: 6 slide kiểu story, lưu ảnh 1080×1920 (Free: xem slide đầu)</value></data>
+  <data name="settings.font" xml:space="preserve"><value>Phông chữ</value></data>
+  <data name="settings.font.hint" xml:space="preserve"><value>Đổi phông chữ toàn app (Plus). Có hiệu lực ở lần mở app sau.</value></data>
+  <data name="settings.font.default" xml:space="preserve"><value>Be Vietnam Pro (mặc định)</value></data>
+  <data name="settings.font.system" xml:space="preserve"><value>Hệ thống</value></data>
+  <data name="settings.font.serif" xml:space="preserve"><value>Có chân</value></data>
+  <data name="settings.font.mono" xml:space="preserve"><value>Đơn cách</value></data>
+  <data name="settings.font.restart" xml:space="preserve"><value>Đã lưu. Mở lại HabitGrid để áp dụng phông mới.</value></data>
 </root>

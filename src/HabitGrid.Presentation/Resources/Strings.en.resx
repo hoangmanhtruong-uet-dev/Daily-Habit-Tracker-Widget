@@ -662,4 +662,11 @@
   <data name="wrapped.locked" xml:space="preserve"><value>The other slides and image export are for Plus.</value></data>
   <data name="wrapped.unlock" xml:space="preserve"><value>Unlock with Plus</value></data>
   <data name="plus.benefit.wrapped" xml:space="preserve"><value>Monthly Wrapped: 6 story slides, save 1080x1920 images (Free: first slide)</value></data>
+  <data name="settings.font" xml:space="preserve"><value>Font</value></data>
+  <data name="settings.font.hint" xml:space="preserve"><value>Change the font across the app (Plus). Takes effect the next time you open the app.</value></data>
+  <data name="settings.font.default" xml:space="preserve"><value>Be Vietnam Pro (default)</value></data>
+  <data name="settings.font.system" xml:space="preserve"><value>System</value></data>
+  <data name="settings.font.serif" xml:space="preserve"><value>Serif</value></data>
+  <data name="settings.font.mono" xml:space="preserve"><value>Monospace</value></data>
+  <data name="settings.font.restart" xml:space="preserve"><value>Saved. Reopen HabitGrid to apply the new font.</value></data>
 </root>

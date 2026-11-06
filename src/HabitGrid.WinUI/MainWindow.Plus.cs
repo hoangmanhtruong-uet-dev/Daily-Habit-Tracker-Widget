@@ -76,6 +76,10 @@ public sealed partial class MainWindow
         var unlocked = ThemeAccess.IsUnlocked(_theme.Theme.Id, plus.Status.IsPlus, level);
         var desired = unlocked ? null : Themes.CandyBento;
 
+        // Phông riêng cũng là quyền Plus: hết Plus thì lần mở sau về phông mặc định, nhưng lựa chọn đã lưu được giữ để nâng cấp lại là dùng tiếp.
+        var savedFont = await App.Host.Get<HabitGrid.Core.Domain.ISettingsStore>().GetAsync(HabitGrid.Core.Domain.AppFonts.SettingKey);
+        FontResources.WriteChoice(plus.Status.IsPlus ? savedFont ?? HabitGrid.Core.Domain.AppFonts.DefaultId : HabitGrid.Core.Domain.AppFonts.DefaultId);
+
         var accentChanged = _theme.AccentAllowed != plus.Status.IsPlus;
         _theme.AccentAllowed = plus.Status.IsPlus;
 
