@@ -174,6 +174,7 @@ public sealed partial class BuddyPage : Page
         {
             AccessoryUnlockKind.Level => Ui.Loc.Format("wardrobe.unlock.level", a.RequiredLevel),
             AccessoryUnlockKind.Badge => Ui.Loc.Format("wardrobe.unlock.badge", Ui.T($"badge.{a.Requirement}.name")),
+            AccessoryUnlockKind.Seasonal => Ui.Loc.Format("wardrobe.unlock.season", Ui.T("season." + a.Season), Seasons.FirstMonth(a.Season!.Value)),
             _ => Ui.T("wardrobe.unlock.plus")
         };
 
@@ -203,7 +204,7 @@ public sealed partial class BuddyPage : Page
         AutomationProperties.SetName(button, $"{name}, {(item.Equipped ? Ui.T("wardrobe.worn") : item.Owned ? string.Empty : requirement)}");
         button.Click += async (_, _) =>
         {
-            if (!item.Owned && a.Unlock == AccessoryUnlockKind.Plus)
+            if (!item.Owned && a.Unlock is AccessoryUnlockKind.Plus or AccessoryUnlockKind.Seasonal)
             {
                 await PaywallDialog.ShowAsync(XamlRoot, HabitGrid.Presentation.ViewModels.PaywallSource.Menu);
             }

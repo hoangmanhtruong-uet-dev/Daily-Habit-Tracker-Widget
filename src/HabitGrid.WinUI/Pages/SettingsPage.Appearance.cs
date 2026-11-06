@@ -1,6 +1,7 @@
 using HabitGrid.Core.Domain;
 using HabitGrid.Presentation.ViewModels;
 using HabitGrid.Presentation.Services;
+using HabitGrid.WinUI.Controls;
 using HabitGrid.WinUI.Plus;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
@@ -93,6 +94,38 @@ public sealed partial class SettingsPage
         card.Children.Add(custom);
         card.Children.Add(status);
         Refresh();
+
+        // Phông chữ: có hiệu lực ở lần mở app sau (phông được nạp trước khi giao diện dựng).
+        card.Children.Add(new TextBlock { Text = Ui.T("settings.font"), Style = Res("SectionHeader"), Margin = new Thickness(0, 6, 0, 0) });
+        card.Children.Add(new TextBlock { Text = Ui.T("settings.font.hint"), Style = Res("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap });
+        var fontStatus = new TextBlock { Style = Res("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap };
+        var fonts = new ChipGroup { MinChipWidth = 150, MaxWidth = 640, HorizontalAlignment = HorizontalAlignment.Left };
+
+        foreach (var font in AppFonts.All)
+        {
+            fonts.Add(Ui.T("settings.font." + font.Id));
+        }
+
+        var savedFont = AppFonts.Resolve(App.Host.Get<ISettingsStore>().GetAsync(AppFonts.SettingKey).GetAwaiter().GetResult()).Id;
+        fonts.SelectedIndex = Math.Max(0, AppFonts.All.ToList().FindIndex(f => f.Id == savedFont));
+        var selectedFont = fonts.SelectedIndex;
+        fonts.SelectionChanged += async (_, _) =>
+        {
+            var choice = AppFonts.All[fonts.SelectedIndex];
+
+            if (choice.Id != AppFonts.DefaultId && !await EnsurePlusAsync())
+            {
+                fonts.SelectedIndex = selectedFont;
+                return;
+            }
+
+            selectedFont = fonts.SelectedIndex;
+            await App.Host.Get<ISettingsStore>().SetAsync(AppFonts.SettingKey, choice.Id);
+            FontResources.WriteChoice(choice.Id);
+            fontStatus.Text = Ui.T("settings.font.restart");
+        };
+        card.Children.Add(fonts);
+        card.Children.Add(fontStatus);
         Wrap(card);
     }
 }

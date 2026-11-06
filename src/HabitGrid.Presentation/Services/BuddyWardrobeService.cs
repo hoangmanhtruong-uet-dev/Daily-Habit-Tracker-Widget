@@ -1,6 +1,7 @@
 using System.Text.Json;
 using HabitGrid.Core.Domain;
 using HabitGrid.Core.Domain.Gamification;
+using IDayProvider = HabitGrid.Core.Services.IDayProvider;
 
 namespace HabitGrid.Presentation.Services;
 
@@ -21,14 +22,17 @@ public sealed record Wardrobe(IReadOnlyList<WardrobeItem> Items, IReadOnlyDictio
 public sealed class BuddyWardrobeService
 {
     public const string Key = "buddy.accessories";
+    public const string CollectedKey = "buddy.seasonal.collected";
 
     private readonly ISettingsStore _settings;
     private readonly IProfileRepository _profile;
     private readonly IAchievementRepository _achievements;
     private readonly IEntitlements _entitlements;
+    private readonly IDayProvider? _days;
 
-    public BuddyWardrobeService(ISettingsStore settings, IProfileRepository profile, IAchievementRepository achievements, IEntitlements entitlements)
+    public BuddyWardrobeService(ISettingsStore settings, IProfileRepository profile, IAchievementRepository achievements, IEntitlements entitlements, IDayProvider? days = null)
     {
+        _days = days;
         _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         _profile = profile ?? throw new ArgumentNullException(nameof(profile));
         _achievements = achievements ?? throw new ArgumentNullException(nameof(achievements));
@@ -37,11 +41,11 @@ public sealed class BuddyWardrobeService
 
     public async Task<Wardrobe> GetAsync(CancellationToken ct = default)
     {
-        var (level, badges) = await StateAsync(ct);
+        var context = await ContextAsync(ct);
         var equipped = await LoadAsync(ct);
-        var worn = BuddyAccessories.Worn(equipped, level, badges, _entitlements.IsPlus);
+        var worn = BuddyAccessories.Worn(equipped, context);
         var items = BuddyAccessories.All
-            .Select(a => new WardrobeItem(a, BuddyAccessories.IsOwned(a, level, badges, _entitlements.IsPlus), worn.TryGetValue(a.Slot, out var w) && w.Id == a.Id))
+            .Select(a => new WardrobeItem(a, BuddyAccessories.IsOwned(a, context), worn.TryGetValue(a.Slot, out var w) && w.Id == a.Id))
             .ToList();
         return new Wardrobe(items, worn);
     }
@@ -54,9 +58,7 @@ public sealed class BuddyWardrobeService
             return EquipResult.Unknown;
         }
 
-        var (level, badges) = await StateAsync(ct);
-
-        if (!BuddyAccessories.IsOwned(accessory, level, badges, _entitlements.IsPlus))
+        if (!BuddyAccessories.IsOwned(accessory, await ContextAsync(ct)))
         {
             return EquipResult.Locked;
         }
@@ -77,11 +79,31 @@ public sealed class BuddyWardrobeService
         return removing ? EquipResult.Removed : EquipResult.Equipped;
     }
 
-    private async Task<(int Level, IReadOnlySet<string> Badges)> StateAsync(CancellationToken ct)
+    /// <summary>
+    /// Ngữ cảnh sở hữu. Plus thì món theo mùa của mùa hiện tại được ghi vào bộ sưu tập (giữ luôn sau khi mùa qua).
+    /// Hết Plus thì bộ sưu tập vẫn nằm đó nhưng không dùng được; có Plus lại là dùng tiếp.
+    /// </summary>
+    private async Task<AccessoryContext> ContextAsync(CancellationToken ct)
     {
         var profile = await _profile.GetAsync(ct);
         var badges = (await _achievements.GetAllAsync(ct)).Select(a => a.Id).ToHashSet();
-        return (profile.Level, badges);
+        var today = _days?.GetToday() ?? DateOnly.FromDateTime(DateTime.Now);
+        var collected = (await _settings.GetAsync(CollectedKey, ct) ?? string.Empty)
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToHashSet();
+
+        if (_entitlements.IsPlus)
+        {
+            var fresh = BuddyAccessories.All.Where(a => BuddyAccessories.InSeason(a, today) && !collected.Contains(a.Id)).Select(a => a.Id).ToList();
+
+            if (fresh.Count > 0)
+            {
+                collected.UnionWith(fresh);
+                await _settings.SetAsync(CollectedKey, string.Join(',', collected.Order(StringComparer.Ordinal)), ct);
+            }
+        }
+
+        return new AccessoryContext(profile.Level, badges, _entitlements.IsPlus, today, collected);
     }
 
     private async Task<Dictionary<AccessorySlot, string>> LoadAsync(CancellationToken ct)

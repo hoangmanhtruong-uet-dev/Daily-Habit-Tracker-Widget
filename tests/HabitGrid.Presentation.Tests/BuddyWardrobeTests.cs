@@ -27,6 +27,34 @@ public class BuddyAccessoryCatalogTests
     }
 
     [Theory]
+    [InlineData(1, Season.Winter)]
+    [InlineData(2, Season.Winter)]
+    [InlineData(3, Season.Spring)]
+    [InlineData(5, Season.Spring)]
+    [InlineData(6, Season.Summer)]
+    [InlineData(8, Season.Summer)]
+    [InlineData(9, Season.Autumn)]
+    [InlineData(11, Season.Autumn)]
+    [InlineData(12, Season.Winter)]
+    public void SeasonsFollowTheCalendarMonth(int month, Season expected)
+    {
+        Seasons.Of(new DateOnly(2026, month, 15)).Should().Be(expected);
+        Seasons.Of(new DateOnly(2026, Seasons.FirstMonth(expected), 1)).Should().Be(expected);
+    }
+
+    [Fact]
+    public void EverySeason_HasAHeadAndANeckItem()
+    {
+        foreach (var season in Enum.GetValues<Season>())
+        {
+            var items = BuddyAccessories.All.Where(a => a.Season == season).ToList();
+            items.Select(a => a.Slot).Should().Contain([AccessorySlot.Head, AccessorySlot.Neck], $"mùa {season}");
+        }
+
+        BuddyAccessories.All.Where(a => a.Unlock == AccessoryUnlockKind.Seasonal).Should().OnlyContain(a => a.Season != null);
+    }
+
+    [Theory]
     [InlineData("vi")]
     [InlineData("en")]
     public void EveryAccessory_HasAName_InBothLanguages(string language)
@@ -47,7 +75,7 @@ public class BuddyWardrobeServiceTests
     {
         var live = new LiveEntitlements();
         live.Set(plus);
-        return new BuddyWardrobeService(f.Settings, f.Profile, f.Achievements, live);
+        return new BuddyWardrobeService(f.Settings, f.Profile, f.Achievements, live, f.Days);
     }
 
     private static async Task SetLevelAsync(AppFixture f, int level) =>
@@ -118,5 +146,43 @@ public class BuddyWardrobeServiceTests
         await f.Settings.SetAsync(BuddyWardrobeService.Key, "{{{");
 
         (await Create(f, plus: true).GetAsync()).Worn.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task SeasonalItems_AreCollectedDuringTheirSeason_AndKeptAfterwards()
+    {
+        using var f = new AppFixture(); // 22/10/2026 = mùa thu
+        var service = Create(f, plus: true);
+
+        var items = (await service.GetAsync()).Items.ToDictionary(i => i.Accessory.Id);
+        items["maple"].Owned.Should().BeTrue("đang mùa thu");
+        items["santa"].Owned.Should().BeFalse("chưa tới mùa đông");
+
+        f.Days.Today = new DateOnly(2026, 12, 5);
+        items = (await service.GetAsync()).Items.ToDictionary(i => i.Accessory.Id);
+        items["santa"].Owned.Should().BeTrue();
+        items["maple"].Owned.Should().BeTrue("món đã sưu tập được giữ sau khi mùa qua");
+        items["tulip"].Owned.Should().BeFalse("chưa từng có mặt trong mùa xuân");
+    }
+
+    [Fact]
+    public async Task FreeCannotCollectSeasonalItems_AndLosingPlusHidesThem()
+    {
+        using var f = new AppFixture();
+        (await Create(f, plus: false).ToggleAsync("maple")).Should().Be(EquipResult.Locked);
+
+        (await Create(f, plus: true).ToggleAsync("maple")).Should().Be(EquipResult.Equipped);
+        (await Create(f, plus: false).GetAsync()).Worn.Should().BeEmpty();
+        (await Create(f, plus: true).GetAsync()).Worn[AccessorySlot.Head].Id.Should().Be("maple");
+    }
+
+    [Fact]
+    public async Task FreeBrowsingDoesNotCollectAnything()
+    {
+        using var f = new AppFixture();
+        await Create(f, plus: false).GetAsync();
+        f.Days.Today = new DateOnly(2026, 12, 5);
+
+        (await Create(f, plus: true).GetAsync()).Items.Single(i => i.Accessory.Id == "maple").Owned.Should().BeFalse("Free không sưu tập được lúc mùa thu");
     }
 }

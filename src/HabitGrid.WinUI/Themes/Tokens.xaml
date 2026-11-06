@@ -32,10 +32,7 @@
         <GradientStop Color="#EC4899" Offset="1" />
     </LinearGradientBrush>
 
-    <!-- Chữ -->
-    <FontFamily x:Key="DisplayFont">ms-appx:///Assets/Fonts/BeVietnamPro-ExtraBold.ttf#Be Vietnam Pro</FontFamily>
-    <FontFamily x:Key="DisplayBoldFont">ms-appx:///Assets/Fonts/BeVietnamPro-Bold.ttf#Be Vietnam Pro</FontFamily>
-    <FontFamily x:Key="DisplaySemiBoldFont">ms-appx:///Assets/Fonts/BeVietnamPro-SemiBold.ttf#Be Vietnam Pro</FontFamily>
+    <!-- Chữ: DisplayFont, DisplayBoldFont, DisplaySemiBoldFont do FontResources (FontResources.cs) cung cấp theo lựa chọn của người dùng. -->
 
     <Style x:Key="DisplayTextStyle" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />

@@ -63,3 +63,27 @@ public static class AccentColors
         return $"#{(int)Math.Round(nr * 255):X2}{(int)Math.Round(ng * 255):X2}{(int)Math.Round(nb * 255):X2}";
     }
 }
+
+/// <summary>Bộ phông chữ gợi ý (P5, Plus). Mặc định là Be Vietnam Pro đóng gói sẵn; các bộ khác dùng phông có sẵn trong Windows và đều hỗ trợ tiếng Việt.</summary>
+public sealed record FontChoice(string Id, string? Family);
+
+public static class AppFonts
+{
+    public const string DefaultId = "default";
+    public const string SettingKey = "appearance.font";
+
+    /// <summary>Tên file nhỏ trong thư mục dữ liệu: phông phải biết trước khi giao diện được dựng nên không đọc từ CSDL được.</summary>
+    public const string FileName = "appearance-font.txt";
+
+    public static readonly IReadOnlyList<FontChoice> All =
+    [
+        new(DefaultId, null),
+        new("system", "Segoe UI Variable"),
+        new("serif", "Cambria"),
+        new("mono", "Consolas")
+    ];
+
+    /// <summary>Id hợp lệ, không thì về mặc định (file hỏng hoặc phông bị gỡ khỏi danh sách).</summary>
+    public static FontChoice Resolve(string? id) =>
+        All.FirstOrDefault(f => string.Equals(f.Id, id?.Trim(), StringComparison.OrdinalIgnoreCase)) ?? All[0];
+}

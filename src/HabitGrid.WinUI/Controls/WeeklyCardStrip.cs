@@ -21,7 +21,55 @@ public sealed class WeeklyCardStrip : UserControl
 
     public bool HasItems => _panel.Children.Count > 0;
 
-    public async Task ReloadAsync() => Render(await App.Host.Get<WeeklyRecapService>().GetAsync());
+    public async Task ReloadAsync()
+    {
+        Render(await App.Host.Get<WeeklyRecapService>().GetAsync());
+
+        // Banner Wrapped đầu tháng nằm trên cùng.
+        if (await App.Host.Get<WrappedService>().BannerAsync() is { } wrapped)
+        {
+            _panel.Children.Insert(0, BuildWrappedBanner(wrapped));
+            Visibility = Visibility.Visible;
+        }
+    }
+
+    private UIElement BuildWrappedBanner(MonthlyWrapped wrapped)
+    {
+        var month = new DateTime(wrapped.Year, wrapped.Month, 1).ToString("MMMM", Ui.CurrentCulture);
+        var row = new Grid { ColumnSpacing = 10 };
+        row.ColumnDefinitions.Add(new ColumnDefinition());
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        row.Children.Add(new TextBlock
+        {
+            Text = "✨ " + Ui.Loc.Format("wrapped.banner.title", month),
+            Style = (Style)Application.Current.Resources["CardTitleTextStyle"],
+            VerticalAlignment = VerticalAlignment.Center,
+            TextWrapping = TextWrapping.Wrap
+        });
+
+        var view = new Button { Content = Ui.T("wrapped.banner.view"), Style = (Style)Application.Current.Resources["GradientButtonStyle"] };
+        AutomationProperties.SetName(view, Ui.T("wrapped.title"));
+        view.Click += async (_, _) =>
+        {
+            await App.Host.Get<WrappedService>().DismissBannerAsync();
+            await ReloadAsync();
+            await HabitGrid.WinUI.Moments.WrappedDialog.ShowAsync(XamlRoot);
+        };
+        Grid.SetColumn(view, 1);
+        row.Children.Add(view);
+
+        var later = new Button { Content = Ui.T("wrapped.banner.later"), Style = (Style)Application.Current.Resources["GhostButtonStyle"] };
+        AutomationProperties.SetName(later, Ui.T("wrapped.banner.later"));
+        later.Click += async (_, _) =>
+        {
+            await App.Host.Get<WrappedService>().DismissBannerAsync();
+            await ReloadAsync();
+        };
+        Grid.SetColumn(later, 2);
+        row.Children.Add(later);
+        return new Border { Style = (Style)Application.Current.Resources["CardBorder"], Child = row };
+    }
 
     /// <summary>Dựng thẻ từ dữ liệu cho sẵn (smoke chụp ảnh thẻ tổng kết dù hôm nay không phải đầu tuần).</summary>
     public void Render(WeeklyCard card)

@@ -11,7 +11,7 @@ public class WrappedServiceTests
     {
         var live = new LiveEntitlements();
         live.Set(plus);
-        return new WrappedService(f.Habits, f.Logs, f.Days, live);
+        return new WrappedService(f.Habits, f.Logs, f.Days, live, f.Settings);
     }
 
     [Fact]
@@ -64,5 +64,47 @@ public class WrappedServiceTests
 
         Create(f, plus: false).IsPlus.Should().BeFalse();
         Create(f, plus: true).IsPlus.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Banner_ShowsInTheFirstWeekOnly_WhenLastMonthHasData()
+    {
+        using var f = new AppFixture();
+        var h = await f.AddAsync("A", startDaysAgo: 90);
+        await f.LogAsync(h, new DateOnly(2026, 9, 3), 1);
+        var service = Create(f);
+
+        f.Days.Today = new DateOnly(2026, 10, 3);
+        (await service.BannerAsync())!.Month.Should().Be(9);
+
+        f.Days.Today = new DateOnly(2026, 10, 8);
+        (await service.BannerAsync()).Should().BeNull("sau 7 ngày đầu tháng thì thôi nhắc");
+    }
+
+    [Fact]
+    public async Task Banner_StaysHiddenOnceDismissed_UntilNextMonth()
+    {
+        using var f = new AppFixture();
+        var h = await f.AddAsync("A", startDaysAgo: 90);
+        await f.LogAsync(h, new DateOnly(2026, 9, 3), 1);
+        await f.LogAsync(h, new DateOnly(2026, 10, 3), 1);
+        var service = Create(f);
+        f.Days.Today = new DateOnly(2026, 10, 2);
+
+        await service.DismissBannerAsync();
+        (await service.BannerAsync()).Should().BeNull();
+
+        f.Days.Today = new DateOnly(2026, 11, 1);
+        (await service.BannerAsync())!.Month.Should().Be(10);
+    }
+
+    [Fact]
+    public async Task Banner_IsNotShown_WhenLastMonthWasEmpty()
+    {
+        using var f = new AppFixture();
+        await f.AddAsync("A", startDaysAgo: 90);
+        f.Days.Today = new DateOnly(2026, 10, 2);
+
+        (await Create(f).BannerAsync()).Should().BeNull();
     }
 }

@@ -202,12 +202,14 @@ public sealed class AppHost : IDisposable
             sp.GetRequiredService<ISettingsStore>(),
             sp.GetRequiredService<IProfileRepository>(),
             sp.GetRequiredService<IAchievementRepository>(),
-            sp.GetRequiredService<IEntitlements>()));
+            sp.GetRequiredService<IEntitlements>(),
+            sp.GetRequiredService<IDayProvider>()));
         services.AddSingleton<WrappedService>(sp => new WrappedService(
             sp.GetRequiredService<IHabitRepository>(),
             sp.GetRequiredService<IDayLogRepository>(),
             sp.GetRequiredService<IDayProvider>(),
-            sp.GetRequiredService<IEntitlements>()));
+            sp.GetRequiredService<IEntitlements>(),
+            sp.GetRequiredService<ISettingsStore>()));
         services.AddSingleton<BackupManager>(sp =>
         {
             var manager = new BackupManager(

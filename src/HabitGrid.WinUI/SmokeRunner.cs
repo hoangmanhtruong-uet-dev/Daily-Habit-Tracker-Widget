@@ -601,6 +601,11 @@ public static class SmokeRunner
         var themeService = App.Host.Get<ThemeService>();
         themeService.AccentAllowed = true;
         Require(await themeService.SetAccentAsync("#22C55E", window.Content as FrameworkElement), "Không đặt được màu nhấn.");
+        // P5 phông chữ: lựa chọn được ghi ra file và từ điển phông dựng ở lần mở sau lấy đúng phông.
+        FontResources.WriteChoice("serif");
+        Require(FontResources.ReadChoice() == "serif" && ((Microsoft.UI.Xaml.Media.FontFamily)new FontResources()["DisplayFont"]).Source == "Cambria", "Lựa chọn phông không được áp vào từ điển phông.");
+        FontResources.WriteChoice(HabitGrid.Core.Domain.AppFonts.DefaultId);
+        Require(FontResources.ReadChoice() == HabitGrid.Core.Domain.AppFonts.DefaultId, "Chọn phông mặc định không xóa lựa chọn cũ.");
         Require(!await themeService.SetAccentAsync("xyz", window.Content as FrameworkElement), "Mã màu sai mà vẫn được nhận.");
         var accentBrush = (Microsoft.UI.Xaml.Media.LinearGradientBrush)Application.Current.Resources["AccentGradientBrush"];
         Require(accentBrush.GradientStops[0].Color == Ui.ParseColor("#22C55E"), "Màu nhấn tùy chỉnh chưa được áp vào gradient.");
