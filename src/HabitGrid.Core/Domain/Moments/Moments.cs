@@ -3,6 +3,31 @@ namespace HabitGrid.Core.Domain.Moments;
 /// <summary>Một ảnh khoảnh khắc gắn với check-in của một thói quen trong một ngày. Ảnh nằm trên máy người dùng.</summary>
 public sealed record Moment(Guid HabitId, DateOnly Day, string Path, DateTime CreatedAtUtc);
 
+/// <summary>Bố cục thẻ chia sẻ: một ảnh lớn (Free) hoặc dải photobooth 4 ảnh (Plus).</summary>
+public enum ShareLayout
+{
+    Single,
+    Strip4
+}
+
+/// <summary>Quy tắc dải 4 ảnh (P7): Plus mới dùng được và cần ít nhất 2 ảnh thật để dải có ý nghĩa.</summary>
+public static class ShareLayouts
+{
+    public const int StripSlots = 4;
+    public const int StripMinPhotos = 2;
+
+    public static bool CanUse(ShareLayout layout, bool isPlus) => layout == ShareLayout.Single || isPlus;
+
+    /// <summary>Chọn tối đa 4 ảnh cho dải: mỗi ngày một ảnh (ảnh mới nhất của ngày), ngày gần nhất trước.</summary>
+    public static IReadOnlyList<Moment> PickStrip(IEnumerable<Moment> moments) =>
+        moments
+            .GroupBy(m => m.Day)
+            .Select(g => g.OrderByDescending(m => m.CreatedAtUtc).ThenByDescending(m => m.Path, StringComparer.Ordinal).First())
+            .OrderByDescending(m => m.Day)
+            .Take(StripSlots)
+            .ToList();
+}
+
 /// <summary>Một khung thẻ chia sẻ kiểu photobooth.</summary>
 /// <param name="Background">Hai màu gradient nền (#RRGGBB).</param>
 /// <param name="Ink">Màu chữ trên khung.</param>

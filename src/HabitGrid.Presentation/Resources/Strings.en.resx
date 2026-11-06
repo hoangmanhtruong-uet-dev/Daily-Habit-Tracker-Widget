@@ -437,7 +437,7 @@
   <data name="share.copied" xml:space="preserve"><value>Image copied — paste it into the app you want to post in.</value></data>
   <data name="share.failed" xml:space="preserve"><value>Couldn't create the image.</value></data>
   <data name="plus.benefit.moments" xml:space="preserve"><value>Unlimited moment photos (Free: 1 per habit per day)</value></data>
-  <data name="plus.benefit.share" xml:space="preserve"><value>Every share card frame, hide the logo (Free: 2 frames)</value></data>
+  <data name="plus.benefit.share" xml:space="preserve"><value>Every share-card frame, the 4-photo strip, hide the logo (Free: 2 frames, 1 photo)</value></data>
   <data name="plus.benefit.momentWidget" xml:space="preserve"><value>Moments widget on your desktop</value></data>
   <data name="settings.momentWidget" xml:space="preserve"><value>Moments widget (Plus)</value></data>
   <data name="settings.momentWidget.hint" xml:space="preserve"><value>Shows your latest moment photo on the desktop; click it to see "this day last month".</value></data>
@@ -516,4 +516,6 @@
   <data name="backup.mirror.err.invalid" xml:space="preserve"><value>That path isn't valid.</value></data>
   <data name="backup.mirror.err.same-as-local" xml:space="preserve"><value>Pick a folder other than the local backup folder.</value></data>
   <data name="backup.mirror.err.not-writable" xml:space="preserve"><value>Can't write to that folder.</value></data>
+  <data name="share.layout.single" xml:space="preserve"><value>Single photo</value></data>
+  <data name="share.layout.strip" xml:space="preserve"><value>4-photo strip</value></data>
 </root>

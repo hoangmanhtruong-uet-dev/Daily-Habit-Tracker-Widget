@@ -437,7 +437,7 @@
   <data name="share.copied" xml:space="preserve"><value>Đã sao chép ảnh, dán vào app bạn muốn đăng.</value></data>
   <data name="share.failed" xml:space="preserve"><value>Không tạo được ảnh.</value></data>
   <data name="plus.benefit.moments" xml:space="preserve"><value>Ảnh khoảnh khắc không giới hạn (Free: 1 ảnh/ngày mỗi thói quen)</value></data>
-  <data name="plus.benefit.share" xml:space="preserve"><value>Mọi khung thẻ chia sẻ, ẩn logo (Free: 2 khung)</value></data>
+  <data name="plus.benefit.share" xml:space="preserve"><value>Mọi khung thẻ chia sẻ, dải 4 ảnh, ẩn logo (Free: 2 khung, 1 ảnh)</value></data>
   <data name="plus.benefit.momentWidget" xml:space="preserve"><value>Widget khoảnh khắc trên desktop</value></data>
   <data name="settings.momentWidget" xml:space="preserve"><value>Widget khoảnh khắc (Plus)</value></data>
   <data name="settings.momentWidget.hint" xml:space="preserve"><value>Hiện ảnh khoảnh khắc mới nhất trên desktop; bấm vào để xem "ngày này tháng trước".</value></data>
@@ -516,4 +516,6 @@
   <data name="backup.mirror.err.invalid" xml:space="preserve"><value>Đường dẫn không hợp lệ.</value></data>
   <data name="backup.mirror.err.same-as-local" xml:space="preserve"><value>Hãy chọn thư mục khác với thư mục sao lưu trên máy.</value></data>
   <data name="backup.mirror.err.not-writable" xml:space="preserve"><value>Không ghi được vào thư mục này.</value></data>
+  <data name="share.layout.single" xml:space="preserve"><value>Một ảnh</value></data>
+  <data name="share.layout.strip" xml:space="preserve"><value>Dải 4 ảnh</value></data>
 </root>

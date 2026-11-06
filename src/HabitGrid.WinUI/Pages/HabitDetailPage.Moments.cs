@@ -15,10 +15,10 @@ public sealed partial class HabitDetailPage
     private const int ThumbWidth = 132;
 
     /// <summary>Thêm ảnh cho hôm nay từ mảng byte (smoke test dùng; giao diện đi qua camera/file).</summary>
-    public MomentAddResult AddMomentForTest(byte[] jpeg)
+    public MomentAddResult AddMomentForTest(byte[] jpeg, int daysAgo = 0)
     {
         var result = ViewModel.Habit is { } habit
-            ? App.Host.Get<MomentService>().Add(habit, ViewModel.Today, jpeg, ".jpg").Result
+            ? App.Host.Get<MomentService>().Add(habit, ViewModel.Today.AddDays(-daysAgo), jpeg, ".jpg").Result
             : MomentAddResult.NotAllowed;
         BuildMoments();
         return result;
