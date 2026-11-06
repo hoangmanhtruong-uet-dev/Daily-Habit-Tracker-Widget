@@ -59,6 +59,7 @@ public static class SmokeRunner
             await MomentsJourneyAsync(window, logger);
             await BatchOneJourneyAsync(window, logger);
             await ChallengeJourneyAsync(window, logger);
+            await WeeklyJourneyAsync(window, logger);
             await AccessibilityAuditAsync(window, logger);
 
             // Mọi theme × sáng/tối phải dựng được (ảnh để duyệt giao diện).
@@ -428,6 +429,40 @@ public static class SmokeRunner
         await App.Host.Get<IHabitRepository>().SoftDeleteAsync(started.Challenge!.HabitId);
         Require((await service.RefreshAsync()).Items.Count == 0, "Xóa thói quen nhưng thử thách vẫn còn chạy.");
         logger.Info("SMOKE challenge OK");
+    }
+
+    /// <summary>F6: chọn ý định tuần (chạy mọi ngày), rồi dựng thẻ tổng kết tuần trước từ dữ liệu mẫu để chụp ảnh.</summary>
+    private static async Task WeeklyJourneyAsync(MainWindow window, IAppLogger logger)
+    {
+        var service = App.Host.Get<WeeklyRecapService>();
+        var repo = App.Host.Get<IHabitRepository>();
+        var habits = (await repo.GetAllActiveAsync()).Where(h => h.Kind != HabitKind.Quit).ToList();
+        Require(await service.SetIntentAsync(habits[0].Id), "Không chọn được ý định tuần.");
+
+        await GoToAsync(window, PageKeys.Today);
+        await Task.Delay(900);
+        var strip = FindAll<WeeklyCardStrip>(window.Content).FirstOrDefault() ?? throw new InvalidOperationException("Không thấy thẻ tuần.");
+        Require(strip.HasItems, "Ý định tuần đã chọn nhưng thẻ không hiện.");
+        Require((await service.GetAsync()).Intent?.HabitId == habits[0].Id, "Ý định tuần không được lưu.");
+
+        var today = App.Host.Get<IDayProvider>().GetToday();
+        var logsRepo = App.Host.Get<IDayLogRepository>();
+        var logs = new List<DayLog>();
+        foreach (var habit in habits)
+        {
+            logs.AddRange(await logsRepo.GetRangeAsync(habit.Id, today.AddDays(-28), today));
+        }
+
+        var monday = HabitGrid.Core.Domain.PeriodCalendar.StartOfWeek(today, DayOfWeek.Monday);
+        var recap = HabitGrid.Core.Domain.Insights.WeeklyRecapBuilder.Build(habits, logs, monday);
+        Require(recap.CheckIns > 0, "Dữ liệu mẫu không có check-in tuần trước để tổng kết.");
+        strip.Render(new WeeklyCard(recap, (await service.GetAsync()).Intent, habits.Take(4).ToList()));
+        await Task.Delay(300);
+        await SnapAsync(window, "today-weekly");
+
+        await service.SetIntentAsync(null);
+        await strip.ReloadAsync();
+        logger.Info($"SMOKE weekly OK (rate {recap.Rate:P0}, checkins {recap.CheckIns}, tip {recap.Tip})");
     }
 
     private static async Task MomentsJourneyAsync(MainWindow window, IAppLogger logger)

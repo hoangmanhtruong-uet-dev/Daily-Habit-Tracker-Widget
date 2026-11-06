@@ -581,4 +581,19 @@
   <data name="challenge.earlyBed" xml:space="preserve"><value>Đi ngủ sớm</value></data>
   <data name="challenge.journal" xml:space="preserve"><value>Viết nhật ký mỗi tối</value></data>
   <data name="challenge.stretch" xml:space="preserve"><value>Giãn cơ mỗi sáng</value></data>
+  <data name="weekly.title" xml:space="preserve"><value>Tuần trước của bạn</value></data>
+  <data name="weekly.rate" xml:space="preserve"><value>Hoàn thành {0}</value></data>
+  <data name="weekly.checkins" xml:space="preserve"><value>{0} lần check-in</value></data>
+  <data name="weekly.perfect" xml:space="preserve"><value>{0} ngày hoàn hảo</value></data>
+  <data name="weekly.bestday" xml:space="preserve"><value>Ngày tốt nhất: {0}</value></data>
+  <data name="weekly.besthabit" xml:space="preserve"><value>Nổi bật: {0}</value></data>
+  <data name="weekly.seen" xml:space="preserve"><value>Đã xem</value></data>
+  <data name="weekly.tip.Praise" xml:space="preserve"><value>Tuần rất trọn vẹn. Giữ nhịp này nhé!</value></data>
+  <data name="weekly.tip.FocusWeakest" xml:space="preserve"><value>{0} đang bị bỏ lơ ({1}%). Chọn nó làm ý định tuần này?</value></data>
+  <data name="weekly.tip.Improving" xml:space="preserve"><value>Tốt hơn tuần trước đó rồi, cứ đà này.</value></data>
+  <data name="weekly.tip.Steady" xml:space="preserve"><value>Giữ nhịp. Chọn một thói quen để tập trung tuần này.</value></data>
+  <data name="weekly.intent.pick" xml:space="preserve"><value>Chọn một ý định cho tuần này</value></data>
+  <data name="weekly.intent.title" xml:space="preserve"><value>Ý định tuần này</value></data>
+  <data name="weekly.intent.progress" xml:space="preserve"><value>{0}: {1}/{2}</value></data>
+  <data name="weekly.intent.clear" xml:space="preserve"><value>Bỏ ý định</value></data>
 </root>

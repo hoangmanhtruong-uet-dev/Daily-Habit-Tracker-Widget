@@ -581,4 +581,19 @@
   <data name="challenge.earlyBed" xml:space="preserve"><value>Go to bed early</value></data>
   <data name="challenge.journal" xml:space="preserve"><value>Journal every evening</value></data>
   <data name="challenge.stretch" xml:space="preserve"><value>Stretch every morning</value></data>
+  <data name="weekly.title" xml:space="preserve"><value>Your last week</value></data>
+  <data name="weekly.rate" xml:space="preserve"><value>Completed {0}</value></data>
+  <data name="weekly.checkins" xml:space="preserve"><value>{0} check-ins</value></data>
+  <data name="weekly.perfect" xml:space="preserve"><value>{0} perfect days</value></data>
+  <data name="weekly.bestday" xml:space="preserve"><value>Best day: {0}</value></data>
+  <data name="weekly.besthabit" xml:space="preserve"><value>Standout: {0}</value></data>
+  <data name="weekly.seen" xml:space="preserve"><value>Got it</value></data>
+  <data name="weekly.tip.Praise" xml:space="preserve"><value>A really complete week. Keep this rhythm!</value></data>
+  <data name="weekly.tip.FocusWeakest" xml:space="preserve"><value>{0} has been neglected ({1}%). Make it this week's intention?</value></data>
+  <data name="weekly.tip.Improving" xml:space="preserve"><value>Better than the week before. Keep going.</value></data>
+  <data name="weekly.tip.Steady" xml:space="preserve"><value>Steady. Pick one habit to focus on this week.</value></data>
+  <data name="weekly.intent.pick" xml:space="preserve"><value>Pick an intention for this week</value></data>
+  <data name="weekly.intent.title" xml:space="preserve"><value>This week's intention</value></data>
+  <data name="weekly.intent.progress" xml:space="preserve"><value>{0}: {1}/{2}</value></data>
+  <data name="weekly.intent.clear" xml:space="preserve"><value>Clear intention</value></data>
 </root>
