@@ -488,7 +488,7 @@ public static class SmokeRunner
 
         foreach (var kind in WrappedSlides.All)
         {
-            var png = await HabitGrid.WinUI.Moments.WrappedDialog.RenderSlidePngForTestAsync(kind, data, withPhoto: false);
+            var png = await HabitGrid.WinUI.Moments.WrappedDialog.RenderSlidePngForTestAsync(FindAll<Panel>(window.Content).First(), kind, data, withPhoto: false);
             Require(png.Length > 8_000, $"Ảnh Wrapped slide {kind} quá nhỏ ({png.Length} byte).");
             sizes.Add(png.Length);
 

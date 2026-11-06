@@ -145,12 +145,29 @@ public static class WrappedDialog
         await dialog.ShowAsync();
     }
 
-    /// <summary>Render một slide thành PNG 1080×1920 (smoke test dùng để kiểm xuất ảnh mà không cần mở hộp thoại).</summary>
-    public static async Task<byte[]> RenderSlidePngForTestAsync(WrappedSlideKind kind, MonthlyWrapped data, bool withPhoto)
+    /// <summary>
+    /// Render một slide thành PNG 1080×1920 cho smoke test, không cần mở hộp thoại. RenderTargetBitmap cần phần tử nằm trong cây giao diện,
+    /// nên slide được gắn tạm (gần như trong suốt) vào <paramref name="host"/> rồi gỡ ra.
+    /// </summary>
+    public static async Task<byte[]> RenderSlidePngForTestAsync(Panel host, WrappedSlideKind kind, MonthlyWrapped data, bool withPhoto)
     {
         var buddy = await LoadBuddyAsync();
         var photo = withPhoto ? await TryLoadMonthPhotoAsync(data) : null;
-        return await MomentCapture.RenderPngAsync(WrappedSlideBuilder.Build(kind, data, buddy, photo), 1080, 1920);
+        var slide = WrappedSlideBuilder.Build(kind, data, buddy, photo);
+        slide.Opacity = 0.01;
+        slide.IsHitTestVisible = false;
+        host.Children.Add(slide);
+
+        try
+        {
+            slide.UpdateLayout();
+            await Task.Delay(100);
+            return await MomentCapture.RenderPngAsync(slide, 1080, 1920);
+        }
+        finally
+        {
+            host.Children.Remove(slide);
+        }
     }
 
     private static async Task<string> SaveAsync(FrameworkElement slide, MonthlyWrapped data, int index)
