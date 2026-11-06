@@ -62,6 +62,7 @@
 
                 <!-- Routine -->
                 <controls:RoutineStrip x:Name="Routines" Margin="0,0,0,14" />
+                <controls:ChallengeStrip x:Name="Challenges" Margin="0,0,0,14" />
 
                 <!-- Bento: hero + streak -->
                 <Grid ColumnDefinitions="2*,*" ColumnSpacing="14">

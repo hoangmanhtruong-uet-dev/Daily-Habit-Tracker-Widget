@@ -552,4 +552,33 @@
   <data name="plus.benefit.backup" xml:space="preserve"><value>Sao lưu tự động sang thư mục OneDrive/Google Drive/Dropbox</value></data>
   <data name="plus.benefit.advanced" xml:space="preserve"><value>Insights nâng cao: so sánh tháng, thói quen đi cùng nhau, lịch cả năm</value></data>
   <data name="plus.benefit.accent" xml:space="preserve"><value>Màu nhấn riêng cho toàn app</value></data>
+  <data name="challenge.title" xml:space="preserve"><value>Thử thách</value></data>
+  <data name="challenge.hint" xml:space="preserve"><value>Chọn một thử thách có hạn rõ ràng. App tạo sẵn thói quen và đếm liền mạch: lỡ một ngày là phải làm lại (ngày tạm nghỉ không tính là lỡ).</value></data>
+  <data name="challenge.length" xml:space="preserve"><value>Số ngày</value></data>
+  <data name="challenge.days" xml:space="preserve"><value>{0} ngày</value></data>
+  <data name="challenge.start" xml:space="preserve"><value>Bắt đầu</value></data>
+  <data name="challenge.badges" xml:space="preserve"><value>Huy hiệu đã đạt</value></data>
+  <data name="challenge.day" xml:space="preserve"><value>Ngày {0}/{1}</value></data>
+  <data name="challenge.left" xml:space="preserve"><value>còn {0} ngày</value></data>
+  <data name="challenge.completed" xml:space="preserve"><value>Hoàn thành thử thách {0} ngày!</value></data>
+  <data name="challenge.failed" xml:space="preserve"><value>Lỡ ngày {0}. Làm lại từ hôm nay?</value></data>
+  <data name="challenge.closed" xml:space="preserve"><value>Thói quen của thử thách đã bị xóa hoặc lưu trữ.</value></data>
+  <data name="challenge.restart" xml:space="preserve"><value>Làm lại</value></data>
+  <data name="challenge.dismiss" xml:space="preserve"><value>Ẩn</value></data>
+  <data name="challenge.unlock" xml:space="preserve"><value>Xem gói Plus (5 thử thách cùng lúc)</value></data>
+  <data name="challenge.err.ActiveLimit" xml:space="preserve"><value>Gói Free chạy một thử thách một lúc; Plus tối đa 5.</value></data>
+  <data name="challenge.err.HabitLimit" xml:space="preserve"><value>Đã đủ số thói quen của gói Free nên chưa tạo thêm được.</value></data>
+  <data name="challenge.err.InvalidDays" xml:space="preserve"><value>Số ngày hoặc tên không hợp lệ.</value></data>
+  <data name="challenge.err.UnknownTemplate" xml:space="preserve"><value>Thử thách không tồn tại.</value></data>
+  <data name="challenge.err.NotFound" xml:space="preserve"><value>Không tìm thấy thử thách.</value></data>
+  <data name="challenge.noSugarDrinks" xml:space="preserve"><value>30 ngày không trà sữa</value></data>
+  <data name="challenge.noSocialMorning" xml:space="preserve"><value>Không mạng xã hội buổi sáng</value></data>
+  <data name="challenge.noLateSnacks" xml:space="preserve"><value>Không ăn vặt khuya</value></data>
+  <data name="challenge.read10" xml:space="preserve"><value>Đọc 10 trang mỗi ngày</value></data>
+  <data name="challenge.walk" xml:space="preserve"><value>Đi bộ 6.000 bước mỗi ngày</value></data>
+  <data name="challenge.water" xml:space="preserve"><value>Uống đủ 8 ly nước</value></data>
+  <data name="challenge.meditate" xml:space="preserve"><value>Thiền 10 phút mỗi ngày</value></data>
+  <data name="challenge.earlyBed" xml:space="preserve"><value>Đi ngủ sớm</value></data>
+  <data name="challenge.journal" xml:space="preserve"><value>Viết nhật ký mỗi tối</value></data>
+  <data name="challenge.stretch" xml:space="preserve"><value>Giãn cơ mỗi sáng</value></data>
 </root>

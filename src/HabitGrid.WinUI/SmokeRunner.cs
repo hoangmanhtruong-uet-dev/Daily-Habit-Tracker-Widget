@@ -1,5 +1,6 @@
 using IDayProvider = HabitGrid.Core.Services.IDayProvider;
 using HabitGrid.Core.Domain;
+using HabitGrid.Core.Domain.Challenges;
 using HabitGrid.Presentation.Services;
 using HabitGrid.Presentation.Templates;
 using HabitGrid.Presentation.Theming;
@@ -57,6 +58,7 @@ public static class SmokeRunner
             await InsightsJourneyAsync(window, logger);
             await MomentsJourneyAsync(window, logger);
             await BatchOneJourneyAsync(window, logger);
+            await ChallengeJourneyAsync(window, logger);
             await AccessibilityAuditAsync(window, logger);
 
             // Mọi theme × sáng/tối phải dựng được (ảnh để duyệt giao diện).
@@ -404,6 +406,28 @@ public static class SmokeRunner
         await routines.DeleteAsync(created.Routine.Id);
         Require(!(await routines.ListAsync()).Any(), "Xóa routine không thành công.");
         logger.Info($"SMOKE batch1 OK (backup {file.SizeBytes} bytes, vacation {marked} days, routine steps done {done}, mood saved)");
+    }
+
+    /// <summary>F2: bắt đầu thử thách, dải thử thách hiện trên Hôm nay với tiến độ "Ngày 1/N"; rồi dọn để không ảnh hưởng các bước sau.</summary>
+    private static async Task ChallengeJourneyAsync(MainWindow window, IAppLogger logger)
+    {
+        var service = App.Host.Get<ChallengeService>();
+        var started = await service.StartAsync("read10", Ui.T("challenge.read10"), 30);
+        Require(started.Succeeded, $"Không bắt đầu được thử thách: {started.Error}");
+
+        await GoToAsync(window, PageKeys.Today);
+        await Task.Delay(900);
+        var strip = FindAll<ChallengeStrip>(window.Content).FirstOrDefault() ?? throw new InvalidOperationException("Không thấy dải thử thách.");
+        Require(strip.HasItems, "Dải thử thách trống dù đã bắt đầu thử thách.");
+        await SnapAsync(window, "today-challenge");
+
+        var board = await service.RefreshAsync();
+        Require(board.Items.Single().State == ChallengeState.Active && board.Items.Single().DayNumber == 1, "Thử thách mới phải ở ngày 1 và đang chạy.");
+
+        // Dọn: xóa thói quen của thử thách để không lẫn vào các bước kiểm sau.
+        await App.Host.Get<IHabitRepository>().SoftDeleteAsync(started.Challenge!.HabitId);
+        Require((await service.RefreshAsync()).Items.Count == 0, "Xóa thói quen nhưng thử thách vẫn còn chạy.");
+        logger.Info("SMOKE challenge OK");
     }
 
     private static async Task MomentsJourneyAsync(MainWindow window, IAppLogger logger)

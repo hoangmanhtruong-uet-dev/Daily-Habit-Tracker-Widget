@@ -11,6 +11,7 @@
         <Grid ColumnDefinitions="*,Auto">
             <TextBlock x:Name="TitleText" Style="{StaticResource TitleDisplayTextStyle}" VerticalAlignment="Center" />
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                <Button x:Name="ChallengeButton" Click="OnChallengeClick" Style="{StaticResource GhostButtonStyle}" />
                 <Button x:Name="RoutineButton" Click="OnRoutineClick" Style="{StaticResource GhostButtonStyle}" />
                 <Button x:Name="AddButton" Click="OnAddClick" Style="{StaticResource GradientButtonStyle}">
                     <StackPanel Orientation="Horizontal" Spacing="8">

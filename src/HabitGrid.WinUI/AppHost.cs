@@ -173,6 +173,12 @@ public sealed class AppHost : IDisposable
             sp.GetRequiredService<ISettingsStore>(),
             sp.GetRequiredService<IDayProvider>(),
             sp.GetRequiredService<IEntitlements>()));
+        services.AddSingleton<ChallengeService>(sp => new ChallengeService(
+            sp.GetRequiredService<ISettingsStore>(),
+            sp.GetRequiredService<IHabitRepository>(),
+            sp.GetRequiredService<IDayLogRepository>(),
+            sp.GetRequiredService<IEntitlements>(),
+            sp.GetRequiredService<IDayProvider>()));
         services.AddSingleton<DailyMoodService>(sp => new DailyMoodService(
             sp.GetRequiredService<ISettingsStore>(),
             sp.GetRequiredService<IDayProvider>()));

@@ -552,4 +552,33 @@
   <data name="plus.benefit.backup" xml:space="preserve"><value>Automatic backups mirrored to a OneDrive/Google Drive/Dropbox folder</value></data>
   <data name="plus.benefit.advanced" xml:space="preserve"><value>Advanced insights: month comparison, habits that go together, whole-year calendar</value></data>
   <data name="plus.benefit.accent" xml:space="preserve"><value>Your own accent colour across the app</value></data>
+  <data name="challenge.title" xml:space="preserve"><value>Challenges</value></data>
+  <data name="challenge.hint" xml:space="preserve"><value>Pick a challenge with a clear end. The app creates the habit and counts it as a streak: miss a day and you start over (break days do not count as a miss).</value></data>
+  <data name="challenge.length" xml:space="preserve"><value>Length</value></data>
+  <data name="challenge.days" xml:space="preserve"><value>{0} days</value></data>
+  <data name="challenge.start" xml:space="preserve"><value>Start</value></data>
+  <data name="challenge.badges" xml:space="preserve"><value>Badges earned</value></data>
+  <data name="challenge.day" xml:space="preserve"><value>Day {0}/{1}</value></data>
+  <data name="challenge.left" xml:space="preserve"><value>{0} days left</value></data>
+  <data name="challenge.completed" xml:space="preserve"><value>{0}-day challenge complete!</value></data>
+  <data name="challenge.failed" xml:space="preserve"><value>Missed {0}. Start again from today?</value></data>
+  <data name="challenge.closed" xml:space="preserve"><value>This challenge habit was deleted or archived.</value></data>
+  <data name="challenge.restart" xml:space="preserve"><value>Start again</value></data>
+  <data name="challenge.dismiss" xml:space="preserve"><value>Hide</value></data>
+  <data name="challenge.unlock" xml:space="preserve"><value>See Plus (5 challenges at once)</value></data>
+  <data name="challenge.err.ActiveLimit" xml:space="preserve"><value>Free runs one challenge at a time; Plus up to 5.</value></data>
+  <data name="challenge.err.HabitLimit" xml:space="preserve"><value>You have reached the Free habit limit, so no new habit can be created.</value></data>
+  <data name="challenge.err.InvalidDays" xml:space="preserve"><value>Invalid length or name.</value></data>
+  <data name="challenge.err.UnknownTemplate" xml:space="preserve"><value>Unknown challenge.</value></data>
+  <data name="challenge.err.NotFound" xml:space="preserve"><value>Challenge not found.</value></data>
+  <data name="challenge.noSugarDrinks" xml:space="preserve"><value>30 days without sugary drinks</value></data>
+  <data name="challenge.noSocialMorning" xml:space="preserve"><value>No social media in the morning</value></data>
+  <data name="challenge.noLateSnacks" xml:space="preserve"><value>No late-night snacks</value></data>
+  <data name="challenge.read10" xml:space="preserve"><value>Read 10 pages a day</value></data>
+  <data name="challenge.walk" xml:space="preserve"><value>Walk 6,000 steps a day</value></data>
+  <data name="challenge.water" xml:space="preserve"><value>Drink 8 glasses of water</value></data>
+  <data name="challenge.meditate" xml:space="preserve"><value>Meditate 10 minutes a day</value></data>
+  <data name="challenge.earlyBed" xml:space="preserve"><value>Go to bed early</value></data>
+  <data name="challenge.journal" xml:space="preserve"><value>Journal every evening</value></data>
+  <data name="challenge.stretch" xml:space="preserve"><value>Stretch every morning</value></data>
 </root>
