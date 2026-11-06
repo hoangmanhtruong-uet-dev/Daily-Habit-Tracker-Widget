@@ -48,6 +48,8 @@ public sealed partial class SettingsPage : Page
 
         _root.Children.Add(new TextBlock { Text = Ui.T("settings.title"), Style = Res("TitleDisplayTextStyle") });
         BuildPlusCard();
+        BuildBackupCard();
+        BuildVacationCard();
 
         // Chủ đề màu
         var themeCard = Card(Ui.T("settings.theme"));

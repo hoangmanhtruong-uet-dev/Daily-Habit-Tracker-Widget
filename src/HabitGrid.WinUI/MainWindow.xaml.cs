@@ -80,6 +80,7 @@ public sealed partial class MainWindow : Window
         {
             Navigate(PageKeys.Today);
             _ = _gamification.StartAsync();
+            _ = RunDailyBackupAsync();
             _ = AskToChooseRunningIfNeededAsync();
 
             if (GamificationCoordinator.DialogsEnabled)

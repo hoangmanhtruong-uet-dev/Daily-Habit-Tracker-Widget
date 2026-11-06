@@ -18,10 +18,73 @@ public sealed partial class TodayPage : Page
         ViewModel.PropertyChanged += OnViewModelChanged;
         ViewModel.Groups.CollectionChanged += (_, _) => UpdateEmpty();
         ViewModel.Week.CollectionChanged += (_, _) => Strip.Update(ViewModel.Week);
-        Strip.DaySelected += async (_, day) => await Guard(() => ViewModel.SelectDayAsync(day));
+        Strip.DaySelected += async (_, day) => await Guard(async () =>
+        {
+            await ViewModel.SelectDayAsync(day);
+            await LoadMoodAsync();
+            await LoadRoutinesAsync();
+        });
     }
 
     public TodayViewModel ViewModel { get; }
+
+    /// <summary>Dải routine cho ngày đang xem; check một bước hoặc "xong cả routine" thì nạp lại thẻ thói quen.</summary>
+    private async Task LoadRoutinesAsync()
+    {
+        var day = ViewModel.SelectedDay == default ? DateOnly.FromDateTime(DateTime.Today) : ViewModel.SelectedDay;
+
+        if (!_routinesWired)
+        {
+            _routinesWired = true;
+            Routines.Changed += async (_, _) => await Guard(async () =>
+            {
+                await ViewModel.LoadAsync();
+                await LoadRoutinesAsync();
+            });
+        }
+
+        await Routines.ReloadAsync(day);
+    }
+
+    private bool _routinesWired;
+
+    /// <summary>Thanh cảm xúc cho ngày đang xem (ẩn khi xem ngày tương lai).</summary>
+    private async Task LoadMoodAsync()
+    {
+        var day = ViewModel.SelectedDay == default ? DateOnly.FromDateTime(DateTime.Today) : ViewModel.SelectedDay;
+        Mood.Visibility = day > DateOnly.FromDateTime(DateTime.Today) ? Visibility.Collapsed : Visibility.Visible;
+        await Mood.LoadAsync(day);
+    }
+
+    /// <summary>Dải "đang tạm nghỉ đến ngày…" kèm nút kết thúc sớm.</summary>
+    private async Task UpdateVacationBarAsync()
+    {
+        var info = await App.Host.Get<VacationService>().CurrentAsync();
+        VacationBar.IsOpen = info is not null;
+
+        if (info is null)
+        {
+            return;
+        }
+
+        VacationBar.Message = Ui.Loc.Format(info.IsAll ? "vacation.banner.all" : "vacation.banner.some", Ui.LongDate(info.To));
+        VacationEndButton.Content = Ui.T("vacation.end");
+    }
+
+    private async void OnVacationEndClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await App.Host.Get<VacationService>().EndAsync();
+            await ViewModel.LoadAsync();
+            await UpdateVacationBarAsync();
+            await LoadRoutinesAsync();
+        }
+        catch (Exception ex)
+        {
+            Log(ex, "Kết thúc tạm nghỉ lỗi");
+        }
+    }
 
     /// <summary>Phím 1–9: check dòng thứ <paramref name="index"/> (đếm từ 0) theo đúng thứ tự đang hiển thị.</summary>
     public async Task CheckRowAsync(int index)
@@ -44,6 +107,9 @@ public sealed partial class TodayPage : Page
             await ViewModel.LoadAsync();
             _wasAllDone = ViewModel.AllDone;
             ApplyTexts();
+            await UpdateVacationBarAsync();
+            await LoadMoodAsync();
+            await LoadRoutinesAsync();
         }
         catch (Exception ex)
         {
@@ -79,6 +145,8 @@ public sealed partial class TodayPage : Page
         switch (e.PropertyName)
         {
             case nameof(TodayViewModel.DoneCount):
+                _ = Guard(LoadRoutinesAsync);
+                goto case nameof(TodayViewModel.TotalCount);
             case nameof(TodayViewModel.TotalCount):
             case nameof(TodayViewModel.BuddyMood):
             case nameof(TodayViewModel.BuddyName):
@@ -164,7 +232,11 @@ public sealed partial class TodayPage : Page
         NotTodayRepeater.Visibility = NotTodayToggle.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
 
     private async void OnBackToToday(object sender, RoutedEventArgs e) =>
-        await Guard(() => ViewModel.SelectDayAsync(ViewModel.Today));
+        await Guard(async () =>
+        {
+            await ViewModel.SelectDayAsync(ViewModel.Today);
+            await LoadMoodAsync();
+        });
 
     private async void OnUndoClick(object sender, RoutedEventArgs e) =>
         await Guard(ViewModel.UndoAsync);

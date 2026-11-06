@@ -12,6 +12,20 @@ public sealed partial class MainWindow
 {
     private bool _askedToChoose;
 
+    /// <summary>Tự sao lưu mỗi ngày một lần (chạy nền, lỗi chỉ ghi log).</summary>
+    private static async Task RunDailyBackupAsync()
+    {
+        try
+        {
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            await App.Host.Get<HabitGrid.Data.V3.BackupManager>().RunIfDueAsync();
+        }
+        catch (Exception ex)
+        {
+            App.Host.Get<IAppLogger>().Error("Tự sao lưu lỗi", ex);
+        }
+    }
+
     /// <summary>Gọi một lần khi mở app, trước khi vào trang đầu tiên.</summary>
     private async Task InitializePlusAsync()
     {

@@ -50,4 +50,10 @@ public interface IEntitlements
 
     /// <summary>Số ảnh khoảnh khắc tối đa cho một thói quen trong một ngày (Free 1, Plus không giới hạn).</summary>
     int MaxMomentsPerDay => IsPlus ? int.MaxValue : 1;
+
+    /// <summary>Số ngày tạm nghỉ tối đa mỗi lần (Free 14, Plus 60).</summary>
+    int MaxVacationDays => IsPlus ? 60 : 14;
+
+    /// <summary>Số routine tối đa (Free 2, Plus không giới hạn).</summary>
+    int MaxRoutines => IsPlus ? int.MaxValue : 2;
 }

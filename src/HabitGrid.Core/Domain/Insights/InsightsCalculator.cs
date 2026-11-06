@@ -58,7 +58,8 @@ public static class InsightsCalculator
         DayOfWeek weekStart = DayOfWeek.Monday,
         IScheduleCalculator? schedule = null,
         IStreakCalculator? streaks = null,
-        IStatsCalculator? stats = null)
+        IStatsCalculator? stats = null,
+        IReadOnlyDictionary<DateOnly, int>? dayMoods = null)
     {
         ArgumentNullException.ThrowIfNull(habits);
         ArgumentNullException.ThrowIfNull(logs);
@@ -143,7 +144,7 @@ public static class InsightsCalculator
             Weekdays(tracked, latest, from, to, today, schedule),
             stats.CheckInsByHour(latest.Values.ToList()),
             rows,
-            Mood(latest.Values.ToList()));
+            Mood(latest.Values.ToList(), dayMoods, from, to));
     }
 
     /// <summary>Ngày hoàn hảo: mọi thói quen có lịch đều Done/Skipped/Frozen và có ít nhất một Done.</summary>
@@ -228,25 +229,37 @@ public static class InsightsCalculator
             .ToList();
     }
 
-    private static MoodSummary Mood(IReadOnlyList<DayLog> logs)
+    /// <summary>
+    /// Mood theo ngày: nếu người dùng đã ghi tâm trạng cả ngày (F4) thì dùng nó; không thì trung bình mood gắn với các thói quen ngày đó.
+    /// </summary>
+    private static MoodSummary Mood(IReadOnlyList<DayLog> logs, IReadOnlyDictionary<DateOnly, int>? dayMoods, DateOnly from, DateOnly to)
     {
-        var withMood = logs.Where(l => l.Mood is >= 1 and <= 5).ToList();
+        var byDay = logs.Where(l => l.Mood is >= 1 and <= 5)
+            .GroupBy(l => l.Day)
+            .ToDictionary(g => g.Key, g => g.Average(l => l.Mood!.Value));
 
-        if (withMood.Count == 0)
+        foreach (var (day, mood) in dayMoods ?? new Dictionary<DateOnly, int>())
+        {
+            if (day >= from && day <= to && mood is >= 1 and <= 5)
+            {
+                byDay[day] = mood;
+            }
+        }
+
+        if (byDay.Count == 0)
         {
             return new MoodSummary(null, null, null, 0);
         }
 
         var doneDays = logs.Where(l => l.Status == DayStatus.Done).Select(l => l.Day).ToHashSet();
-        var byDay = withMood.GroupBy(l => l.Day).ToDictionary(g => g.Key, g => g.Average(l => l.Mood!.Value));
         var onDone = byDay.Where(p => doneDays.Contains(p.Key)).Select(p => p.Value).ToList();
         var onOther = byDay.Where(p => !doneDays.Contains(p.Key)).Select(p => p.Value).ToList();
 
         return new MoodSummary(
-            withMood.Average(l => l.Mood!.Value),
+            byDay.Values.Average(),
             onDone.Count == 0 ? null : onDone.Average(),
             onOther.Count == 0 ? null : onOther.Average(),
-            withMood.Count);
+            byDay.Count);
     }
 
     /// <summary>Bản ghi mới nhất cho mỗi (thói quen, ngày).</summary>

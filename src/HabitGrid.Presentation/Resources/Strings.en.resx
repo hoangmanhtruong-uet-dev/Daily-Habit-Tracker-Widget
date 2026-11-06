@@ -441,4 +441,66 @@
   <data name="plus.benefit.momentWidget" xml:space="preserve"><value>Moments widget on your desktop</value></data>
   <data name="settings.momentWidget" xml:space="preserve"><value>Moments widget (Plus)</value></data>
   <data name="settings.momentWidget.hint" xml:space="preserve"><value>Shows your latest moment photo on the desktop; click it to see "this day last month".</value></data>
+  <data name="backup.title" xml:space="preserve"><value>Backup</value></data>
+  <data name="backup.hint" xml:space="preserve"><value>The app backs up automatically every day (keeping the latest 14) on your PC. You can also back up by hand and restore when you reinstall.</value></data>
+  <data name="backup.now" xml:space="preserve"><value>Back up now</value></data>
+  <data name="backup.restore.file" xml:space="preserve"><value>Restore from file…</value></data>
+  <data name="backup.open" xml:space="preserve"><value>Open folder</value></data>
+  <data name="backup.restore" xml:space="preserve"><value>Restore</value></data>
+  <data name="backup.auto" xml:space="preserve"><value>automatic</value></data>
+  <data name="backup.manual" xml:space="preserve"><value>manual</value></data>
+  <data name="backup.none" xml:space="preserve"><value>No backups yet.</value></data>
+  <data name="backup.done" xml:space="preserve"><value>Saved {0}</value></data>
+  <data name="backup.failed" xml:space="preserve"><value>That didn't work. Your current data is untouched.</value></data>
+  <data name="backup.invalid" xml:space="preserve"><value>This backup can't be used: {0}</value></data>
+  <data name="backup.restored" xml:space="preserve"><value>Restored {0} habits and {1} days of records.</value></data>
+  <data name="backup.confirm.title" xml:space="preserve"><value>Restore from backup?</value></data>
+  <data name="backup.confirm.body" xml:space="preserve"><value>Your current data will be replaced by this backup. The app saves your current state first, so you can always go back.</value></data>
+  <data name="vacation.title" xml:space="preserve"><value>Vacation mode</value></data>
+  <data name="vacation.start" xml:space="preserve"><value>Start break</value></data>
+  <data name="vacation.end" xml:space="preserve"><value>End early</value></data>
+  <data name="vacation.until" xml:space="preserve"><value>Break until the end of</value></data>
+  <data name="vacation.days" xml:space="preserve"><value>{0} days</value></data>
+  <data name="vacation.limit" xml:space="preserve"><value>Up to {0} days at a time. Plus allows longer breaks.</value></data>
+  <data name="vacation.body.all" xml:space="preserve"><value>Pause every habit (sick, traveling, exams…): your streaks are kept, there are no reminders and nothing counts as missed. You can still check in if you like.</value></data>
+  <data name="vacation.body.one" xml:space="preserve"><value>Pause "{0}" only: its streak is kept, with no reminders and nothing counted as missed.</value></data>
+  <data name="vacation.banner.all" xml:space="preserve"><value>🏖 On a break until the end of {0}. Your streaks are safe.</value></data>
+  <data name="vacation.banner.some" xml:space="preserve"><value>🏖 Some habits are on a break until the end of {0}.</value></data>
+  <data name="vacation.pause.habit" xml:space="preserve"><value>Pause</value></data>
+  <data name="vacation.err.InPast" xml:space="preserve"><value>A break can't start in the past.</value></data>
+  <data name="vacation.err.EndBeforeStart" xml:space="preserve"><value>The end date must be today or later.</value></data>
+  <data name="vacation.err.TooLong" xml:space="preserve"><value>A break can be at most {0} days.</value></data>
+  <data name="vacation.err.AlreadyActive" xml:space="preserve"><value>You already have a break running. End it before starting a new one.</value></data>
+  <data name="vacation.err.NothingToPause" xml:space="preserve"><value>There's nothing to pause (quit habits don't need a break).</value></data>
+  <data name="settings.vacation" xml:space="preserve"><value>Vacation mode</value></data>
+  <data name="settings.vacation.hint" xml:space="preserve"><value>Traveling or sick? Take a break to keep your streaks without spending a freeze.</value></data>
+  <data name="settings.vacation.active" xml:space="preserve"><value>On a break until the end of {0}.</value></data>
+  <data name="settings.vacation.none" xml:space="preserve"><value>Not on a break right now.</value></data>
+  <data name="mood.title.today" xml:space="preserve"><value>How are you feeling today?</value></data>
+  <data name="mood.title.past" xml:space="preserve"><value>How did you feel that day?</value></data>
+  <data name="mood.note" xml:space="preserve"><value>One line about the day (optional)</value></data>
+  <data name="routine.title" xml:space="preserve"><value>Routines</value></data>
+  <data name="routine.hint" xml:space="preserve"><value>Group habits into a sequence of steps like "Morning" or "Before bed", then do them one by one or tap Complete routine.</value></data>
+  <data name="routine.empty" xml:space="preserve"><value>No routines yet. Create your first one to do several habits in a row.</value></data>
+  <data name="routine.create" xml:space="preserve"><value>Create routine</value></data>
+  <data name="routine.edit" xml:space="preserve"><value>Edit routine</value></data>
+  <data name="routine.steps" xml:space="preserve"><value>{0} steps</value></data>
+  <data name="routine.limit" xml:space="preserve"><value>Routine limit: {0}. Plus is unlimited.</value></data>
+  <data name="routine.name" xml:space="preserve"><value>Routine name</value></data>
+  <data name="routine.name.placeholder" xml:space="preserve"><value>For example: Morning, Before bed</value></data>
+  <data name="routine.pick" xml:space="preserve"><value>Pick habits (each habit belongs to one routine)</value></data>
+  <data name="routine.order" xml:space="preserve"><value>Order of steps</value></data>
+  <data name="routine.selected" xml:space="preserve"><value>{0}/{1} selected</value></data>
+  <data name="routine.nohabits" xml:space="preserve"><value>No habits left to add. Each habit belongs to one routine and quit habits can't be added.</value></data>
+  <data name="routine.progress" xml:space="preserve"><value>{0}/{1} steps</value></data>
+  <data name="routine.complete" xml:space="preserve"><value>Routine complete 🎉</value></data>
+  <data name="routine.completeAll" xml:space="preserve"><value>Complete routine</value></data>
+  <data name="routine.pending" xml:space="preserve"><value>not done</value></data>
+  <data name="routine.err.NameRequired" xml:space="preserve"><value>Give the routine a name.</value></data>
+  <data name="routine.err.NameTooLong" xml:space="preserve"><value>Routine names are limited to 30 characters.</value></data>
+  <data name="routine.err.TooFewHabits" xml:space="preserve"><value>A routine needs at least 2 habits.</value></data>
+  <data name="routine.err.TooManyHabits" xml:space="preserve"><value>A routine can have at most 12 habits.</value></data>
+  <data name="routine.err.LimitReached" xml:space="preserve"><value>The Free plan allows 2 routines. Upgrade to Plus for more.</value></data>
+  <data name="routine.err.UnknownHabit" xml:space="preserve"><value>A habit is invalid or already in another routine.</value></data>
+  <data name="routine.err.NotFound" xml:space="preserve"><value>That routine wasn't found.</value></data>
 </root>

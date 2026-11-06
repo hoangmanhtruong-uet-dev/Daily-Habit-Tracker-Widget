@@ -37,6 +37,8 @@ public sealed partial class HabitDetailPage : Page
         BackText.Text = Ui.T("detail.back");
         EditText.Text = Ui.T("habits.edit");
         FocusText.Text = Ui.T("detail.focus");
+        PauseText.Text = Ui.T("vacation.pause.habit");
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(PauseButton, PauseText.Text);
         Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(BackButton, BackText.Text);
         Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(EditButton, EditText.Text);
         Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(FocusButton, FocusText.Text);
@@ -238,6 +240,22 @@ public sealed partial class HabitDetailPage : Page
         else
         {
             Frame.Navigate(typeof(HabitsPage));
+        }
+    }
+
+    /// <summary>Tạm nghỉ riêng thói quen này (F3).</summary>
+    private async void OnPauseClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (ViewModel.Habit is { } habit && await VacationDialog.ShowAsync(XamlRoot, habit.Id, habit.Name))
+            {
+                await LoadAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            App.Host.Get<IAppLogger>().Error("Tạm nghỉ từ trang chi tiết lỗi", ex);
         }
     }
 
