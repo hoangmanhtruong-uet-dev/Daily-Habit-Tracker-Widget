@@ -64,3 +64,10 @@ Chưa làm trong đợt 1: hẹn giờ từng bước của routine (P4, Plus), 
 | P4 | Routine hẹn giờ | **Xong (Plus).** Đặt phút cho từng bước, chạy nối tiếp; hết giờ hoặc bấm Xong thì đánh dấu hoàn thành, Bỏ qua thì không. Bộ chạy xử lý cả trường hợp máy ngủ. Chưa kiểm thử tay hộp thoại đếm giờ thật (smoke chỉ kiểm bộ chạy). |
 | P6 | Phụ kiện Buddy | **Xong.** 13 món (đầu/mặt/cổ): Free mở bằng cấp độ hoặc huy hiệu, Plus 6 món riêng; hết Plus thì món Plus ngừng hiển thị nhưng lựa chọn được giữ. Hình hiện là emoji ghép lên linh vật, chưa có hình vẽ riêng; "bộ riêng mỗi mùa" chưa làm (chưa có đồ theo mùa). |
 | P1 | Wrapped tháng | **Xong.** 6 slide story (tổng check-in, thói quen số 1, chuỗi dài nhất, giờ vàng, ngày hoàn hảo, ảnh khoảnh khắc/Buddy), tháng trước hoặc tháng này, lưu PNG 1080×1920. Free xem slide đầu, Plus xem đủ và lưu. Nút ở trang Insights; chưa có banner nhắc đầu tháng. |
+
+## Tiến độ đợt 4 – việc còn lại của đợt 2 và 3 (06/11/2026)
+| # | Việc | Trạng thái |
+|---|---|---|
+| P5 | Đổi phông chữ | **Xong.** 4 bộ (Be Vietnam Pro mặc định, hệ thống, có chân, đơn cách), Plus mới đổi được. Phông được nạp trước khi giao diện dựng nên **có hiệu lực ở lần mở app sau**; hết Plus thì lần mở sau về mặc định, lựa chọn vẫn được giữ. Chưa kiểm chứng bằng mắt khi chạy thật với phông khác (smoke chỉ kiểm lựa chọn được ghi và từ điển phông lấy đúng). |
+| P1 | Banner Wrapped đầu tháng | **Xong.** 7 ngày đầu mỗi tháng, chỉ khi tháng trước có check-in, ẩn bằng "Để sau" hoặc "Xem" (mỗi tháng một lần). |
+| P6 | Đồ phụ kiện theo mùa | **Xong.** 8 món (mỗi mùa một món đầu + một món cổ), Plus nhận trong mùa của nó rồi giữ luôn khi còn Plus (mùa theo tháng dương lịch: xuân 3–5, hè 6–8, thu 9–11, đông 12–2). Hình vẫn là emoji. |

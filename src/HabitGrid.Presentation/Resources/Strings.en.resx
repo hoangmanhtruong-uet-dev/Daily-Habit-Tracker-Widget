@@ -634,7 +634,7 @@
   <data name="wardrobe.unlock.plus" xml:space="preserve"><value>Plus only</value></data>
   <data name="wardrobe.worn" xml:space="preserve"><value>Worn</value></data>
   <data name="wardrobe.locked" xml:space="preserve"><value>Locked</value></data>
-  <data name="plus.benefit.accessories" xml:space="preserve"><value>Exclusive Buddy accessories (top hat, monocle, ribbon, gem...)</value></data>
+  <data name="plus.benefit.accessories" xml:space="preserve"><value>Exclusive Buddy accessories, with a new set every season</value></data>
   <data name="wrapped.title" xml:space="preserve"><value>Monthly Wrapped</value></data>
   <data name="wrapped.button" xml:space="preserve"><value>Wrapped</value></data>
   <data name="wrapped.lastMonth" xml:space="preserve"><value>Last month</value></data>
@@ -669,4 +669,20 @@
   <data name="settings.font.serif" xml:space="preserve"><value>Serif</value></data>
   <data name="settings.font.mono" xml:space="preserve"><value>Monospace</value></data>
   <data name="settings.font.restart" xml:space="preserve"><value>Saved. Reopen HabitGrid to apply the new font.</value></data>
+  <data name="wrapped.banner.title" xml:space="preserve"><value>Your {0} Wrapped is ready</value></data>
+  <data name="wrapped.banner.view" xml:space="preserve"><value>View</value></data>
+  <data name="wrapped.banner.later" xml:space="preserve"><value>Not now</value></data>
+  <data name="season.Spring" xml:space="preserve"><value>spring</value></data>
+  <data name="season.Summer" xml:space="preserve"><value>summer</value></data>
+  <data name="season.Autumn" xml:space="preserve"><value>autumn</value></data>
+  <data name="season.Winter" xml:space="preserve"><value>winter</value></data>
+  <data name="wardrobe.unlock.season" xml:space="preserve"><value>Plus · collect during {0} (from month {1})</value></data>
+  <data name="accessory.tulip" xml:space="preserve"><value>Tulip</value></data>
+  <data name="accessory.butterfly" xml:space="preserve"><value>Butterfly</value></data>
+  <data name="accessory.straw" xml:space="preserve"><value>Straw hat</value></data>
+  <data name="accessory.lei" xml:space="preserve"><value>Flower lei</value></data>
+  <data name="accessory.maple" xml:space="preserve"><value>Maple leaf</value></data>
+  <data name="accessory.pumpkin" xml:space="preserve"><value>Pumpkin</value></data>
+  <data name="accessory.santa" xml:space="preserve"><value>Santa hat</value></data>
+  <data name="accessory.snowflake" xml:space="preserve"><value>Snowflake</value></data>
 </root>

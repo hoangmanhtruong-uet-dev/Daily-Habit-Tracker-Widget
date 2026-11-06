@@ -634,7 +634,7 @@
   <data name="wardrobe.unlock.plus" xml:space="preserve"><value>Dành cho Plus</value></data>
   <data name="wardrobe.worn" xml:space="preserve"><value>Đang đeo</value></data>
   <data name="wardrobe.locked" xml:space="preserve"><value>Chưa mở</value></data>
-  <data name="plus.benefit.accessories" xml:space="preserve"><value>Phụ kiện riêng cho Buddy (mũ, kính, nơ, kim cương…)</value></data>
+  <data name="plus.benefit.accessories" xml:space="preserve"><value>Phụ kiện riêng cho Buddy, thêm bộ mới mỗi mùa (mũ, kính, nơ, hoa, lá…)</value></data>
   <data name="wrapped.title" xml:space="preserve"><value>Wrapped tháng</value></data>
   <data name="wrapped.button" xml:space="preserve"><value>Wrapped</value></data>
   <data name="wrapped.lastMonth" xml:space="preserve"><value>Tháng trước</value></data>
@@ -669,4 +669,20 @@
   <data name="settings.font.serif" xml:space="preserve"><value>Có chân</value></data>
   <data name="settings.font.mono" xml:space="preserve"><value>Đơn cách</value></data>
   <data name="settings.font.restart" xml:space="preserve"><value>Đã lưu. Mở lại HabitGrid để áp dụng phông mới.</value></data>
+  <data name="wrapped.banner.title" xml:space="preserve"><value>Wrapped {0} của bạn đã sẵn sàng</value></data>
+  <data name="wrapped.banner.view" xml:space="preserve"><value>Xem</value></data>
+  <data name="wrapped.banner.later" xml:space="preserve"><value>Để sau</value></data>
+  <data name="season.Spring" xml:space="preserve"><value>xuân</value></data>
+  <data name="season.Summer" xml:space="preserve"><value>hè</value></data>
+  <data name="season.Autumn" xml:space="preserve"><value>thu</value></data>
+  <data name="season.Winter" xml:space="preserve"><value>đông</value></data>
+  <data name="wardrobe.unlock.season" xml:space="preserve"><value>Plus · nhận trong mùa {0} (từ tháng {1})</value></data>
+  <data name="accessory.tulip" xml:space="preserve"><value>Hoa tulip</value></data>
+  <data name="accessory.butterfly" xml:space="preserve"><value>Bướm</value></data>
+  <data name="accessory.straw" xml:space="preserve"><value>Nón rơm</value></data>
+  <data name="accessory.lei" xml:space="preserve"><value>Vòng hoa cổ</value></data>
+  <data name="accessory.maple" xml:space="preserve"><value>Lá phong</value></data>
+  <data name="accessory.pumpkin" xml:space="preserve"><value>Bí ngô</value></data>
+  <data name="accessory.santa" xml:space="preserve"><value>Mũ ông già Noel</value></data>
+  <data name="accessory.snowflake" xml:space="preserve"><value>Bông tuyết</value></data>
 </root>
