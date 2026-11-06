@@ -149,3 +149,107 @@ public sealed class MomentsTests : IDisposable
         }
     }
 }
+
+public sealed class StripLayoutTests : IDisposable
+{
+    private static readonly byte[] Jpeg = [0xFF, 0xD8, 0xFF, 0xE0, 0, 0x10, 0x4A, 0x46, 0x49, 0x46, 0, 1];
+    private readonly string _root = Path.Combine(Path.GetTempPath(), "hg-strip-" + Guid.NewGuid().ToString("N"));
+
+    public void Dispose()
+    {
+        if (Directory.Exists(_root))
+        {
+            Directory.Delete(_root, recursive: true);
+        }
+    }
+
+    private static LiveEntitlements Live(bool plus)
+    {
+        var live = new LiveEntitlements();
+        live.Set(plus);
+        return live;
+    }
+
+    private async Task<(AppFixture F, HabitGrid.Core.Domain.Habit H, MomentStore Store)> SeedAsync(int photoDays, int perDay = 1)
+    {
+        var f = new AppFixture();
+        var h = await f.AddAsync("A", startDaysAgo: 20);
+        var store = new MomentStore(_root);
+        var service = new MomentService(store, Live(true), f.Days, () => DateTime.UtcNow);
+
+        for (var i = 0; i < photoDays; i++)
+        {
+            for (var k = 0; k < perDay; k++)
+            {
+                service.Add(h, AppFixture.Today.AddDays(-i), Jpeg, ".jpg");
+            }
+        }
+
+        return (f, h, store);
+    }
+
+    [Fact]
+    public async Task PickStrip_TakesOnePhotoPerDay_UpToFour_NewestDaysFirst()
+    {
+        var (f, h, store) = await SeedAsync(photoDays: 6, perDay: 2);
+        using var _ = f;
+
+        var picked = ShareLayouts.PickStrip(store.ForHabit(h.Id));
+
+        picked.Should().HaveCount(4);
+        picked.Select(m => m.Day).Should().Equal(Enumerable.Range(0, 4).Select(i => AppFixture.Today.AddDays(-i)));
+    }
+
+    [Fact]
+    public async Task Plus_WithEnoughPhotos_GetsTheStrip()
+    {
+        var (f, h, store) = await SeedAsync(photoDays: 4);
+        using var _ = f;
+
+        var card = await new ShareCardService(f.Habits, f.Logs, f.Profile, Live(true), f.Days, store).BuildAsync(h.Id, layout: ShareLayout.Strip4);
+
+        card!.Layout.Should().Be(ShareLayout.Strip4);
+        card.StripPhotos.Should().HaveCount(4);
+    }
+
+    [Fact]
+    public async Task Free_AlwaysGetsASinglePhoto_EvenWhenAskingForTheStrip()
+    {
+        var (f, h, store) = await SeedAsync(photoDays: 4);
+        using var _ = f;
+
+        var card = await new ShareCardService(f.Habits, f.Logs, f.Profile, Live(false), f.Days, store).BuildAsync(h.Id, layout: ShareLayout.Strip4);
+
+        card!.Layout.Should().Be(ShareLayout.Single);
+        card.StripPhotos.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task TooFewPhotos_FallsBackToASingleLayout()
+    {
+        var (f, h, store) = await SeedAsync(photoDays: 1);
+        using var _ = f;
+
+        var card = await new ShareCardService(f.Habits, f.Logs, f.Profile, Live(true), f.Days, store).BuildAsync(h.Id, layout: ShareLayout.Strip4);
+
+        card!.Layout.Should().Be(ShareLayout.Single);
+    }
+
+    [Fact]
+    public async Task TwoOrThreePhotos_StillMakeAStrip_WithEmptySlots()
+    {
+        var (f, h, store) = await SeedAsync(photoDays: 3);
+        using var _ = f;
+
+        var card = await new ShareCardService(f.Habits, f.Logs, f.Profile, Live(true), f.Days, store).BuildAsync(h.Id, layout: ShareLayout.Strip4);
+
+        card!.StripPhotos.Should().HaveCount(3);
+    }
+
+    [Theory]
+    [InlineData(ShareLayout.Single, false, true)]
+    [InlineData(ShareLayout.Strip4, false, false)]
+    [InlineData(ShareLayout.Strip4, true, true)]
+    public void CanUse_FollowsThePlan(ShareLayout layout, bool plus, bool expected) =>
+        ShareLayouts.CanUse(layout, plus).Should().Be(expected);
+}

@@ -83,3 +83,55 @@ public class InsightsViewModelTests
         vm.Insights.Should().BeEmpty();
     }
 }
+
+public class AdvancedInsightsViewModelTests
+{
+    private static InsightsViewModel Create(AppFixture f, bool plus)
+    {
+        var live = new LiveEntitlements();
+        live.Set(plus);
+        return new InsightsViewModel(f.Habits, f.Logs, f.Days, live, f.Settings);
+    }
+
+    [Fact]
+    public async Task Free_GetsNoAdvancedData_AndCannotCompare()
+    {
+        using var f = new AppFixture();
+        var a = await f.AddAsync("A", startDaysAgo: 30);
+        var b = await f.AddAsync("B", startDaysAgo: 30);
+        var vm = Create(f, plus: false);
+
+        await vm.LoadAsync();
+
+        vm.Advanced.Should().BeNull();
+        vm.CanUseAdvanced.Should().BeFalse();
+        vm.Compare(a.Id, b.Id).Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Plus_GetsCorrelationsMonthsYearHeatmap_AndCanCompare()
+    {
+        using var f = new AppFixture();
+        var a = await f.AddAsync("Gym", startDaysAgo: 100);
+        var b = await f.AddAsync("Protein", startDaysAgo: 100);
+        for (var i = 1; i <= 70; i += 2)
+        {
+            await f.LogAsync(a, AppFixture.Today.AddDays(-i), 1);
+            await f.LogAsync(b, AppFixture.Today.AddDays(-i), 1);
+        }
+
+        var vm = Create(f, plus: true);
+        await vm.LoadAsync();
+
+        vm.Advanced.Should().NotBeNull();
+        vm.Advanced!.Correlations.Should().ContainSingle();
+        vm.Advanced.Months.CheckInsThis.Should().BeGreaterThanOrEqualTo(0);
+        vm.Advanced.YearHeatmap.Weeks.Should().HaveCount(52);
+        vm.Habits.Should().HaveCount(2);
+
+        var comparison = vm.Compare(a.Id, b.Id);
+        comparison!.BothDone.Should().BeGreaterThan(0);
+        vm.Compare(a.Id, a.Id).Should().BeNull("không so sánh một thói quen với chính nó");
+        vm.Compare(a.Id, Guid.NewGuid()).Should().BeNull();
+    }
+}

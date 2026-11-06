@@ -21,7 +21,9 @@ public sealed record ShareCard(
     string? PhotoPath,
     DateOnly Day,
     ShareFrame Frame,
-    bool ShowWatermark);
+    bool ShowWatermark,
+    ShareLayout Layout = ShareLayout.Single,
+    IReadOnlyList<string>? StripPhotos = null);
 
 /// <summary>
 /// Dựng thẻ chia sẻ. Không đăng lên mạng xã hội nào: người dùng tự lưu/sao chép ảnh rồi đăng (không cần mật khẩu tài khoản khác).
@@ -67,7 +69,8 @@ public sealed class ShareCardService
     /// <param name="frameId">Khung muốn dùng; khung của Plus khi đang Free thì dùng khung mặc định.</param>
     /// <param name="hideWatermark">Chỉ có tác dụng với Plus.</param>
     /// <param name="photoPath">Ảnh chọn riêng; null thì lấy ảnh khoảnh khắc mới nhất của thói quen (nếu có).</param>
-    public async Task<ShareCard?> BuildAsync(Guid habitId, string? frameId = null, bool hideWatermark = false, string? photoPath = null)
+    /// <param name="layout">Dải 4 ảnh chỉ cho Plus và cần ≥ 2 ảnh ở các ngày khác nhau; nếu không đủ điều kiện thì tự dùng một ảnh.</param>
+    public async Task<ShareCard?> BuildAsync(Guid habitId, string? frameId = null, bool hideWatermark = false, string? photoPath = null, ShareLayout layout = ShareLayout.Single)
     {
         if (await _habits.GetByIdAsync(habitId) is not { DeletedAt: null } habit)
         {
@@ -87,6 +90,17 @@ public sealed class ShareCardService
         }
 
         var photo = photoPath ?? _moments?.ForHabit(habitId).FirstOrDefault()?.Path;
+        IReadOnlyList<string>? strip = null;
+
+        if (layout == ShareLayout.Strip4 && ShareLayouts.CanUse(layout, IsPlus) && _moments is not null)
+        {
+            var picked = ShareLayouts.PickStrip(_moments.ForHabit(habitId).Where(m => File.Exists(m.Path)));
+
+            if (picked.Count >= ShareLayouts.StripMinPhotos)
+            {
+                strip = picked.Select(m => m.Path).ToList();
+            }
+        }
 
         return new ShareCard(
             habit.Name,
@@ -103,6 +117,8 @@ public sealed class ShareCardService
             photo is not null && File.Exists(photo) ? photo : null,
             today,
             frame,
-            ShowWatermark: !(IsPlus && hideWatermark));
+            ShowWatermark: !(IsPlus && hideWatermark),
+            Layout: strip is null ? ShareLayout.Single : ShareLayout.Strip4,
+            StripPhotos: strip);
     }
 }

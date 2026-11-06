@@ -31,6 +31,15 @@ public sealed class BackupManager
 
     public string Directory => _directory;
 
+    /// <summary>
+    /// Thư mục nhân bản (cloud) hiện tại, hoặc null nếu tắt/không có quyền. Gọi mỗi lần sao lưu nên đổi cài đặt có hiệu lực ngay.
+    /// Lỗi nhân bản không làm hỏng bản sao lưu cục bộ; xem <see cref="LastMirror"/>.
+    /// </summary>
+    public Func<Task<string?>>? MirrorTarget { get; set; }
+
+    /// <summary>Kết quả nhân bản gần nhất (null nếu chưa có lần nào).</summary>
+    public MirrorResult? LastMirror { get; private set; }
+
     /// <summary>Danh sách bản sao lưu trong thư mục, mới nhất trước.</summary>
     public IReadOnlyList<BackupFile> List() => ListIn(_directory);
 
@@ -110,6 +119,7 @@ public sealed class BackupManager
         var name = $"{(manual ? ManualPrefix : AutoPrefix)}{nowUtc.ToString(Pattern, CultureInfo.InvariantCulture)}";
         var path = System.IO.Path.Combine(_directory, name + SnapshotBackupService.Extension);
         await _service.ExportAsync(path, ct);
+        await MirrorAsync(path, suffix.Length == 0, ct);
 
         if (suffix.Length > 0)
         {
@@ -120,6 +130,45 @@ public sealed class BackupManager
         }
 
         return new BackupFile(path, nowUtc, new FileInfo(path).Length, !manual);
+    }
+
+    /// <summary>Nhân bản ngay bản sao lưu mới nhất sang <paramref name="target"/> (dùng khi người dùng vừa chọn thư mục cloud).</summary>
+    public async Task<MirrorResult?> MirrorLatestAsync(string target, CancellationToken ct = default)
+    {
+        if (List().FirstOrDefault() is not { } latest)
+        {
+            return null;
+        }
+
+        LastMirror = await BackupMirror.CopyAsync(latest.Path, target, _retention, ct);
+        return LastMirror;
+    }
+
+    /// <summary>Chỉ nhân bản bản sao lưu thường (tay hoặc tự động), không nhân bản bản an toàn "trước khi khôi phục".</summary>
+    private async Task MirrorAsync(string path, bool shouldMirror, CancellationToken ct)
+    {
+        if (!shouldMirror || MirrorTarget is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var target = await MirrorTarget();
+
+            if (target is null)
+            {
+                return;
+            }
+
+            LastMirror = BackupMirror.Validate(target, _directory) is null
+                ? await BackupMirror.CopyAsync(path, target, _retention, ct)
+                : new MirrorResult(false, null, "target-unavailable");
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LastMirror = new MirrorResult(false, null, ex.Message);
+        }
     }
 
     private void Prune()

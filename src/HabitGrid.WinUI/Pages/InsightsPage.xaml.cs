@@ -93,6 +93,7 @@ public sealed partial class InsightsPage : Page
         _root.Children.Add(charts);
         _root.Children.Add(BuildMood(report.Mood));
         _root.Children.Add(BuildHabits(report));
+        _root.Children.Add(BuildAdvanced());
     }
 
     private UIElement BuildRangeChips()

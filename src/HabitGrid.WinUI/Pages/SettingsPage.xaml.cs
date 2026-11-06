@@ -65,6 +65,8 @@ public sealed partial class SettingsPage : Page
         themeCard.Children.Add(_lightOnlyNote);
         Wrap(themeCard);
 
+        BuildAccentCard();
+
         // Chế độ
         var modeCard = Card(Ui.T("settings.mode"));
         _modeChips = new ChipGroup { MinChipWidth = 130, MaxWidth = 460, HorizontalAlignment = HorizontalAlignment.Left };

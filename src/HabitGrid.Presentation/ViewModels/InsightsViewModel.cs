@@ -8,6 +8,12 @@ using IDayProvider = HabitGrid.Core.Services.IDayProvider;
 
 namespace HabitGrid.Presentation.ViewModels;
 
+/// <summary>Số liệu nâng cao (Plus): tương quan, tháng so với tháng, lịch năm gộp.</summary>
+public sealed record AdvancedData(
+    IReadOnlyList<HabitCorrelation> Correlations,
+    MonthComparison Months,
+    HeatmapData YearHeatmap);
+
 public enum InsightsRange
 {
     Days30,
@@ -51,6 +57,17 @@ public sealed partial class InsightsViewModel : ObservableObject
 
     public IReadOnlyList<Insight> Insights { get; private set; } = [];
 
+    /// <summary>Số liệu nâng cao; null khi chưa có Plus (giao diện hiện thẻ giới thiệu + paywall).</summary>
+    public AdvancedData? Advanced { get; private set; }
+
+    public IReadOnlyList<Habit> Habits { get; private set; } = [];
+
+    /// <summary>Quyền xem Insights nâng cao (P2): chỉ Plus.</summary>
+    public bool CanUseAdvanced => IsPlus;
+
+    private List<DayLog> _allLogs = [];
+    private IReadOnlyList<Habit> _allHabits = [];
+
     public bool IsPlus => _entitlements is LiveEntitlements live ? live.IsPlus : _entitlements.MaxActiveHabits == int.MaxValue;
 
     public bool CanUse(InsightsRange range) => range == InsightsRange.Days30 || IsPlus;
@@ -91,6 +108,18 @@ public sealed partial class InsightsViewModel : ObservableObject
                 _ => today.AddDays(-29)
             };
 
+            _allLogs = logs;
+            _allHabits = habits;
+            Habits = habits.Where(h => h.IsActive && h.Kind != HabitKind.Quit).OrderBy(h => h.SortKey, StringComparer.Ordinal).ToList();
+            Advanced = IsPlus
+                ? new AdvancedData(
+                    AdvancedInsights.Correlations(habits, logs, today),
+                    AdvancedInsights.MonthOverMonth(habits, logs, today),
+                    AdvancedInsights.YearHeatmap(habits, logs, today))
+                : null;
+            OnPropertyChanged(nameof(Advanced));
+            OnPropertyChanged(nameof(Habits));
+            OnPropertyChanged(nameof(CanUseAdvanced));
             var dayMoods = (await _moods.AllAsync()).ToDictionary(p => p.Key, p => p.Value.Mood);
             Report = InsightsCalculator.Build(habits, logs, today, from > today ? today : from, dayMoods: dayMoods);
 
@@ -105,6 +134,31 @@ public sealed partial class InsightsViewModel : ObservableObject
         {
             ErrorMessage = ex.Message;
         }
+    }
+
+    /// <summary>So sánh hai thói quen (Plus) trong khoảng đang xem; null nếu chưa có quyền hoặc chọn trùng/không tồn tại.</summary>
+    public HabitComparison? Compare(Guid a, Guid b)
+    {
+        if (!CanUseAdvanced || a == b || Report is not { } report)
+        {
+            return null;
+        }
+
+        var habitA = _allHabits.FirstOrDefault(h => h.Id == a);
+        var habitB = _allHabits.FirstOrDefault(h => h.Id == b);
+
+        if (habitA is null || habitB is null)
+        {
+            return null;
+        }
+
+        return AdvancedInsights.Compare(
+            habitA,
+            habitB,
+            _allLogs.Where(l => l.HabitId == a).ToList(),
+            _allLogs.Where(l => l.HabitId == b).ToList(),
+            _days.GetToday(),
+            report.From);
     }
 
     /// <summary>Nội dung CSV toàn bộ dữ liệu (chỉ Plus); null nếu chưa có quyền.</summary>

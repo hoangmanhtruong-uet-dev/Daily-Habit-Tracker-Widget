@@ -24,10 +24,14 @@ public static class ShareCardDialog
     /// <summary>Phần tử thẻ đang hiện trong hộp thoại (smoke test dùng để chụp).</summary>
     public static FrameworkElement? CurrentCard { get; private set; }
 
+    /// <summary>Chọn bố cục trong hộp thoại đang mở như khi người dùng bấm chip (smoke test).</summary>
+    public static Func<ShareLayout, Task>? SelectLayoutForTest { get; private set; }
+
     public static async Task ShowAsync(XamlRoot root, Guid habitId)
     {
         var service = App.Host.Get<ShareCardService>();
         var frameId = ShareFrames.Default.Id;
+        var layout = ShareLayout.Single;
         var hideWatermark = false;
         var host = new Border { Width = CardWidth, Height = CardHeight, HorizontalAlignment = HorizontalAlignment.Center };
         var status = new TextBlock { TextWrapping = TextWrapping.Wrap, Visibility = Visibility.Collapsed };
@@ -37,10 +41,17 @@ public static class ShareCardDialog
 
         async Task RenderAsync()
         {
-            if (await service.BuildAsync(habitId, frameId, hideWatermark) is { } card)
+            if (await service.BuildAsync(habitId, frameId, hideWatermark, layout: layout) is { } card)
             {
                 var photo = card.PhotoPath is { } path ? await MomentCapture.LoadNowAsync(path, 720) : null;
-                var element = Build(card, photo);
+                var strip = new List<Microsoft.UI.Xaml.Media.Imaging.BitmapImage>();
+
+                foreach (var stripPath in card.StripPhotos ?? [])
+                {
+                    strip.Add(await MomentCapture.LoadNowAsync(stripPath, 540));
+                }
+
+                var element = Build(card, photo, strip);
                 host.Child = element;
                 CurrentCard = element;
             }
@@ -83,7 +94,39 @@ public static class ShareCardDialog
             await RenderAsync();
         };
 
+        // Bố cục: một ảnh (Free) hoặc dải 4 ảnh (Plus; bấm khi chưa có Plus thì mở paywall).
+        var layouts = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+        var layoutButtons = new List<(ToggleButton Button, ShareLayout Layout)>();
+
+        foreach (var (value, key) in new[] { (ShareLayout.Single, "share.layout.single"), (ShareLayout.Strip4, "share.layout.strip") })
+        {
+            var locked = !ShareLayouts.CanUse(value, service.IsPlus);
+            var chip = new ToggleButton
+            {
+                Style = (Style)Application.Current.Resources["ChipStyle"],
+                Content = Ui.T(key) + (locked ? " 🔒" : string.Empty),
+                IsChecked = value == layout,
+                Padding = new Thickness(12, 6, 12, 6)
+            };
+            AutomationProperties.SetName(chip, Ui.T(key));
+            chip.Click += async (_, _) =>
+            {
+                if (locked && !await PaywallDialog.ShowAsync(root, PaywallSource.Menu))
+                {
+                    chip.IsChecked = layout == value;
+                    return;
+                }
+
+                layout = value;
+                layoutButtons.ForEach(b => b.Button.IsChecked = b.Layout == layout);
+                await RenderAsync();
+            };
+            layoutButtons.Add((chip, value));
+            layouts.Children.Add(chip);
+        }
+
         var panel = new StackPanel { Spacing = 12 };
+        panel.Children.Add(layouts);
         panel.Children.Add(new ScrollViewer { Content = frames, HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled, HorizontalScrollMode = ScrollMode.Enabled });
         panel.Children.Add(host);
         panel.Children.Add(watermark);
@@ -155,6 +198,12 @@ public static class ShareCardDialog
         };
 
         await RenderAsync();
+        SelectLayoutForTest = async value =>
+        {
+            layout = value;
+            layoutButtons.ForEach(b => b.Button.IsChecked = b.Layout == layout);
+            await RenderAsync();
+        };
 
         try
         {
@@ -163,6 +212,7 @@ public static class ShareCardDialog
         finally
         {
             CurrentCard = null;
+            SelectLayoutForTest = null;
         }
     }
 
@@ -173,8 +223,13 @@ public static class ShareCardDialog
     }
 
     /// <summary>Dựng thẻ 360×640 (logic px); khi lưu được render lại ở 1080×1920.</summary>
-    public static FrameworkElement Build(ShareCard card, Microsoft.UI.Xaml.Media.Imaging.BitmapImage? photoImage = null)
+    public static FrameworkElement Build(ShareCard card, Microsoft.UI.Xaml.Media.Imaging.BitmapImage? photoImage = null, IReadOnlyList<Microsoft.UI.Xaml.Media.Imaging.BitmapImage>? stripImages = null)
     {
+        if (card.Layout == ShareLayout.Strip4 && stripImages is { Count: >= ShareLayouts.StripMinPhotos })
+        {
+            return BuildStrip(card, stripImages);
+        }
+
         var frame = card.Frame;
         var ink = new SolidColorBrush(Ui.ParseColor(frame.Ink));
         var panelBrush = new SolidColorBrush(Ui.ParseColor(frame.Panel));
@@ -240,6 +295,84 @@ public static class ShareCardDialog
         if (card.ShowWatermark)
         {
             root.Children.Add(new TextBlock { Text = "HabitGrid", FontSize = 11, Foreground = ink, Opacity = 0.7, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Bottom, Margin = new Thickness(16, 0, 0, 12) });
+        }
+
+        AutomationProperties.SetName(root, $"{card.HabitName}: {card.Streak}");
+        return root;
+    }
+
+    /// <summary>Dải photobooth: 4 ô ảnh xếp dọc (ô thiếu để trống), một dòng chuỗi + Buddy, lưới 12 tuần.</summary>
+    private static FrameworkElement BuildStrip(ShareCard card, IReadOnlyList<Microsoft.UI.Xaml.Media.Imaging.BitmapImage> images)
+    {
+        var frame = card.Frame;
+        var ink = new SolidColorBrush(Ui.ParseColor(frame.Ink));
+        var panelBrush = new SolidColorBrush(Ui.ParseColor(frame.Panel));
+        var background = new LinearGradientBrush { StartPoint = new Windows.Foundation.Point(0, 0), EndPoint = new Windows.Foundation.Point(1, 1) };
+        background.GradientStops.Add(new GradientStop { Color = Ui.ParseColor(frame.BackgroundStart), Offset = 0 });
+        background.GradientStops.Add(new GradientStop { Color = Ui.ParseColor(frame.BackgroundEnd), Offset = 1 });
+
+        var stack = new StackPanel { Spacing = 8, Padding = new Thickness(18, 16, 18, 12) };
+
+        var head = new Grid { ColumnSpacing = 8 };
+        head.ColumnDefinitions.Add(new ColumnDefinition());
+        head.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        head.Children.Add(new TextBlock { Text = $"{Ui.IconText(card.Icon)}  {card.HabitName}", FontFamily = (FontFamily)Application.Current.Resources["DisplayFont"], FontSize = 18, Foreground = ink, TextTrimming = TextTrimming.CharacterEllipsis });
+        var date = new TextBlock { Text = card.Day.ToString("dd.MM.yyyy", Ui.CurrentCulture), FontSize = 12, Foreground = ink, Opacity = 0.8, VerticalAlignment = VerticalAlignment.Center };
+        Grid.SetColumn(date, 1);
+        head.Children.Add(date);
+        stack.Children.Add(head);
+
+        // 4 ô ảnh: viền trắng kiểu ảnh photobooth.
+        for (var i = 0; i < ShareLayouts.StripSlots; i++)
+        {
+            UIElement content = i < images.Count
+                ? new Image { Source = images[i], Stretch = Stretch.UniformToFill }
+                : new TextBlock { Text = Ui.IconText(card.Icon), FontSize = 30, Opacity = 0.5, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+            stack.Children.Add(new Border
+            {
+                Height = 70,
+                CornerRadius = new CornerRadius(12),
+                Background = panelBrush,
+                BorderBrush = new SolidColorBrush(Microsoft.UI.Colors.White),
+                BorderThickness = new Thickness(3),
+                Child = new Grid { CornerRadius = new CornerRadius(9), Children = { content } }
+            });
+        }
+
+        var info = new Grid { Height = 48, ColumnSpacing = 8 };
+        info.ColumnDefinitions.Add(new ColumnDefinition());
+        info.ColumnDefinitions.Add(new ColumnDefinition());
+        info.Children.Add(new Border
+        {
+            CornerRadius = new CornerRadius(14),
+            Background = panelBrush,
+            Child = new TextBlock { Text = $"🔥 {card.Streak}  {Ui.StreakText(card.Streak, card.StreakUnit).Replace(card.Streak.ToString(Ui.CurrentCulture), string.Empty).Trim()}", FontSize = 16, Foreground = ink, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }
+        });
+        var buddy = new Border
+        {
+            CornerRadius = new CornerRadius(14),
+            Background = panelBrush,
+            Child = new TextBlock { Text = $"{StageEmoji(card.Stage)} {card.BuddyName} · {Ui.Loc.Format("buddy.level", card.Level)}", FontSize = 13, Foreground = ink, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis }
+        };
+        Grid.SetColumn(buddy, 1);
+        info.Children.Add(buddy);
+        stack.Children.Add(info);
+
+        stack.Children.Add(new Border
+        {
+            CornerRadius = new CornerRadius(14),
+            Background = panelBrush,
+            Padding = new Thickness(8),
+            Child = new HeatmapGrid { Data = card.Heatmap, ColorHue = card.ColorHue, CellSize = 15, HorizontalAlignment = HorizontalAlignment.Center }
+        });
+
+        var root = new Grid { Width = CardWidth, Height = CardHeight, Background = background, CornerRadius = new CornerRadius(24) };
+        root.Children.Add(stack);
+        root.Children.Add(new TextBlock { Text = frame.Sticker, FontSize = 20, HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom, Margin = new Thickness(0, 0, 14, 8) });
+
+        if (card.ShowWatermark)
+        {
+            root.Children.Add(new TextBlock { Text = "HabitGrid", FontSize = 11, Foreground = ink, Opacity = 0.7, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Bottom, Margin = new Thickness(16, 0, 0, 10) });
         }
 
         AutomationProperties.SetName(root, $"{card.HabitName}: {card.Streak}");

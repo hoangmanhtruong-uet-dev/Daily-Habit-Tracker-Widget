@@ -1,0 +1,65 @@
+using System.Globalization;
+
+namespace HabitGrid.Core.Domain;
+
+/// <summary>Màu nhấn tùy chỉnh (P5, Plus): kiểm tra mã hex và sinh màu cuối của dải gradient từ màu đầu.</summary>
+public static class AccentColors
+{
+    public const string SettingKey = "appearance.accent";
+
+    /// <summary>Các màu gợi ý (không phải màu của theme nào để người dùng thấy khác biệt rõ).</summary>
+    public static readonly IReadOnlyList<string> Presets =
+    [
+        "#FF5C8A", "#FF8A4C", "#F5B800", "#22C55E", "#14B8A6", "#38BDF8", "#6366F1", "#A855F7"
+    ];
+
+    /// <summary>Chuẩn hóa "#RRGGBB" (chấp nhận thiếu dấu # và chữ thường); null nếu không hợp lệ.</summary>
+    public static string? Normalize(string? input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return null;
+        }
+
+        var hex = input.Trim().TrimStart('#');
+
+        return hex.Length == 6 && int.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out _)
+            ? "#" + hex.ToUpperInvariant()
+            : null;
+    }
+
+    /// <summary>Màu cuối của gradient: xoay sắc độ +35° để dải có chiều sâu nhưng vẫn cùng tông.</summary>
+    public static string DeriveEnd(string startHex)
+    {
+        var normalized = Normalize(startHex) ?? throw new ArgumentException("Mã màu không hợp lệ.", nameof(startHex));
+        var r = Convert.ToInt32(normalized.Substring(1, 2), 16) / 255.0;
+        var g = Convert.ToInt32(normalized.Substring(3, 2), 16) / 255.0;
+        var b = Convert.ToInt32(normalized.Substring(5, 2), 16) / 255.0;
+        var max = Math.Max(r, Math.Max(g, b));
+        var min = Math.Min(r, Math.Min(g, b));
+        var l = (max + min) / 2;
+        double h = 0, s = 0;
+
+        if (max != min)
+        {
+            var d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            h = max == r ? ((g - b) / d + (g < b ? 6 : 0)) : max == g ? (b - r) / d + 2 : (r - g) / d + 4;
+            h *= 60;
+        }
+
+        h = (h + 35) % 360;
+        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        var p = 2 * l - q;
+
+        double Channel(double t)
+        {
+            t = (t % 1 + 1) % 1;
+            return t < 1.0 / 6 ? p + (q - p) * 6 * t : t < 0.5 ? q : t < 2.0 / 3 ? p + (q - p) * (2.0 / 3 - t) * 6 : p;
+        }
+
+        var hk = h / 360;
+        var (nr, ng, nb) = s == 0 ? (l, l, l) : (Channel(hk + 1.0 / 3), Channel(hk), Channel(hk - 1.0 / 3));
+        return $"#{(int)Math.Round(nr * 255):X2}{(int)Math.Round(ng * 255):X2}{(int)Math.Round(nb * 255):X2}";
+    }
+}

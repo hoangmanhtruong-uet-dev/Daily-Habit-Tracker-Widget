@@ -437,7 +437,7 @@
   <data name="share.copied" xml:space="preserve"><value>Đã sao chép ảnh, dán vào app bạn muốn đăng.</value></data>
   <data name="share.failed" xml:space="preserve"><value>Không tạo được ảnh.</value></data>
   <data name="plus.benefit.moments" xml:space="preserve"><value>Ảnh khoảnh khắc không giới hạn (Free: 1 ảnh/ngày mỗi thói quen)</value></data>
-  <data name="plus.benefit.share" xml:space="preserve"><value>Mọi khung thẻ chia sẻ, ẩn logo (Free: 2 khung)</value></data>
+  <data name="plus.benefit.share" xml:space="preserve"><value>Mọi khung thẻ chia sẻ, dải 4 ảnh, ẩn logo (Free: 2 khung, 1 ảnh)</value></data>
   <data name="plus.benefit.momentWidget" xml:space="preserve"><value>Widget khoảnh khắc trên desktop</value></data>
   <data name="settings.momentWidget" xml:space="preserve"><value>Widget khoảnh khắc (Plus)</value></data>
   <data name="settings.momentWidget.hint" xml:space="preserve"><value>Hiện ảnh khoảnh khắc mới nhất trên desktop; bấm vào để xem "ngày này tháng trước".</value></data>
@@ -503,4 +503,53 @@
   <data name="routine.err.LimitReached" xml:space="preserve"><value>Gói Free tối đa 2 routine. Nâng cấp Plus để tạo thêm.</value></data>
   <data name="routine.err.UnknownHabit" xml:space="preserve"><value>Có thói quen không hợp lệ hoặc đã thuộc routine khác.</value></data>
   <data name="routine.err.NotFound" xml:space="preserve"><value>Không tìm thấy routine này.</value></data>
+  <data name="backup.mirror.title" xml:space="preserve"><value>Sao lưu vào thư mục cloud (Plus)</value></data>
+  <data name="backup.mirror.hint" xml:space="preserve"><value>Mỗi bản sao lưu được chép thêm vào thư mục bạn chọn. Đặt thư mục trong OneDrive, Google Drive hay Dropbox thì dịch vụ đó tự đưa lên mây. HabitGrid không đăng nhập vào dịch vụ nào.</value></data>
+  <data name="backup.mirror.choose" xml:space="preserve"><value>Chọn thư mục…</value></data>
+  <data name="backup.mirror.off" xml:space="preserve"><value>Tắt</value></data>
+  <data name="backup.mirror.use" xml:space="preserve"><value>Dùng thư mục</value></data>
+  <data name="backup.mirror.none" xml:space="preserve"><value>Chưa chọn thư mục cloud.</value></data>
+  <data name="backup.mirror.current" xml:space="preserve"><value>Thư mục cloud: {0}</value></data>
+  <data name="backup.mirror.ok" xml:space="preserve"><value>Đã chép bản sao lưu mới nhất vào {0}</value></data>
+  <data name="backup.mirror.failed" xml:space="preserve"><value>Chưa chép được sang thư mục cloud (ổ chưa sẵn sàng hoặc hết dung lượng). Bản sao lưu trên máy vẫn an toàn.</value></data>
+  <data name="backup.mirror.err.empty" xml:space="preserve"><value>Chưa chọn thư mục.</value></data>
+  <data name="backup.mirror.err.invalid" xml:space="preserve"><value>Đường dẫn không hợp lệ.</value></data>
+  <data name="backup.mirror.err.same-as-local" xml:space="preserve"><value>Hãy chọn thư mục khác với thư mục sao lưu trên máy.</value></data>
+  <data name="backup.mirror.err.not-writable" xml:space="preserve"><value>Không ghi được vào thư mục này.</value></data>
+  <data name="share.layout.single" xml:space="preserve"><value>Một ảnh</value></data>
+  <data name="share.layout.strip" xml:space="preserve"><value>Dải 4 ảnh</value></data>
+  <data name="adv.title" xml:space="preserve"><value>Insights nâng cao</value></data>
+  <data name="adv.locked.title" xml:space="preserve"><value>Nhìn sâu hơn vào dữ liệu của bạn</value></data>
+  <data name="adv.unlock" xml:space="preserve"><value>Mở khóa với Plus</value></data>
+  <data name="adv.locked.body" xml:space="preserve"><value>So sánh tháng này với tháng trước, tìm những thói quen hay đi cùng nhau, đặt hai thói quen cạnh nhau và xem lịch cả năm của mọi thói quen gộp lại.</value></data>
+  <data name="adv.months" xml:space="preserve"><value>Tháng này so với tháng trước</value></data>
+  <data name="adv.months.range" xml:space="preserve"><value>{0}–{1} so với {2}–{3}</value></data>
+  <data name="adv.months.overall" xml:space="preserve"><value>Tỷ lệ hoàn thành: {0} (tháng trước {1}) {2}</value></data>
+  <data name="adv.months.checkins" xml:space="preserve"><value>Số lần check-in: {0} (tháng trước {1})</value></data>
+  <data name="adv.corr" xml:space="preserve"><value>Thói quen đi cùng nhau</value></data>
+  <data name="adv.corr.hint" xml:space="preserve"><value>Chỉ xét 90 ngày gần nhất, bỏ qua ngày tạm nghỉ/bỏ qua, và cần đủ dữ liệu mới kết luận.</value></data>
+  <data name="adv.corr.none" xml:space="preserve"><value>Chưa thấy cặp thói quen nào rõ ràng. Cần thêm vài tuần dữ liệu.</value></data>
+  <data name="adv.corr.line" xml:space="preserve"><value>Ngày nào làm {0} thì {1}: {2}% hôm làm, {3}% hôm không làm.</value></data>
+  <data name="adv.compare" xml:space="preserve"><value>So sánh hai thói quen</value></data>
+  <data name="adv.compare.a" xml:space="preserve"><value>Thói quen A</value></data>
+  <data name="adv.compare.b" xml:space="preserve"><value>Thói quen B</value></data>
+  <data name="adv.compare.need2" xml:space="preserve"><value>Cần ít nhất 2 thói quen để so sánh.</value></data>
+  <data name="adv.compare.same" xml:space="preserve"><value>Hãy chọn hai thói quen khác nhau.</value></data>
+  <data name="adv.compare.streak" xml:space="preserve"><value>Chuỗi hiện tại</value></data>
+  <data name="adv.compare.both" xml:space="preserve"><value>Cùng xong trong {0} ngày.</value></data>
+  <data name="adv.year" xml:space="preserve"><value>Lịch cả năm</value></data>
+  <data name="adv.year.hint" xml:space="preserve"><value>Mỗi ô là một ngày: càng đậm thì càng nhiều thói quen đến hạn được hoàn thành.</value></data>
+  <data name="settings.accent" xml:space="preserve"><value>Màu nhấn riêng</value></data>
+  <data name="settings.accent.hint" xml:space="preserve"><value>Đổi màu nút, thanh tiến độ và điểm nhấn trong toàn app (Plus). Theme vẫn giữ nền và chữ.</value></data>
+  <data name="settings.accent.hex" xml:space="preserve"><value>Mã màu hex</value></data>
+  <data name="settings.accent.default" xml:space="preserve"><value>Đang dùng màu của theme.</value></data>
+  <data name="settings.accent.current" xml:space="preserve"><value>Đang dùng {0}.</value></data>
+  <data name="settings.accent.expired" xml:space="preserve"><value>(Cần Plus để áp dụng; lựa chọn được giữ lại.)</value></data>
+  <data name="settings.accent.invalid" xml:space="preserve"><value>Mã màu không hợp lệ, hãy nhập dạng #RRGGBB.</value></data>
+  <data name="settings.accent.pick" xml:space="preserve"><value>Chọn màu {0}</value></data>
+  <data name="settings.accent.apply" xml:space="preserve"><value>Áp dụng</value></data>
+  <data name="settings.accent.reset" xml:space="preserve"><value>Về màu theme</value></data>
+  <data name="plus.benefit.backup" xml:space="preserve"><value>Sao lưu tự động sang thư mục OneDrive/Google Drive/Dropbox</value></data>
+  <data name="plus.benefit.advanced" xml:space="preserve"><value>Insights nâng cao: so sánh tháng, thói quen đi cùng nhau, lịch cả năm</value></data>
+  <data name="plus.benefit.accent" xml:space="preserve"><value>Màu nhấn riêng cho toàn app</value></data>
 </root>

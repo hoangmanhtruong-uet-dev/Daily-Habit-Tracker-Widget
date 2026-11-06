@@ -1,6 +1,7 @@
 using HabitGrid.Data.V3;
 using HabitGrid.Presentation.Services;
 using HabitGrid.Presentation.ViewModels;
+using HabitGrid.WinUI.Plus;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
@@ -11,6 +12,102 @@ namespace HabitGrid.WinUI.Pages;
 /// <summary>Cài đặt → Sao lưu (F5): sao lưu ngay, khôi phục từ file hoặc từ danh sách bản tự động, mở thư mục.</summary>
 public sealed partial class SettingsPage
 {
+    /// <summary>P3 (Plus): tự nhân bản sao lưu sang thư mục cloud (OneDrive/Google Drive/Dropbox) do người dùng chọn.</summary>
+    private void BuildMirrorSection(StackPanel card, BackupManager manager)
+    {
+        var settings = App.Host.Get<HabitGrid.Core.Domain.ISettingsStore>();
+        card.Children.Add(new TextBlock { Text = Ui.T("backup.mirror.title"), Style = Res("BodyStrongTextBlockStyle"), Margin = new Thickness(0, 10, 0, 0) });
+        card.Children.Add(new TextBlock { Text = Ui.T("backup.mirror.hint"), Style = Res("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap });
+
+        var current = new TextBlock { TextWrapping = TextWrapping.Wrap };
+        var result = new TextBlock { TextWrapping = TextWrapping.Wrap, Style = Res("BodySecondaryTextStyle") };
+        var suggestions = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        var choose = new Button { Content = Ui.T("backup.mirror.choose"), Style = Res("GhostButtonStyle") };
+        var off = new Button { Content = Ui.T("backup.mirror.off"), Style = Res("GhostButtonStyle"), Visibility = Visibility.Collapsed };
+
+        async Task RefreshAsync()
+        {
+            var path = await settings.GetAsync(AppHost.BackupMirrorKey);
+            current.Text = string.IsNullOrEmpty(path) ? Ui.T("backup.mirror.none") : Ui.Loc.Format("backup.mirror.current", path);
+            off.Visibility = string.IsNullOrEmpty(path) ? Visibility.Collapsed : Visibility.Visible;
+
+            result.Text = manager.LastMirror switch
+            {
+                { Succeeded: true, Path: { } p } => Ui.Loc.Format("backup.mirror.ok", p),
+                { Succeeded: false } => Ui.T("backup.mirror.failed"),
+                _ => string.Empty
+            };
+        }
+
+        async Task SetAsync(string path)
+        {
+            // Chọn thư mục cloud là tính năng Plus: mở paywall vì người dùng vừa bấm chọn.
+            if (!App.Host.Get<HabitGrid.Core.Domain.IEntitlements>().IsPlus
+                && !await PaywallDialog.ShowAsync(XamlRoot, PaywallSource.Menu))
+            {
+                return;
+            }
+
+            var problem = BackupMirror.Validate(path, manager.Directory);
+
+            if (problem is not null)
+            {
+                current.Text = Ui.T("backup.mirror.err." + problem);
+                return;
+            }
+
+            await settings.SetAsync(AppHost.BackupMirrorKey, path);
+
+            // Chép ngay bản mới nhất để người dùng thấy hoạt động; lỗi chỉ hiện ở dòng kết quả.
+            await manager.MirrorLatestAsync(path);
+
+            await RefreshAsync();
+        }
+
+        foreach (var folder in BackupMirror.DetectCloudFolders())
+        {
+            var chip = new Button { Content = $"☁ {folder.Name}", Style = Res("GhostButtonStyle") };
+            AutomationProperties.SetName(chip, $"{Ui.T("backup.mirror.use")} {folder.Name}: {folder.Path}");
+            chip.Click += async (_, _) => await SetAsync(folder.Path);
+            suggestions.Children.Add(chip);
+        }
+
+        choose.Click += async (_, _) =>
+        {
+            var picker = new FolderPicker { SuggestedStartLocation = PickerLocationId.DocumentsLibrary };
+            picker.FileTypeFilter.Add("*");
+
+            if (App.MainWindowInstance is { } window)
+            {
+                WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(window));
+            }
+
+            if (await picker.PickSingleFolderAsync() is { } folder)
+            {
+                await SetAsync(System.IO.Path.Combine(folder.Path, "HabitGrid"));
+            }
+        };
+        off.Click += async (_, _) =>
+        {
+            await settings.RemoveAsync(AppHost.BackupMirrorKey);
+            await RefreshAsync();
+        };
+
+        var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        buttons.Children.Add(choose);
+        buttons.Children.Add(off);
+
+        if (suggestions.Children.Count > 0)
+        {
+            card.Children.Add(suggestions);
+        }
+
+        card.Children.Add(buttons);
+        card.Children.Add(current);
+        card.Children.Add(result);
+        _ = RefreshAsync();
+    }
+
     private void BuildBackupCard()
     {
         var manager = App.Host.Get<BackupManager>();
@@ -138,6 +235,7 @@ public sealed partial class SettingsPage
         card.Children.Add(buttons);
         card.Children.Add(status);
         card.Children.Add(list);
+        BuildMirrorSection(card, manager);
         Render();
         Wrap(card);
     }

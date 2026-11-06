@@ -417,7 +417,8 @@ public static class SmokeRunner
         var jpeg = await MakeJpegAsync();
         Require(page.AddMomentForTest(jpeg) == MomentAddResult.Added, "Không thêm được ảnh khoảnh khắc.");
         Require(page.AddMomentForTest(jpeg) == MomentAddResult.Added, "Đang Plus tặng mà vẫn bị giới hạn 1 ảnh/ngày.");
-        Require(App.Host.Get<MomentService>().Store.ForHabit(habit.Id).Count == 2, "Kho ảnh không có đủ 2 ảnh.");
+        Require(page.AddMomentForTest(jpeg, 1) == MomentAddResult.Added && page.AddMomentForTest(jpeg, 2) == MomentAddResult.Added && page.AddMomentForTest(jpeg, 3) == MomentAddResult.Added, "Không thêm được ảnh các ngày trước.");
+        Require(App.Host.Get<MomentService>().Store.ForHabit(habit.Id).Count == 5, "Kho ảnh không có đủ 5 ảnh.");
         await Task.Delay(600);
         await SnapAsync(window, "habit-moments");
 
@@ -431,10 +432,19 @@ public static class SmokeRunner
         Directory.CreateDirectory(Shot.Directory);
         await File.WriteAllBytesAsync(Path.Combine(Shot.Directory, $"{++_shotNo:00}-share-card.png"), png);
 
+        // P7: dải 4 ảnh (đang Plus tặng) phải dựng được và khác thẻ một ảnh.
+        var select = HabitGrid.WinUI.Moments.ShareCardDialog.SelectLayoutForTest ?? throw new InvalidOperationException("Hộp thoại thẻ chia sẻ không cho chọn bố cục.");
+        await select(HabitGrid.Core.Domain.Moments.ShareLayout.Strip4);
+        await Task.Delay(1200);
+        var stripCard = HabitGrid.WinUI.Moments.ShareCardDialog.CurrentCard ?? throw new InvalidOperationException("Dải 4 ảnh không dựng được.");
+        var stripPng = await HabitGrid.WinUI.Moments.MomentCapture.RenderPngAsync(stripCard, 1080, 1920);
+        Require(stripPng.Length > 10_000 && stripPng.Length != png.Length, "Dải 4 ảnh giống hệt thẻ một ảnh.");
+        await File.WriteAllBytesAsync(Path.Combine(Shot.Directory, $"{++_shotNo:00}-share-strip.png"), stripPng);
+
         var dialog = VisualTreeHelper.GetOpenPopupsForXamlRoot(root).Select(p => p.Child).OfType<ContentDialog>().FirstOrDefault();
         dialog?.Hide();
         await showing;
-        logger.Info($"SMOKE moments OK (2 photos, share card {png.Length} bytes)");
+        logger.Info($"SMOKE moments OK (5 photos, share card {png.Length} bytes, strip {stripPng.Length} bytes)");
     }
 
     private static async Task<byte[]> MakeJpegAsync()
@@ -482,6 +492,27 @@ public static class SmokeRunner
         Require(await vm.SetRangeAsync(InsightsRange.All), "Plus mà không xem được toàn bộ lịch sử.");
         var csv = await vm.ExportCsvAsync();
         Require(csv is not null && csv.StartsWith("date,habit,kind", StringComparison.Ordinal), "Xuất CSV không đúng định dạng.");
+        Require(vm.Advanced is { YearHeatmap.Weeks.Count: 52 }, "Plus mà Insights nâng cao trống.");
+        Require(vm.Habits.Count >= 2 && vm.Compare(vm.Habits[0].Id, vm.Habits[1].Id) is not null, "So sánh hai thói quen không chạy.");
+        await Task.Delay(200);
+        page.ScrollToAdvancedForTest(toEnd: true);
+        await Task.Delay(400);
+        await SnapAsync(window, "insights-advanced");
+        page.ScrollToAdvancedForTest(toEnd: false);
+
+        // P5: màu nhấn tùy chỉnh áp ngay khi đang Plus, bỏ khi đặt lại.
+        var themeService = App.Host.Get<ThemeService>();
+        themeService.AccentAllowed = true;
+        Require(await themeService.SetAccentAsync("#22C55E", window.Content as FrameworkElement), "Không đặt được màu nhấn.");
+        Require(!await themeService.SetAccentAsync("xyz", window.Content as FrameworkElement), "Mã màu sai mà vẫn được nhận.");
+        var accentBrush = (Microsoft.UI.Xaml.Media.LinearGradientBrush)Application.Current.Resources["AccentGradientBrush"];
+        Require(accentBrush.GradientStops[0].Color == Ui.ParseColor("#22C55E"), "Màu nhấn tùy chỉnh chưa được áp vào gradient.");
+        await GoToAsync(window, PageKeys.Settings);
+        await Task.Delay(300);
+        await SnapAsync(window, "settings-accent");
+        Require(await themeService.SetAccentAsync(null, window.Content as FrameworkElement), "Không đặt lại được màu nhấn.");
+        Require(accentBrush.GradientStops[0].Color != Ui.ParseColor("#22C55E"), "Đặt lại màu nhấn chưa trả về màu theme.");
+        await GoToAsync(window, PageKeys.Insights);
         logger.Info($"SMOKE insights OK (check-ins {vm.Report!.CheckIns}, tips {vm.Insights.Count}, csv {csv!.Length} bytes)");
     }
 
