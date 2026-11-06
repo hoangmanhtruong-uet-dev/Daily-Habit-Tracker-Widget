@@ -55,3 +55,12 @@ Chưa làm trong đợt 1: hẹn giờ từng bước của routine (P4, Plus), 
 | P7 | Dải 4 ảnh | **Xong.** Khung photobooth 4 ảnh (mỗi ngày một ảnh, mới nhất trước) trong thẻ chia sẻ; Free thấy khóa → paywall. |
 | P2 | Insights nâng cao | **Xong.** Tháng này vs tháng trước (cùng số ngày), thói quen đi cùng nhau (90 ngày, cần đủ dữ liệu), so sánh hai thói quen (12 tuần), lịch cả năm gộp. Free thấy thẻ giới thiệu. |
 | P5 | Tùy biến giao diện | **Một phần.** Có màu nhấn riêng (8 màu gợi ý + hex, áp ngay, giữ lại khi hết Plus). **Chưa làm đổi font** (font là StaticResource, cần khởi động lại). |
+
+## Tiến độ đợt 3 (06/11/2026)
+| # | Tính năng | Trạng thái |
+|---|---|---|
+| F2 | Thử thách 30 ngày | **Xong.** 10 thử thách mẫu (7–100 ngày), tạo thói quen kèm mốc kết thúc; đếm liền mạch (lỡ một ngày là làm lại, ngày tạm nghỉ được miễn); dải tiến độ trên Hôm nay, huy hiệu hoàn thành. Free 1 thử thách một lúc, Plus 5. Lưu trong settings nên **chưa đồng bộ**; huy hiệu thử thách chưa nằm trong hệ huy hiệu Buddy. |
+| F6 | Tổng kết tuần | **Xong.** Thứ Hai–thứ Tư hiện thẻ tuần trước (tỷ lệ, so với tuần trước đó, ngày tốt nhất, thói quen nổi bật/yếu, một gợi ý) + chọn "ý định tuần này" có thanh tiến độ cả tuần. Lưu trong settings (chưa đồng bộ). |
+| P4 | Routine hẹn giờ | **Xong (Plus).** Đặt phút cho từng bước, chạy nối tiếp; hết giờ hoặc bấm Xong thì đánh dấu hoàn thành, Bỏ qua thì không. Bộ chạy xử lý cả trường hợp máy ngủ. Chưa kiểm thử tay hộp thoại đếm giờ thật (smoke chỉ kiểm bộ chạy). |
+| P6 | Phụ kiện Buddy | **Xong.** 13 món (đầu/mặt/cổ): Free mở bằng cấp độ hoặc huy hiệu, Plus 6 món riêng; hết Plus thì món Plus ngừng hiển thị nhưng lựa chọn được giữ. Hình hiện là emoji ghép lên linh vật, chưa có hình vẽ riêng; "bộ riêng mỗi mùa" chưa làm (chưa có đồ theo mùa). |
+| P1 | Wrapped tháng | **Xong.** 6 slide story (tổng check-in, thói quen số 1, chuỗi dài nhất, giờ vàng, ngày hoàn hảo, ảnh khoảnh khắc/Buddy), tháng trước hoặc tháng này, lưu PNG 1080×1920. Free xem slide đầu, Plus xem đủ và lưu. Nút ở trang Insights; chưa có banner nhắc đầu tháng. |
