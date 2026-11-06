@@ -611,4 +611,28 @@
   <data name="routine.run.total" xml:space="preserve"><value>about {0} min left</value></data>
   <data name="routine.run.finished" xml:space="preserve"><value>Routine finished! {0} steps marked.</value></data>
   <data name="plus.benefit.routineTimer" xml:space="preserve"><value>Timed routine steps and unlimited routines (Free: 2)</value></data>
+  <data name="accessory.cap" xml:space="preserve"><value>Cap</value></data>
+  <data name="accessory.party" xml:space="preserve"><value>Party face</value></data>
+  <data name="accessory.grad" xml:space="preserve"><value>Graduation cap</value></data>
+  <data name="accessory.crown" xml:space="preserve"><value>Crown</value></data>
+  <data name="accessory.tophat" xml:space="preserve"><value>Top hat</value></data>
+  <data name="accessory.blossom" xml:space="preserve"><value>Cherry blossom</value></data>
+  <data name="accessory.shades" xml:space="preserve"><value>Sunglasses</value></data>
+  <data name="accessory.nerd" xml:space="preserve"><value>Nerd glasses</value></data>
+  <data name="accessory.monocle" xml:space="preserve"><value>Monocle</value></data>
+  <data name="accessory.scarf" xml:space="preserve"><value>Scarf</value></data>
+  <data name="accessory.medal" xml:space="preserve"><value>Medal</value></data>
+  <data name="accessory.ribbon" xml:space="preserve"><value>Ribbon</value></data>
+  <data name="accessory.gem" xml:space="preserve"><value>Gem</value></data>
+  <data name="wardrobe.title" xml:space="preserve"><value>Accessories</value></data>
+  <data name="wardrobe.hint" xml:space="preserve"><value>Tap to wear or remove. One item per slot (head, face, neck).</value></data>
+  <data name="wardrobe.slot.Head" xml:space="preserve"><value>Head</value></data>
+  <data name="wardrobe.slot.Face" xml:space="preserve"><value>Face</value></data>
+  <data name="wardrobe.slot.Neck" xml:space="preserve"><value>Neck</value></data>
+  <data name="wardrobe.unlock.level" xml:space="preserve"><value>Reach level {0}</value></data>
+  <data name="wardrobe.unlock.badge" xml:space="preserve"><value>Earn badge: {0}</value></data>
+  <data name="wardrobe.unlock.plus" xml:space="preserve"><value>Plus only</value></data>
+  <data name="wardrobe.worn" xml:space="preserve"><value>Worn</value></data>
+  <data name="wardrobe.locked" xml:space="preserve"><value>Locked</value></data>
+  <data name="plus.benefit.accessories" xml:space="preserve"><value>Exclusive Buddy accessories (top hat, monocle, ribbon, gem...)</value></data>
 </root>

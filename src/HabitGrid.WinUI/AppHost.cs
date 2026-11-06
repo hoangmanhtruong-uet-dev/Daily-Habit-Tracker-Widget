@@ -198,6 +198,11 @@ public sealed class AppHost : IDisposable
             sp.GetRequiredService<RoutineService>(),
             sp.GetRequiredService<ISettingsStore>(),
             sp.GetRequiredService<IEntitlements>()));
+        services.AddSingleton<BuddyWardrobeService>(sp => new BuddyWardrobeService(
+            sp.GetRequiredService<ISettingsStore>(),
+            sp.GetRequiredService<IProfileRepository>(),
+            sp.GetRequiredService<IAchievementRepository>(),
+            sp.GetRequiredService<IEntitlements>()));
         services.AddSingleton<BackupManager>(sp =>
         {
             var manager = new BackupManager(

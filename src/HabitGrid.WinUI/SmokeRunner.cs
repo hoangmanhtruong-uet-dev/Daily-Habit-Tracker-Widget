@@ -751,6 +751,18 @@ public static class SmokeRunner
         Require(vm.Badges.Where(b => b.Hidden).All(b => b.Group == "secret"), "Có huy hiệu thường bị ẩn.");
         Require(celebrations() >= 1, "Không có lần ăn mừng nào dù đã mở khóa huy hiệu sau lần tính đầu.");
         await SnapAsync(window, "buddy");
+
+        // P6: đang Plus tặng nên đeo được món Plus (mũ chóp cao) và món mở bằng huy hiệu/cấp; chụp ảnh Buddy đã đeo đồ rồi tháo hết.
+        Require(await page.ToggleAccessoryForTestAsync("tophat") == HabitGrid.Presentation.Services.EquipResult.Equipped, "Plus mà không đeo được món Plus.");
+        Require(await page.ToggleAccessoryForTestAsync("tophat") == HabitGrid.Presentation.Services.EquipResult.Removed, "Không tháo được phụ kiện.");
+        Require(await page.ToggleAccessoryForTestAsync("tophat") == HabitGrid.Presentation.Services.EquipResult.Equipped, "Không đeo lại được phụ kiện.");
+        await page.ToggleAccessoryForTestAsync("shades");
+        await page.ToggleAccessoryForTestAsync("ribbon");
+        await Task.Delay(300);
+        await SnapAsync(window, "buddy-accessories");
+        await page.ToggleAccessoryForTestAsync("tophat");
+        await page.ToggleAccessoryForTestAsync("shades");
+        await page.ToggleAccessoryForTestAsync("ribbon");
         logger.Info($"SMOKE buddy OK (level {vm.Level}, xp {vm.TotalXp}, badges {vm.UnlockedCount}/{vm.TotalCount}, celebrations {celebrations()})");
     }
 

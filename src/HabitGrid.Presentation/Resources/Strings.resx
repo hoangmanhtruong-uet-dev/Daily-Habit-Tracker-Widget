@@ -611,4 +611,28 @@
   <data name="routine.run.total" xml:space="preserve"><value>còn khoảng {0} phút</value></data>
   <data name="routine.run.finished" xml:space="preserve"><value>Xong routine! Đã đánh dấu {0} bước.</value></data>
   <data name="plus.benefit.routineTimer" xml:space="preserve"><value>Routine hẹn giờ từng bước, không giới hạn số routine (Free: 2)</value></data>
+  <data name="accessory.cap" xml:space="preserve"><value>Mũ lưỡi trai</value></data>
+  <data name="accessory.party" xml:space="preserve"><value>Mặt tiệc tùng</value></data>
+  <data name="accessory.grad" xml:space="preserve"><value>Mũ tốt nghiệp</value></data>
+  <data name="accessory.crown" xml:space="preserve"><value>Vương miện</value></data>
+  <data name="accessory.tophat" xml:space="preserve"><value>Mũ chóp cao</value></data>
+  <data name="accessory.blossom" xml:space="preserve"><value>Vòng hoa anh đào</value></data>
+  <data name="accessory.shades" xml:space="preserve"><value>Kính râm</value></data>
+  <data name="accessory.nerd" xml:space="preserve"><value>Kính mọt sách</value></data>
+  <data name="accessory.monocle" xml:space="preserve"><value>Kính một mắt</value></data>
+  <data name="accessory.scarf" xml:space="preserve"><value>Khăn quàng</value></data>
+  <data name="accessory.medal" xml:space="preserve"><value>Huy chương</value></data>
+  <data name="accessory.ribbon" xml:space="preserve"><value>Nơ</value></data>
+  <data name="accessory.gem" xml:space="preserve"><value>Kim cương</value></data>
+  <data name="wardrobe.title" xml:space="preserve"><value>Phụ kiện</value></data>
+  <data name="wardrobe.hint" xml:space="preserve"><value>Bấm để đeo hoặc tháo. Mỗi vị trí (đầu, mặt, cổ) đeo một món.</value></data>
+  <data name="wardrobe.slot.Head" xml:space="preserve"><value>Đầu</value></data>
+  <data name="wardrobe.slot.Face" xml:space="preserve"><value>Mặt</value></data>
+  <data name="wardrobe.slot.Neck" xml:space="preserve"><value>Cổ</value></data>
+  <data name="wardrobe.unlock.level" xml:space="preserve"><value>Đạt cấp {0}</value></data>
+  <data name="wardrobe.unlock.badge" xml:space="preserve"><value>Nhận huy hiệu: {0}</value></data>
+  <data name="wardrobe.unlock.plus" xml:space="preserve"><value>Dành cho Plus</value></data>
+  <data name="wardrobe.worn" xml:space="preserve"><value>Đang đeo</value></data>
+  <data name="wardrobe.locked" xml:space="preserve"><value>Chưa mở</value></data>
+  <data name="plus.benefit.accessories" xml:space="preserve"><value>Phụ kiện riêng cho Buddy (mũ, kính, nơ, kim cương…)</value></data>
 </root>
