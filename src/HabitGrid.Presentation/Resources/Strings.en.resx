@@ -503,4 +503,17 @@
   <data name="routine.err.LimitReached" xml:space="preserve"><value>The Free plan allows 2 routines. Upgrade to Plus for more.</value></data>
   <data name="routine.err.UnknownHabit" xml:space="preserve"><value>A habit is invalid or already in another routine.</value></data>
   <data name="routine.err.NotFound" xml:space="preserve"><value>That routine wasn't found.</value></data>
+  <data name="backup.mirror.title" xml:space="preserve"><value>Back up to a cloud folder (Plus)</value></data>
+  <data name="backup.mirror.hint" xml:space="preserve"><value>Every backup is also copied into the folder you choose. Put it inside OneDrive, Google Drive or Dropbox and that service uploads it for you. HabitGrid never signs in to any service.</value></data>
+  <data name="backup.mirror.choose" xml:space="preserve"><value>Choose folder…</value></data>
+  <data name="backup.mirror.off" xml:space="preserve"><value>Turn off</value></data>
+  <data name="backup.mirror.use" xml:space="preserve"><value>Use folder</value></data>
+  <data name="backup.mirror.none" xml:space="preserve"><value>No cloud folder chosen.</value></data>
+  <data name="backup.mirror.current" xml:space="preserve"><value>Cloud folder: {0}</value></data>
+  <data name="backup.mirror.ok" xml:space="preserve"><value>Copied the latest backup to {0}</value></data>
+  <data name="backup.mirror.failed" xml:space="preserve"><value>Couldn't copy to the cloud folder (drive not ready or out of space). Your local backup is safe.</value></data>
+  <data name="backup.mirror.err.empty" xml:space="preserve"><value>No folder chosen.</value></data>
+  <data name="backup.mirror.err.invalid" xml:space="preserve"><value>That path isn't valid.</value></data>
+  <data name="backup.mirror.err.same-as-local" xml:space="preserve"><value>Pick a folder other than the local backup folder.</value></data>
+  <data name="backup.mirror.err.not-writable" xml:space="preserve"><value>Can't write to that folder.</value></data>
 </root>

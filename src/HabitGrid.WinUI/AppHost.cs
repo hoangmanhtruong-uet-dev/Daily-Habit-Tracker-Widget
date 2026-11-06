@@ -183,16 +183,26 @@ public sealed class AppHost : IDisposable
             sp.GetRequiredService<IEntitlements>(),
             sp.GetRequiredService<IDayProvider>(),
             sp.GetRequiredService<ISettingsStore>()));
-        services.AddSingleton<BackupManager>(sp => new BackupManager(
-            new SnapshotBackupService(
-                database,
-                clock,
-                sp.GetRequiredService<IHabitRepository>(),
-                sp.GetRequiredService<IDayLogRepository>(),
-                sp.GetRequiredService<IRoutineRepository>(),
-                sp.GetRequiredService<IProfileRepository>(),
-                bus),
-            Path.Combine(AppPaths.DataDir, "backups")));
+        services.AddSingleton<BackupManager>(sp =>
+        {
+            var manager = new BackupManager(
+                new SnapshotBackupService(
+                    database,
+                    clock,
+                    sp.GetRequiredService<IHabitRepository>(),
+                    sp.GetRequiredService<IDayLogRepository>(),
+                    sp.GetRequiredService<IRoutineRepository>(),
+                    sp.GetRequiredService<IProfileRepository>(),
+                    bus),
+                Path.Combine(AppPaths.DataDir, "backups"));
+
+            // P3 (Plus): nhân bản sang thư mục cloud người dùng chọn. Đọc lại mỗi lần nên bật/tắt/đổi thư mục có hiệu lực ngay;
+            // hết Plus thì ngừng nhân bản (file đã chép vẫn ở đó, không xóa gì).
+            var live = sp.GetRequiredService<IEntitlements>();
+            var store = sp.GetRequiredService<ISettingsStore>();
+            manager.MirrorTarget = async () => live.IsPlus ? await store.GetAsync(BackupMirrorKey) : null;
+            return manager;
+        });
         services.AddSingleton<IProfileRepository>(_ => new ProfileRepository(database, clock, bus));
         services.AddSingleton<IAchievementRepository>(_ => new AchievementRepository(database, clock, bus));
         services.AddSingleton<IFocusRepository>(_ => new FocusRepository(database, clock, bus));
@@ -289,6 +299,9 @@ public sealed class AppHost : IDisposable
 
         return new AppHost(services.BuildServiceProvider(), importNote);
     }
+
+    /// <summary>Khóa cài đặt: thư mục cloud nhận bản sao lưu nhân bản (Plus).</summary>
+    public const string BackupMirrorKey = "backup.mirror.path";
 
     public T Get<T>() where T : notnull => Services.GetRequiredService<T>();
 
