@@ -518,4 +518,38 @@
   <data name="backup.mirror.err.not-writable" xml:space="preserve"><value>Can't write to that folder.</value></data>
   <data name="share.layout.single" xml:space="preserve"><value>Single photo</value></data>
   <data name="share.layout.strip" xml:space="preserve"><value>4-photo strip</value></data>
+  <data name="adv.title" xml:space="preserve"><value>Advanced insights</value></data>
+  <data name="adv.locked.title" xml:space="preserve"><value>Look deeper into your data</value></data>
+  <data name="adv.unlock" xml:space="preserve"><value>Unlock with Plus</value></data>
+  <data name="adv.locked.body" xml:space="preserve"><value>Compare this month with last month, find habits that go together, put two habits side by side and see a whole year of every habit combined.</value></data>
+  <data name="adv.months" xml:space="preserve"><value>This month vs last month</value></data>
+  <data name="adv.months.range" xml:space="preserve"><value>{0}–{1} vs {2}–{3}</value></data>
+  <data name="adv.months.overall" xml:space="preserve"><value>Completion rate: {0} (last month {1}) {2}</value></data>
+  <data name="adv.months.checkins" xml:space="preserve"><value>Check-ins: {0} (last month {1})</value></data>
+  <data name="adv.corr" xml:space="preserve"><value>Habits that go together</value></data>
+  <data name="adv.corr.hint" xml:space="preserve"><value>Only the last 90 days, skipping break and skipped days, and only with enough data to say anything.</value></data>
+  <data name="adv.corr.none" xml:space="preserve"><value>No clear pair yet. It needs a few more weeks of data.</value></data>
+  <data name="adv.corr.line" xml:space="preserve"><value>On days you do {0}, you do {1}: {2}% of those days vs {3}% of the others.</value></data>
+  <data name="adv.compare" xml:space="preserve"><value>Compare two habits</value></data>
+  <data name="adv.compare.a" xml:space="preserve"><value>Habit A</value></data>
+  <data name="adv.compare.b" xml:space="preserve"><value>Habit B</value></data>
+  <data name="adv.compare.need2" xml:space="preserve"><value>You need at least 2 habits to compare.</value></data>
+  <data name="adv.compare.same" xml:space="preserve"><value>Pick two different habits.</value></data>
+  <data name="adv.compare.streak" xml:space="preserve"><value>Current streak</value></data>
+  <data name="adv.compare.both" xml:space="preserve"><value>Both done on {0} days.</value></data>
+  <data name="adv.year" xml:space="preserve"><value>Whole-year calendar</value></data>
+  <data name="adv.year.hint" xml:space="preserve"><value>Each square is a day: the darker it is, the more of your due habits you finished.</value></data>
+  <data name="settings.accent" xml:space="preserve"><value>Custom accent</value></data>
+  <data name="settings.accent.hint" xml:space="preserve"><value>Change the colour of buttons, progress and highlights across the app (Plus). The theme keeps its background and text.</value></data>
+  <data name="settings.accent.hex" xml:space="preserve"><value>Hex colour</value></data>
+  <data name="settings.accent.default" xml:space="preserve"><value>Using the theme colour.</value></data>
+  <data name="settings.accent.current" xml:space="preserve"><value>Using {0}.</value></data>
+  <data name="settings.accent.expired" xml:space="preserve"><value>(Needs Plus to apply; your choice is kept.)</value></data>
+  <data name="settings.accent.invalid" xml:space="preserve"><value>Invalid colour, use the form #RRGGBB.</value></data>
+  <data name="settings.accent.pick" xml:space="preserve"><value>Pick colour {0}</value></data>
+  <data name="settings.accent.apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="settings.accent.reset" xml:space="preserve"><value>Back to theme colour</value></data>
+  <data name="plus.benefit.backup" xml:space="preserve"><value>Automatic backups mirrored to a OneDrive/Google Drive/Dropbox folder</value></data>
+  <data name="plus.benefit.advanced" xml:space="preserve"><value>Advanced insights: month comparison, habits that go together, whole-year calendar</value></data>
+  <data name="plus.benefit.accent" xml:space="preserve"><value>Your own accent colour across the app</value></data>
 </root>

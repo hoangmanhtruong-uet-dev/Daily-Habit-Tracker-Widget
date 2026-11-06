@@ -76,7 +76,10 @@ public sealed partial class MainWindow
         var unlocked = ThemeAccess.IsUnlocked(_theme.Theme.Id, plus.Status.IsPlus, level);
         var desired = unlocked ? null : Themes.CandyBento;
 
-        if (_theme.Override != desired)
+        var accentChanged = _theme.AccentAllowed != plus.Status.IsPlus;
+        _theme.AccentAllowed = plus.Status.IsPlus;
+
+        if (_theme.Override != desired || accentChanged)
         {
             _theme.Override = desired;
             _theme.Apply(Root);

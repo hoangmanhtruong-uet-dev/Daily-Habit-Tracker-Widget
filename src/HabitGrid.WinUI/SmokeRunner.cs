@@ -492,6 +492,24 @@ public static class SmokeRunner
         Require(await vm.SetRangeAsync(InsightsRange.All), "Plus mà không xem được toàn bộ lịch sử.");
         var csv = await vm.ExportCsvAsync();
         Require(csv is not null && csv.StartsWith("date,habit,kind", StringComparison.Ordinal), "Xuất CSV không đúng định dạng.");
+        Require(vm.Advanced is { YearHeatmap.Weeks.Count: 52 }, "Plus mà Insights nâng cao trống.");
+        Require(vm.Habits.Count >= 2 && vm.Compare(vm.Habits[0].Id, vm.Habits[1].Id) is not null, "So sánh hai thói quen không chạy.");
+        await Task.Delay(200);
+        await SnapAsync(window, "insights-advanced");
+
+        // P5: màu nhấn tùy chỉnh áp ngay khi đang Plus, bỏ khi đặt lại.
+        var themeService = App.Host.Get<ThemeService>();
+        themeService.AccentAllowed = true;
+        Require(await themeService.SetAccentAsync("#22C55E", window.Content as FrameworkElement), "Không đặt được màu nhấn.");
+        Require(!await themeService.SetAccentAsync("xyz", window.Content as FrameworkElement), "Mã màu sai mà vẫn được nhận.");
+        var accentBrush = (Microsoft.UI.Xaml.Media.LinearGradientBrush)Application.Current.Resources["AccentGradientBrush"];
+        Require(accentBrush.GradientStops[0].Color == Ui.ParseColor("#22C55E"), "Màu nhấn tùy chỉnh chưa được áp vào gradient.");
+        await GoToAsync(window, PageKeys.Settings);
+        await Task.Delay(300);
+        await SnapAsync(window, "settings-accent");
+        Require(await themeService.SetAccentAsync(null, window.Content as FrameworkElement), "Không đặt lại được màu nhấn.");
+        Require(accentBrush.GradientStops[0].Color != Ui.ParseColor("#22C55E"), "Đặt lại màu nhấn chưa trả về màu theme.");
+        await GoToAsync(window, PageKeys.Insights);
         logger.Info($"SMOKE insights OK (check-ins {vm.Report!.CheckIns}, tips {vm.Insights.Count}, csv {csv!.Length} bytes)");
     }
 

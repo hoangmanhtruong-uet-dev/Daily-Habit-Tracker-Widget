@@ -47,3 +47,11 @@ Mỗi tính năng làm như các đợt trước: lõi thuần có test → giao
 | F1 | Routine | **Xong.** Free 2 routine, Plus không giới hạn; mỗi routine 2–12 bước, mỗi thói quen thuộc một routine; dải routine trên Hôm nay (bấm từng bước, "Xong cả routine" không đè lên ngày đóng băng); quản lý/soạn routine ở trang Thói quen. Thẻ thói quen bên dưới giữ nguyên (routine là lối tắt, chưa ẩn thẻ gốc). |
 
 Chưa làm trong đợt 1: hẹn giờ từng bước của routine (P4, Plus), nhắc theo routine, kéo-thả đổi thứ tự bước (đang dùng nút ↑↓).
+
+## Tiến độ đợt 2 – Plus (06/11/2026)
+| # | Tính năng | Trạng thái |
+|---|---|---|
+| P3 | Sao lưu sang thư mục cloud | **Xong.** Chép mỗi bản sao lưu (tự động + tay) sang thư mục người dùng chọn (gợi ý OneDrive/Google Drive/Dropbox), ghi file tạm rồi đổi tên, chỉ dọn bản tự động cũ. App không đăng nhập hay gửi gì lên mây. Chưa kiểm thử với thư mục cloud thật. |
+| P7 | Dải 4 ảnh | **Xong.** Khung photobooth 4 ảnh (mỗi ngày một ảnh, mới nhất trước) trong thẻ chia sẻ; Free thấy khóa → paywall. |
+| P2 | Insights nâng cao | **Xong.** Tháng này vs tháng trước (cùng số ngày), thói quen đi cùng nhau (90 ngày, cần đủ dữ liệu), so sánh hai thói quen (12 tuần), lịch cả năm gộp. Free thấy thẻ giới thiệu. |
+| P5 | Tùy biến giao diện | **Một phần.** Có màu nhấn riêng (8 màu gợi ý + hex, áp ngay, giữ lại khi hết Plus). **Chưa làm đổi font** (font là StaticResource, cần khởi động lại). |

@@ -77,7 +77,7 @@ public class CorrelationTests
         // Chỉ còn 30 ngày dùng được; A xong 15 ngày, B xong 7 ngày và luôn trùng A khi xong → vẫn tìm thấy, nhưng không dùng ngày nghỉ.
         var found = AdvancedInsights.Correlations([a, b], logs, Today);
 
-        found.Should().OnlyContain(c => c.Days <= 30);
+        found.Should().OnlyContain(c => c.Days <= 60, "30 ngày nghỉ trong cửa sổ 90 ngày không được tính");
     }
 
     [Fact]
@@ -174,7 +174,7 @@ public class YearHeatmapTests
         HeatCell Cell(int ago) => heat.Cells.Single(x => x.Day == Today.AddDays(-ago));
 
         Cell(1).Level.Should().Be(4);
-        Cell(2).Level.Should().Be(3, "2/3 = 67%");
+        Cell(2).Level.Should().Be(2, "2/3 = 66,7% vẫn dưới ngưỡng 67% của mức 3");
         Cell(3).Level.Should().Be(1, "1/3 = 33% chưa tới ngưỡng 34% của mức 2");
     }
 

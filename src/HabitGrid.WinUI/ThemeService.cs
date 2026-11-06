@@ -39,12 +39,44 @@ public sealed class ThemeService
 
     public bool AnimationsEnabled { get; private set; } = true;
 
+    /// <summary>Màu nhấn người dùng chọn (#RRGGBB), lưu ngay cả khi hết Plus để nâng cấp lại là dùng tiếp.</summary>
+    public string? AccentColor { get; private set; }
+
+    /// <summary>Plus mới được áp màu nhấn tùy chỉnh; Free vẫn thấy màu của theme.</summary>
+    public bool AccentAllowed { get; set; }
+
     public async Task LoadAsync()
     {
         Theme = Themes.Find(await _settings.GetAsync(SettingKeys.Theme));
         Mode = Enum.TryParse<ThemeMode>(await _settings.GetAsync(SettingKeys.ThemeMode), out var mode) ? mode : ThemeMode.System;
         ReduceMotionSetting = await _settings.GetAsync(SettingKeys.ReduceMotion) == "1";
         AnimationsEnabled = _uiSettings.AnimationsEnabled && !ReduceMotionSetting;
+        AccentColor = AccentColors.Normalize(await _settings.GetAsync(AccentColors.SettingKey));
+    }
+
+    /// <summary>Đặt (hoặc xóa với null) màu nhấn tùy chỉnh và áp ngay. Trả false nếu mã màu không hợp lệ.</summary>
+    public async Task<bool> SetAccentAsync(string? hex, FrameworkElement? root)
+    {
+        var normalized = AccentColors.Normalize(hex);
+
+        if (hex is not null && normalized is null)
+        {
+            return false;
+        }
+
+        AccentColor = normalized;
+
+        if (normalized is null)
+        {
+            await _settings.RemoveAsync(AccentColors.SettingKey);
+        }
+        else
+        {
+            await _settings.SetAsync(AccentColors.SettingKey, normalized);
+        }
+
+        Apply(root);
+        return true;
     }
 
     /// <summary>Bật/tắt giảm chuyển động ngay lập tức và nhớ lựa chọn.</summary>
@@ -103,6 +135,18 @@ public sealed class ThemeService
         {
             accent.GradientStops[0].Color = Ui.ParseColor(p.AccentStart);
             accent.GradientStops[1].Color = Ui.ParseColor(p.AccentEnd);
+        }
+
+        if (AccentAllowed && AccentColor is { } custom)
+        {
+            var end = AccentColors.DeriveEnd(custom);
+            Set("AccentBrandBrush", custom);
+
+            if (resources.TryGetValue("AccentGradientBrush", out var g2) && g2 is LinearGradientBrush custom2 && custom2.GradientStops.Count >= 2)
+            {
+                custom2.GradientStops[0].Color = Ui.ParseColor(custom);
+                custom2.GradientStops[1].Color = Ui.ParseColor(end);
+            }
         }
 
         // Control hệ thống (TextBox, NumberBox…) theo sáng/tối của bảng màu.
