@@ -2,7 +2,7 @@
 <!--
   Manifest của gói MSIX cho app WinUI (HabitGrid.WinUI). Danh tính (Name/Publisher/PublisherDisplayName) lấy từ
   Partner Center > HabitGrid > Product identity; phải khớp đúng, nếu không Store sẽ từ chối gói.
-  Không có widget/StartupTask: widget đã dừng phát triển. Chỉ cần runFullTrust (app WinUI chạy đầy đủ quyền người dùng).
+  Không có widget/StartupTask: widget đã dừng phát triển. Quyền: runFullTrust và webcam (chụp ảnh khoảnh khắc).
 -->
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
@@ -47,5 +47,7 @@
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
+    <!-- Chụp ảnh khoảnh khắc bằng camera (CameraCaptureUI). Không dùng micro, vị trí hay mạng. -->
+    <DeviceCapability Name="webcam" />
   </Capabilities>
 </Package>
