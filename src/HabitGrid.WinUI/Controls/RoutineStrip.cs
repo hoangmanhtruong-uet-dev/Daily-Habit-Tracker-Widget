@@ -47,6 +47,7 @@ public sealed class RoutineStrip : UserControl
         head.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         head.ColumnDefinitions.Add(new ColumnDefinition());
         head.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        head.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         head.Children.Add(new TextBlock { Text = Ui.IconText(routine.Icon.Value), FontSize = 24, VerticalAlignment = VerticalAlignment.Center });
 
         var titles = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
@@ -71,8 +72,21 @@ public sealed class RoutineStrip : UserControl
             await App.Host.Get<RoutineService>().CompleteAllAsync(routine.Id, day);
             Changed?.Invoke(this, EventArgs.Empty);
         };
-        Grid.SetColumn(all, 2);
+        Grid.SetColumn(all, 3);
         head.Children.Add(all);
+
+        // P4: chạy routine hẹn giờ từng bước. Free bấm vào thì mở paywall.
+        var run = new Button { Content = "⏱ " + Ui.T("routine.run.title"), Style = (Style)Application.Current.Resources["GhostButtonStyle"], IsEnabled = !progress.IsComplete };
+        AutomationProperties.SetName(run, $"{Ui.T("routine.run.title")}: {routine.Name}");
+        run.Click += async (_, _) =>
+        {
+            if (await Pages.RoutineRunDialog.ShowAsync(XamlRoot, routine, day))
+            {
+                Changed?.Invoke(this, EventArgs.Empty);
+            }
+        };
+        Grid.SetColumn(run, 2);
+        head.Children.Add(run);
 
         var track = new Grid { Height = 8, CornerRadius = new CornerRadius(4), Background = (Brush)Application.Current.Resources["HeatEmptyBrush"] };
         var fill = new Border { CornerRadius = new CornerRadius(4), HorizontalAlignment = HorizontalAlignment.Left, Background = (Brush)Application.Current.Resources["AccentGradientBrush"] };

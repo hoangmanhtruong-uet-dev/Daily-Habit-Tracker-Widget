@@ -552,4 +552,114 @@
   <data name="plus.benefit.backup" xml:space="preserve"><value>Automatic backups mirrored to a OneDrive/Google Drive/Dropbox folder</value></data>
   <data name="plus.benefit.advanced" xml:space="preserve"><value>Advanced insights: month comparison, habits that go together, whole-year calendar</value></data>
   <data name="plus.benefit.accent" xml:space="preserve"><value>Your own accent colour across the app</value></data>
+  <data name="challenge.title" xml:space="preserve"><value>Challenges</value></data>
+  <data name="challenge.hint" xml:space="preserve"><value>Pick a challenge with a clear end. The app creates the habit and counts it as a streak: miss a day and you start over (break days do not count as a miss).</value></data>
+  <data name="challenge.length" xml:space="preserve"><value>Length</value></data>
+  <data name="challenge.days" xml:space="preserve"><value>{0} days</value></data>
+  <data name="challenge.start" xml:space="preserve"><value>Start</value></data>
+  <data name="challenge.badges" xml:space="preserve"><value>Badges earned</value></data>
+  <data name="challenge.day" xml:space="preserve"><value>Day {0}/{1}</value></data>
+  <data name="challenge.left" xml:space="preserve"><value>{0} days left</value></data>
+  <data name="challenge.completed" xml:space="preserve"><value>{0}-day challenge complete!</value></data>
+  <data name="challenge.failed" xml:space="preserve"><value>Missed {0}. Start again from today?</value></data>
+  <data name="challenge.closed" xml:space="preserve"><value>This challenge habit was deleted or archived.</value></data>
+  <data name="challenge.restart" xml:space="preserve"><value>Start again</value></data>
+  <data name="challenge.dismiss" xml:space="preserve"><value>Hide</value></data>
+  <data name="challenge.unlock" xml:space="preserve"><value>See Plus (5 challenges at once)</value></data>
+  <data name="challenge.err.ActiveLimit" xml:space="preserve"><value>Free runs one challenge at a time; Plus up to 5.</value></data>
+  <data name="challenge.err.HabitLimit" xml:space="preserve"><value>You have reached the Free habit limit, so no new habit can be created.</value></data>
+  <data name="challenge.err.InvalidDays" xml:space="preserve"><value>Invalid length or name.</value></data>
+  <data name="challenge.err.UnknownTemplate" xml:space="preserve"><value>Unknown challenge.</value></data>
+  <data name="challenge.err.NotFound" xml:space="preserve"><value>Challenge not found.</value></data>
+  <data name="challenge.noSugarDrinks" xml:space="preserve"><value>30 days without sugary drinks</value></data>
+  <data name="challenge.noSocialMorning" xml:space="preserve"><value>No social media in the morning</value></data>
+  <data name="challenge.noLateSnacks" xml:space="preserve"><value>No late-night snacks</value></data>
+  <data name="challenge.read10" xml:space="preserve"><value>Read 10 pages a day</value></data>
+  <data name="challenge.walk" xml:space="preserve"><value>Walk 6,000 steps a day</value></data>
+  <data name="challenge.water" xml:space="preserve"><value>Drink 8 glasses of water</value></data>
+  <data name="challenge.meditate" xml:space="preserve"><value>Meditate 10 minutes a day</value></data>
+  <data name="challenge.earlyBed" xml:space="preserve"><value>Go to bed early</value></data>
+  <data name="challenge.journal" xml:space="preserve"><value>Journal every evening</value></data>
+  <data name="challenge.stretch" xml:space="preserve"><value>Stretch every morning</value></data>
+  <data name="weekly.title" xml:space="preserve"><value>Your last week</value></data>
+  <data name="weekly.rate" xml:space="preserve"><value>Completed {0}</value></data>
+  <data name="weekly.checkins" xml:space="preserve"><value>{0} check-ins</value></data>
+  <data name="weekly.perfect" xml:space="preserve"><value>{0} perfect days</value></data>
+  <data name="weekly.bestday" xml:space="preserve"><value>Best day: {0}</value></data>
+  <data name="weekly.besthabit" xml:space="preserve"><value>Standout: {0}</value></data>
+  <data name="weekly.seen" xml:space="preserve"><value>Got it</value></data>
+  <data name="weekly.tip.Praise" xml:space="preserve"><value>A really complete week. Keep this rhythm!</value></data>
+  <data name="weekly.tip.FocusWeakest" xml:space="preserve"><value>{0} has been neglected ({1}%). Make it this week's intention?</value></data>
+  <data name="weekly.tip.Improving" xml:space="preserve"><value>Better than the week before. Keep going.</value></data>
+  <data name="weekly.tip.Steady" xml:space="preserve"><value>Steady. Pick one habit to focus on this week.</value></data>
+  <data name="weekly.intent.pick" xml:space="preserve"><value>Pick an intention for this week</value></data>
+  <data name="weekly.intent.title" xml:space="preserve"><value>This week's intention</value></data>
+  <data name="weekly.intent.progress" xml:space="preserve"><value>{0}: {1}/{2}</value></data>
+  <data name="weekly.intent.clear" xml:space="preserve"><value>Clear intention</value></data>
+  <data name="routine.run.title" xml:space="preserve"><value>Timer</value></data>
+  <data name="routine.run.hint" xml:space="preserve"><value>Set minutes for each step. When time is up, or you tap Done, the step is marked complete.</value></data>
+  <data name="routine.run.minutesFor" xml:space="preserve"><value>Minutes for {0}</value></data>
+  <data name="routine.run.start" xml:space="preserve"><value>Start</value></data>
+  <data name="routine.run.nothing" xml:space="preserve"><value>Nothing left to do today.</value></data>
+  <data name="routine.run.done" xml:space="preserve"><value>Done</value></data>
+  <data name="routine.run.skip" xml:space="preserve"><value>Skip</value></data>
+  <data name="routine.run.pause" xml:space="preserve"><value>Pause</value></data>
+  <data name="routine.run.resume" xml:space="preserve"><value>Resume</value></data>
+  <data name="routine.run.stop" xml:space="preserve"><value>Stop</value></data>
+  <data name="routine.run.remaining" xml:space="preserve"><value>Time left for this step</value></data>
+  <data name="routine.run.step" xml:space="preserve"><value>Step {0}/{1}</value></data>
+  <data name="routine.run.total" xml:space="preserve"><value>about {0} min left</value></data>
+  <data name="routine.run.finished" xml:space="preserve"><value>Routine finished! {0} steps marked.</value></data>
+  <data name="plus.benefit.routineTimer" xml:space="preserve"><value>Timed routine steps and unlimited routines (Free: 2)</value></data>
+  <data name="accessory.cap" xml:space="preserve"><value>Cap</value></data>
+  <data name="accessory.party" xml:space="preserve"><value>Party face</value></data>
+  <data name="accessory.grad" xml:space="preserve"><value>Graduation cap</value></data>
+  <data name="accessory.crown" xml:space="preserve"><value>Crown</value></data>
+  <data name="accessory.tophat" xml:space="preserve"><value>Top hat</value></data>
+  <data name="accessory.blossom" xml:space="preserve"><value>Cherry blossom</value></data>
+  <data name="accessory.shades" xml:space="preserve"><value>Sunglasses</value></data>
+  <data name="accessory.nerd" xml:space="preserve"><value>Nerd glasses</value></data>
+  <data name="accessory.monocle" xml:space="preserve"><value>Monocle</value></data>
+  <data name="accessory.scarf" xml:space="preserve"><value>Scarf</value></data>
+  <data name="accessory.medal" xml:space="preserve"><value>Medal</value></data>
+  <data name="accessory.ribbon" xml:space="preserve"><value>Ribbon</value></data>
+  <data name="accessory.gem" xml:space="preserve"><value>Gem</value></data>
+  <data name="wardrobe.title" xml:space="preserve"><value>Accessories</value></data>
+  <data name="wardrobe.hint" xml:space="preserve"><value>Tap to wear or remove. One item per slot (head, face, neck).</value></data>
+  <data name="wardrobe.slot.Head" xml:space="preserve"><value>Head</value></data>
+  <data name="wardrobe.slot.Face" xml:space="preserve"><value>Face</value></data>
+  <data name="wardrobe.slot.Neck" xml:space="preserve"><value>Neck</value></data>
+  <data name="wardrobe.unlock.level" xml:space="preserve"><value>Reach level {0}</value></data>
+  <data name="wardrobe.unlock.badge" xml:space="preserve"><value>Earn badge: {0}</value></data>
+  <data name="wardrobe.unlock.plus" xml:space="preserve"><value>Plus only</value></data>
+  <data name="wardrobe.worn" xml:space="preserve"><value>Worn</value></data>
+  <data name="wardrobe.locked" xml:space="preserve"><value>Locked</value></data>
+  <data name="plus.benefit.accessories" xml:space="preserve"><value>Exclusive Buddy accessories (top hat, monocle, ribbon, gem...)</value></data>
+  <data name="wrapped.title" xml:space="preserve"><value>Monthly Wrapped</value></data>
+  <data name="wrapped.button" xml:space="preserve"><value>Wrapped</value></data>
+  <data name="wrapped.lastMonth" xml:space="preserve"><value>Last month</value></data>
+  <data name="wrapped.thisMonth" xml:space="preserve"><value>This month</value></data>
+  <data name="wrapped.prev" xml:space="preserve"><value>Previous slide</value></data>
+  <data name="wrapped.next" xml:space="preserve"><value>Next slide</value></data>
+  <data name="wrapped.empty" xml:space="preserve"><value>No check-ins this month yet.</value></data>
+  <data name="wrapped.total.lead" xml:space="preserve"><value>This month you made</value></data>
+  <data name="wrapped.total.unit" xml:space="preserve"><value>check-ins</value></data>
+  <data name="wrapped.total.days" xml:space="preserve"><value>across {0} active days</value></data>
+  <data name="wrapped.total.delta" xml:space="preserve"><value>{0} vs last month</value></data>
+  <data name="wrapped.top.lead" xml:space="preserve"><value>Your number one habit</value></data>
+  <data name="wrapped.top.count" xml:space="preserve"><value>{0} times this month</value></data>
+  <data name="wrapped.streak.lead" xml:space="preserve"><value>Longest streak</value></data>
+  <data name="wrapped.streak.days" xml:space="preserve"><value>{0} days in a row</value></data>
+  <data name="wrapped.hour.lead" xml:space="preserve"><value>Your golden hour</value></data>
+  <data name="wrapped.hour.note" xml:space="preserve"><value>You check in most often around this time</value></data>
+  <data name="wrapped.perfect.lead" xml:space="preserve"><value>Perfect days</value></data>
+  <data name="wrapped.perfect.unit" xml:space="preserve"><value>days with every habit done</value></data>
+  <data name="wrapped.moment.lead" xml:space="preserve"><value>Moment of the month</value></data>
+  <data name="wrapped.buddy.lead" xml:space="preserve"><value>Your companion</value></data>
+  <data name="wrapped.nodata.TopHabit" xml:space="preserve"><value>No standout habit yet.</value></data>
+  <data name="wrapped.nodata.Streak" xml:space="preserve"><value>No 2-day streak yet. Try next month!</value></data>
+  <data name="wrapped.nodata.GoldenHour" xml:space="preserve"><value>Not enough check-in time data.</value></data>
+  <data name="wrapped.locked" xml:space="preserve"><value>The other slides and image export are for Plus.</value></data>
+  <data name="wrapped.unlock" xml:space="preserve"><value>Unlock with Plus</value></data>
+  <data name="plus.benefit.wrapped" xml:space="preserve"><value>Monthly Wrapped: 6 story slides, save 1080x1920 images (Free: first slide)</value></data>
 </root>

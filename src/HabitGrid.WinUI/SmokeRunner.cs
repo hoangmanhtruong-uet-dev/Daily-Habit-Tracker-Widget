@@ -1,5 +1,7 @@
 using IDayProvider = HabitGrid.Core.Services.IDayProvider;
 using HabitGrid.Core.Domain;
+using HabitGrid.Core.Domain.Challenges;
+using HabitGrid.Core.Domain.Insights;
 using HabitGrid.Presentation.Services;
 using HabitGrid.Presentation.Templates;
 using HabitGrid.Presentation.Theming;
@@ -57,6 +59,9 @@ public static class SmokeRunner
             await InsightsJourneyAsync(window, logger);
             await MomentsJourneyAsync(window, logger);
             await BatchOneJourneyAsync(window, logger);
+            await ChallengeJourneyAsync(window, logger);
+            await WeeklyJourneyAsync(window, logger);
+            await WrappedJourneyAsync(window, logger);
             await AccessibilityAuditAsync(window, logger);
 
             // Mọi theme × sáng/tối phải dựng được (ảnh để duyệt giao diện).
@@ -391,6 +396,14 @@ public static class SmokeRunner
         var strip = FindAll<RoutineStrip>(window.Content).FirstOrDefault() ?? throw new InvalidOperationException("Không thấy dải routine.");
         Require(strip.HasItems, "Dải routine trống dù đã có routine.");
 
+        // P4 Hẹn giờ: đang Plus tặng nên dựng được bộ chạy cho hai bước; chạy hết giờ thì cả hai bước hoàn thành.
+        var runner = await App.Host.Get<RoutineTimerService>().BuildRunnerAsync(created.Routine!.Id)
+            ?? throw new InvalidOperationException("Không dựng được bộ chạy routine hẹn giờ.");
+        Require(runner.Steps.Count == 2, "Bộ chạy routine phải có đúng hai bước chưa xong.");
+        var t0 = DateTime.UtcNow;
+        runner.Start(t0);
+        Require(runner.Tick(t0.AddHours(1)).Count == 2 && runner.IsFinished, "Hết giờ phải hoàn thành cả hai bước.");
+
         // F4 Cảm xúc: chọn một mức, kiểm tra đã lưu, rồi bỏ chọn.
         var mood = FindAll<MoodBar>(window.Content).FirstOrDefault() ?? throw new InvalidOperationException("Không thấy thanh cảm xúc.");
         await mood.PickForTestAsync(4);
@@ -404,6 +417,90 @@ public static class SmokeRunner
         await routines.DeleteAsync(created.Routine.Id);
         Require(!(await routines.ListAsync()).Any(), "Xóa routine không thành công.");
         logger.Info($"SMOKE batch1 OK (backup {file.SizeBytes} bytes, vacation {marked} days, routine steps done {done}, mood saved)");
+    }
+
+    /// <summary>F2: bắt đầu thử thách, dải thử thách hiện trên Hôm nay với tiến độ "Ngày 1/N"; rồi dọn để không ảnh hưởng các bước sau.</summary>
+    private static async Task ChallengeJourneyAsync(MainWindow window, IAppLogger logger)
+    {
+        var service = App.Host.Get<ChallengeService>();
+        var started = await service.StartAsync("read10", Ui.T("challenge.read10"), 30);
+        Require(started.Succeeded, $"Không bắt đầu được thử thách: {started.Error}");
+
+        await GoToAsync(window, PageKeys.Today);
+        await Task.Delay(900);
+        var strip = FindAll<ChallengeStrip>(window.Content).FirstOrDefault() ?? throw new InvalidOperationException("Không thấy dải thử thách.");
+        Require(strip.HasItems, "Dải thử thách trống dù đã bắt đầu thử thách.");
+        await SnapAsync(window, "today-challenge");
+
+        var board = await service.RefreshAsync();
+        Require(board.Items.Single().State == ChallengeState.Active && board.Items.Single().DayNumber == 1, "Thử thách mới phải ở ngày 1 và đang chạy.");
+
+        // Dọn: xóa thói quen của thử thách để không lẫn vào các bước kiểm sau.
+        await App.Host.Get<IHabitRepository>().SoftDeleteAsync(started.Challenge!.HabitId);
+        Require((await service.RefreshAsync()).Items.Count == 0, "Xóa thói quen nhưng thử thách vẫn còn chạy.");
+        logger.Info("SMOKE challenge OK");
+    }
+
+    /// <summary>F6: chọn ý định tuần (chạy mọi ngày), rồi dựng thẻ tổng kết tuần trước từ dữ liệu mẫu để chụp ảnh.</summary>
+    private static async Task WeeklyJourneyAsync(MainWindow window, IAppLogger logger)
+    {
+        var service = App.Host.Get<WeeklyRecapService>();
+        var repo = App.Host.Get<IHabitRepository>();
+        var habits = (await repo.GetAllActiveAsync()).Where(h => h.Kind != HabitKind.Quit).ToList();
+        Require(await service.SetIntentAsync(habits[0].Id), "Không chọn được ý định tuần.");
+
+        await GoToAsync(window, PageKeys.Today);
+        await Task.Delay(900);
+        var strip = FindAll<WeeklyCardStrip>(window.Content).FirstOrDefault() ?? throw new InvalidOperationException("Không thấy thẻ tuần.");
+        Require(strip.HasItems, "Ý định tuần đã chọn nhưng thẻ không hiện.");
+        Require((await service.GetAsync()).Intent?.HabitId == habits[0].Id, "Ý định tuần không được lưu.");
+
+        var today = App.Host.Get<IDayProvider>().GetToday();
+        var logsRepo = App.Host.Get<IDayLogRepository>();
+        var logs = new List<DayLog>();
+        foreach (var habit in habits)
+        {
+            logs.AddRange(await logsRepo.GetRangeAsync(habit.Id, today.AddDays(-28), today));
+        }
+
+        var monday = HabitGrid.Core.Domain.PeriodCalendar.StartOfWeek(today, DayOfWeek.Monday);
+        var recap = HabitGrid.Core.Domain.Insights.WeeklyRecapBuilder.Build(habits, logs, monday);
+        Require(recap.CheckIns > 0, "Dữ liệu mẫu không có check-in tuần trước để tổng kết.");
+        strip.Render(new WeeklyCard(recap, (await service.GetAsync()).Intent, habits.Take(4).ToList()));
+        await Task.Delay(300);
+        await SnapAsync(window, "today-weekly");
+
+        await service.SetIntentAsync(null);
+        await strip.ReloadAsync();
+        logger.Info($"SMOKE weekly OK (rate {recap.Rate:P0}, checkins {recap.CheckIns}, tip {recap.Tip})");
+    }
+
+    /// <summary>P1: số liệu tháng này từ dữ liệu mẫu, rồi render từng slide thành PNG 1080×1920 (lưu vài ảnh để duyệt).</summary>
+    private static async Task WrappedJourneyAsync(MainWindow window, IAppLogger logger)
+    {
+        var service = App.Host.Get<WrappedService>();
+        var data = await service.BuildAsync(0);
+        Require(!data.IsEmpty && data.TopHabit is not null, "Wrapped tháng này trống dù dữ liệu mẫu có check-in.");
+        Require(WrappedSlides.CanView(5, service.IsPlus), "Đang Plus tặng mà không xem được đủ slide.");
+
+        Directory.CreateDirectory(Shot.Directory);
+        var sizes = new List<int>();
+
+        foreach (var kind in WrappedSlides.All)
+        {
+            var png = await HabitGrid.WinUI.Moments.WrappedDialog.RenderSlidePngForTestAsync(FindAll<Panel>(window.Content).First(), kind, data, withPhoto: false);
+            Require(png.Length > 8_000, $"Ảnh Wrapped slide {kind} quá nhỏ ({png.Length} byte).");
+            sizes.Add(png.Length);
+
+            if (kind is WrappedSlideKind.Total or WrappedSlideKind.TopHabit or WrappedSlideKind.GoldenHour)
+            {
+                await File.WriteAllBytesAsync(Path.Combine(Shot.Directory, $"{++_shotNo:00}-wrapped-{kind}.png"), png);
+            }
+        }
+
+        // Mở trang Insights để chắc nút Wrapped có tên cho trình đọc màn hình (kiểm trợ năng chạy sau đó).
+        await GoToAsync(window, PageKeys.Insights);
+        logger.Info($"SMOKE wrapped OK (checkins {data.TotalCheckIns}, top {data.TopHabit!.Name}, perfect {data.PerfectDays}, png {string.Join('/', sizes)})");
     }
 
     private static async Task MomentsJourneyAsync(MainWindow window, IAppLogger logger)
@@ -684,6 +781,18 @@ public static class SmokeRunner
         Require(vm.Badges.Where(b => b.Hidden).All(b => b.Group == "secret"), "Có huy hiệu thường bị ẩn.");
         Require(celebrations() >= 1, "Không có lần ăn mừng nào dù đã mở khóa huy hiệu sau lần tính đầu.");
         await SnapAsync(window, "buddy");
+
+        // P6: đang Plus tặng nên đeo được món Plus (mũ chóp cao) và món mở bằng huy hiệu/cấp; chụp ảnh Buddy đã đeo đồ rồi tháo hết.
+        Require(await page.ToggleAccessoryForTestAsync("tophat") == HabitGrid.Presentation.Services.EquipResult.Equipped, "Plus mà không đeo được món Plus.");
+        Require(await page.ToggleAccessoryForTestAsync("tophat") == HabitGrid.Presentation.Services.EquipResult.Removed, "Không tháo được phụ kiện.");
+        Require(await page.ToggleAccessoryForTestAsync("tophat") == HabitGrid.Presentation.Services.EquipResult.Equipped, "Không đeo lại được phụ kiện.");
+        await page.ToggleAccessoryForTestAsync("shades");
+        await page.ToggleAccessoryForTestAsync("ribbon");
+        await Task.Delay(300);
+        await SnapAsync(window, "buddy-accessories");
+        await page.ToggleAccessoryForTestAsync("tophat");
+        await page.ToggleAccessoryForTestAsync("shades");
+        await page.ToggleAccessoryForTestAsync("ribbon");
         logger.Info($"SMOKE buddy OK (level {vm.Level}, xp {vm.TotalXp}, badges {vm.UnlockedCount}/{vm.TotalCount}, celebrations {celebrations()})");
     }
 

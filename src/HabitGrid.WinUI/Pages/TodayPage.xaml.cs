@@ -44,6 +44,8 @@ public sealed partial class TodayPage : Page
         }
 
         await Routines.ReloadAsync(day);
+        await Challenges.ReloadAsync();
+        await Weekly.ReloadAsync();
     }
 
     private bool _routinesWired;

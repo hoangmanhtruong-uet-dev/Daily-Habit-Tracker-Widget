@@ -173,6 +173,17 @@ public sealed class AppHost : IDisposable
             sp.GetRequiredService<ISettingsStore>(),
             sp.GetRequiredService<IDayProvider>(),
             sp.GetRequiredService<IEntitlements>()));
+        services.AddSingleton<ChallengeService>(sp => new ChallengeService(
+            sp.GetRequiredService<ISettingsStore>(),
+            sp.GetRequiredService<IHabitRepository>(),
+            sp.GetRequiredService<IDayLogRepository>(),
+            sp.GetRequiredService<IEntitlements>(),
+            sp.GetRequiredService<IDayProvider>()));
+        services.AddSingleton<WeeklyRecapService>(sp => new WeeklyRecapService(
+            sp.GetRequiredService<IHabitRepository>(),
+            sp.GetRequiredService<IDayLogRepository>(),
+            sp.GetRequiredService<ISettingsStore>(),
+            sp.GetRequiredService<IDayProvider>()));
         services.AddSingleton<DailyMoodService>(sp => new DailyMoodService(
             sp.GetRequiredService<ISettingsStore>(),
             sp.GetRequiredService<IDayProvider>()));
@@ -183,6 +194,20 @@ public sealed class AppHost : IDisposable
             sp.GetRequiredService<IEntitlements>(),
             sp.GetRequiredService<IDayProvider>(),
             sp.GetRequiredService<ISettingsStore>()));
+        services.AddSingleton<RoutineTimerService>(sp => new RoutineTimerService(
+            sp.GetRequiredService<RoutineService>(),
+            sp.GetRequiredService<ISettingsStore>(),
+            sp.GetRequiredService<IEntitlements>()));
+        services.AddSingleton<BuddyWardrobeService>(sp => new BuddyWardrobeService(
+            sp.GetRequiredService<ISettingsStore>(),
+            sp.GetRequiredService<IProfileRepository>(),
+            sp.GetRequiredService<IAchievementRepository>(),
+            sp.GetRequiredService<IEntitlements>()));
+        services.AddSingleton<WrappedService>(sp => new WrappedService(
+            sp.GetRequiredService<IHabitRepository>(),
+            sp.GetRequiredService<IDayLogRepository>(),
+            sp.GetRequiredService<IDayProvider>(),
+            sp.GetRequiredService<IEntitlements>()));
         services.AddSingleton<BackupManager>(sp =>
         {
             var manager = new BackupManager(

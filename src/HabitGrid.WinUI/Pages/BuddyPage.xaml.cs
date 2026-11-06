@@ -1,4 +1,6 @@
 using HabitGrid.Core.Domain;
+using HabitGrid.Core.Domain.Gamification;
+using HabitGrid.WinUI.Plus;
 using HabitGrid.Presentation.Services;
 using HabitGrid.Presentation.ViewModels;
 using Microsoft.UI.Xaml;
@@ -33,11 +35,14 @@ public sealed partial class BuddyPage : Page
         Ready = LoadAsync();
     }
 
+    private Wardrobe _wardrobe = new([], new Dictionary<AccessorySlot, BuddyAccessory>());
+
     private async Task LoadAsync()
     {
         try
         {
             await ViewModel.LoadAsync();
+            _wardrobe = await App.Host.Get<BuddyWardrobeService>().GetAsync();
             Build();
         }
         catch (Exception ex)
@@ -51,6 +56,7 @@ public sealed partial class BuddyPage : Page
         _root.Children.Clear();
         _root.Children.Add(new TextBlock { Text = Ui.T("buddy.title"), Style = Res("TitleDisplayTextStyle") });
         _root.Children.Add(BuildHero());
+        _root.Children.Add(BuildWardrobe());
 
         var header = new TextBlock
         {
@@ -84,8 +90,23 @@ public sealed partial class BuddyPage : Page
         content.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         content.ColumnDefinitions.Add(new ColumnDefinition());
 
-        var avatar = new TextBlock { Text = StageEmoji(ViewModel.Stage), FontSize = 92, VerticalAlignment = VerticalAlignment.Center };
-        AutomationProperties.SetName(avatar, $"{ViewModel.Name}, {Ui.T("stage." + ViewModel.Stage.ToString().ToLowerInvariant())}");
+        var avatar = new Grid { Width = 140, Height = 150, VerticalAlignment = VerticalAlignment.Center };
+        avatar.Children.Add(new TextBlock { Text = StageEmoji(ViewModel.Stage), FontSize = 92, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center });
+
+        foreach (var (slot, accessory) in _wardrobe.Worn)
+        {
+            avatar.Children.Add(new TextBlock
+            {
+                Text = accessory.Emoji,
+                FontSize = slot == AccessorySlot.Head ? 52 : 40,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = slot switch { AccessorySlot.Head => VerticalAlignment.Top, AccessorySlot.Face => VerticalAlignment.Center, _ => VerticalAlignment.Bottom },
+                Margin = slot switch { AccessorySlot.Head => new Thickness(0, -14, 0, 0), AccessorySlot.Face => new Thickness(0, 14, 0, 0), _ => new Thickness(0, 0, 0, -6) }
+            });
+        }
+
+        var worn = _wardrobe.Worn.Count == 0 ? string.Empty : ", " + string.Join(", ", _wardrobe.Worn.Values.Select(a => Ui.T("accessory." + a.Id)));
+        AutomationProperties.SetName(avatar, $"{ViewModel.Name}, {Ui.T("stage." + ViewModel.Stage.ToString().ToLowerInvariant())}{worn}");
         content.Children.Add(avatar);
 
         var info = new StackPanel { Spacing = 6, VerticalAlignment = VerticalAlignment.Center };
@@ -120,6 +141,87 @@ public sealed partial class BuddyPage : Page
         content.Children.Add(info);
         hero.Children.Add(content);
         return hero;
+    }
+
+    /// <summary>Tủ phụ kiện (P6): bấm đeo/tháo; món chưa mở ghi rõ điều kiện; món Plus bấm vào thì mở paywall.</summary>
+    private UIElement BuildWardrobe()
+    {
+        var stack = new StackPanel { Spacing = 10 };
+        stack.Children.Add(new TextBlock { Text = Ui.T("wardrobe.title").ToUpperInvariant(), Style = Res("SectionHeader"), Margin = new Thickness(4, 12, 0, 0) });
+        stack.Children.Add(new TextBlock { Text = Ui.T("wardrobe.hint"), Style = Res("BodySecondaryTextStyle"), TextWrapping = TextWrapping.Wrap });
+
+        foreach (var slot in Enum.GetValues<AccessorySlot>())
+        {
+            stack.Children.Add(new TextBlock { Text = Ui.T("wardrobe.slot." + slot), FontSize = 13, Foreground = (Brush)Application.Current.Resources["TextMutedBrush"] });
+            var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10 };
+
+            foreach (var item in _wardrobe.Items.Where(i => i.Accessory.Slot == slot))
+            {
+                row.Children.Add(BuildAccessoryTile(item));
+            }
+
+            stack.Children.Add(new ScrollViewer { Content = row, HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled, HorizontalScrollMode = ScrollMode.Enabled });
+        }
+
+        return stack;
+    }
+
+    private UIElement BuildAccessoryTile(WardrobeItem item)
+    {
+        var a = item.Accessory;
+        var name = Ui.T("accessory." + a.Id);
+        var requirement = a.Unlock switch
+        {
+            AccessoryUnlockKind.Level => Ui.Loc.Format("wardrobe.unlock.level", a.RequiredLevel),
+            AccessoryUnlockKind.Badge => Ui.Loc.Format("wardrobe.unlock.badge", Ui.T($"badge.{a.Requirement}.name")),
+            _ => Ui.T("wardrobe.unlock.plus")
+        };
+
+        var text = new StackPanel { Spacing = 2, HorizontalAlignment = HorizontalAlignment.Center };
+        text.Children.Add(new TextBlock { Text = item.Owned ? a.Emoji : "🔒", FontSize = 32, HorizontalAlignment = HorizontalAlignment.Center, Opacity = item.Owned ? 1 : 0.6 });
+        text.Children.Add(new TextBlock { Text = name, FontSize = 13, HorizontalAlignment = HorizontalAlignment.Center });
+        text.Children.Add(new TextBlock
+        {
+            Text = item.Equipped ? Ui.T("wardrobe.worn") : item.Owned ? string.Empty : requirement,
+            FontSize = 11,
+            MaxWidth = 120,
+            TextWrapping = TextWrapping.Wrap,
+            TextAlignment = TextAlignment.Center,
+            Foreground = item.Equipped ? (Brush)Application.Current.Resources["AccentBrandBrush"] : (Brush)Application.Current.Resources["TextMutedBrush"]
+        });
+
+        var button = new Button
+        {
+            Content = text,
+            Width = 136,
+            Padding = new Thickness(8, 10, 8, 10),
+            CornerRadius = new CornerRadius(16),
+            Background = item.Equipped ? (Brush)Application.Current.Resources["Surface2Brush"] : (Brush)Application.Current.Resources["CardIdleBrush"],
+            BorderBrush = item.Equipped ? (Brush)Application.Current.Resources["AccentBrandBrush"] : (Brush)Application.Current.Resources["StrokeSubtleBrush"],
+            BorderThickness = new Thickness(item.Equipped ? 2 : 1)
+        };
+        AutomationProperties.SetName(button, $"{name}, {(item.Equipped ? Ui.T("wardrobe.worn") : item.Owned ? string.Empty : requirement)}");
+        button.Click += async (_, _) =>
+        {
+            if (!item.Owned && a.Unlock == AccessoryUnlockKind.Plus)
+            {
+                await PaywallDialog.ShowAsync(XamlRoot, HabitGrid.Presentation.ViewModels.PaywallSource.Menu);
+            }
+
+            await App.Host.Get<BuddyWardrobeService>().ToggleAsync(a.Id);
+            _wardrobe = await App.Host.Get<BuddyWardrobeService>().GetAsync();
+            Build();
+        };
+        return button;
+    }
+
+    /// <summary>Đeo một món cho smoke test (bỏ qua paywall).</summary>
+    public async Task<EquipResult> ToggleAccessoryForTestAsync(string id)
+    {
+        var result = await App.Host.Get<BuddyWardrobeService>().ToggleAsync(id);
+        _wardrobe = await App.Host.Get<BuddyWardrobeService>().GetAsync();
+        Build();
+        return result;
     }
 
     private UIElement BuildBadge(BadgeItem badge)

@@ -29,6 +29,8 @@ public sealed partial class HabitsPage : Page
         {
             TitleText.Text = Ui.T("habits.title");
             AddButtonText.Text = Ui.T("habits.add");
+            ChallengeButton.Content = "🏁 " + Ui.T("challenge.title");
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(ChallengeButton, Ui.T("challenge.title"));
             RoutineButton.Content = "🔗 " + Ui.T("routine.title");
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(RoutineButton, Ui.T("routine.title"));
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(AddButton, AddButtonText.Text);
@@ -80,6 +82,19 @@ public sealed partial class HabitsPage : Page
         catch (Exception ex)
         {
             Log(ex, "Thêm thói quen lỗi");
+        }
+    }
+
+    private async void OnChallengeClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ChallengeDialog.ShowAsync(XamlRoot);
+            await ViewModel.LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            Log(ex, "Thử thách lỗi");
         }
     }
 
