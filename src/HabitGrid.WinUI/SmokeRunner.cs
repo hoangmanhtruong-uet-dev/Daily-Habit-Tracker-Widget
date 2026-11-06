@@ -1,6 +1,7 @@
 using IDayProvider = HabitGrid.Core.Services.IDayProvider;
 using HabitGrid.Core.Domain;
 using HabitGrid.Core.Domain.Challenges;
+using HabitGrid.Core.Domain.Insights;
 using HabitGrid.Presentation.Services;
 using HabitGrid.Presentation.Templates;
 using HabitGrid.Presentation.Theming;
@@ -60,6 +61,7 @@ public static class SmokeRunner
             await BatchOneJourneyAsync(window, logger);
             await ChallengeJourneyAsync(window, logger);
             await WeeklyJourneyAsync(window, logger);
+            await WrappedJourneyAsync(window, logger);
             await AccessibilityAuditAsync(window, logger);
 
             // Mọi theme × sáng/tối phải dựng được (ảnh để duyệt giao diện).
@@ -471,6 +473,34 @@ public static class SmokeRunner
         await service.SetIntentAsync(null);
         await strip.ReloadAsync();
         logger.Info($"SMOKE weekly OK (rate {recap.Rate:P0}, checkins {recap.CheckIns}, tip {recap.Tip})");
+    }
+
+    /// <summary>P1: số liệu tháng này từ dữ liệu mẫu, rồi render từng slide thành PNG 1080×1920 (lưu vài ảnh để duyệt).</summary>
+    private static async Task WrappedJourneyAsync(MainWindow window, IAppLogger logger)
+    {
+        var service = App.Host.Get<WrappedService>();
+        var data = await service.BuildAsync(0);
+        Require(!data.IsEmpty && data.TopHabit is not null, "Wrapped tháng này trống dù dữ liệu mẫu có check-in.");
+        Require(WrappedSlides.CanView(5, service.IsPlus), "Đang Plus tặng mà không xem được đủ slide.");
+
+        Directory.CreateDirectory(Shot.Directory);
+        var sizes = new List<int>();
+
+        foreach (var kind in WrappedSlides.All)
+        {
+            var png = await HabitGrid.WinUI.Moments.WrappedDialog.RenderSlidePngForTestAsync(kind, data, withPhoto: false);
+            Require(png.Length > 8_000, $"Ảnh Wrapped slide {kind} quá nhỏ ({png.Length} byte).");
+            sizes.Add(png.Length);
+
+            if (kind is WrappedSlideKind.Total or WrappedSlideKind.TopHabit or WrappedSlideKind.GoldenHour)
+            {
+                await File.WriteAllBytesAsync(Path.Combine(Shot.Directory, $"{++_shotNo:00}-wrapped-{kind}.png"), png);
+            }
+        }
+
+        // Mở trang Insights để chắc nút Wrapped có tên cho trình đọc màn hình (kiểm trợ năng chạy sau đó).
+        await GoToAsync(window, PageKeys.Insights);
+        logger.Info($"SMOKE wrapped OK (checkins {data.TotalCheckIns}, top {data.TopHabit!.Name}, perfect {data.PerfectDays}, png {string.Join('/', sizes)})");
     }
 
     private static async Task MomentsJourneyAsync(MainWindow window, IAppLogger logger)

@@ -64,8 +64,14 @@ public sealed partial class InsightsPage : Page
         var export = new Button { Style = Res("GhostButtonStyle"), Content = Ui.T("insights.export") + (ViewModel.CanExport ? string.Empty : "  🔒") };
         AutomationProperties.SetName(export, Ui.T("insights.export"));
         export.Click += async (_, _) => await ExportAsync();
-        Grid.SetColumn(export, 1);
-        header.Children.Add(export);
+        var wrapped = new Button { Style = Res("GhostButtonStyle"), Content = "✨ " + Ui.T("wrapped.button") };
+        AutomationProperties.SetName(wrapped, Ui.T("wrapped.title"));
+        wrapped.Click += async (_, _) => await HabitGrid.WinUI.Moments.WrappedDialog.ShowAsync(XamlRoot);
+        var actions = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        actions.Children.Add(wrapped);
+        actions.Children.Add(export);
+        Grid.SetColumn(actions, 1);
+        header.Children.Add(actions);
         _root.Children.Add(header);
         _root.Children.Add(BuildRangeChips());
 

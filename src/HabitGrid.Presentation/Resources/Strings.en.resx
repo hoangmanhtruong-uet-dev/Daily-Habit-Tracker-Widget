@@ -635,4 +635,31 @@
   <data name="wardrobe.worn" xml:space="preserve"><value>Worn</value></data>
   <data name="wardrobe.locked" xml:space="preserve"><value>Locked</value></data>
   <data name="plus.benefit.accessories" xml:space="preserve"><value>Exclusive Buddy accessories (top hat, monocle, ribbon, gem...)</value></data>
+  <data name="wrapped.title" xml:space="preserve"><value>Monthly Wrapped</value></data>
+  <data name="wrapped.button" xml:space="preserve"><value>Wrapped</value></data>
+  <data name="wrapped.lastMonth" xml:space="preserve"><value>Last month</value></data>
+  <data name="wrapped.thisMonth" xml:space="preserve"><value>This month</value></data>
+  <data name="wrapped.prev" xml:space="preserve"><value>Previous slide</value></data>
+  <data name="wrapped.next" xml:space="preserve"><value>Next slide</value></data>
+  <data name="wrapped.empty" xml:space="preserve"><value>No check-ins this month yet.</value></data>
+  <data name="wrapped.total.lead" xml:space="preserve"><value>This month you made</value></data>
+  <data name="wrapped.total.unit" xml:space="preserve"><value>check-ins</value></data>
+  <data name="wrapped.total.days" xml:space="preserve"><value>across {0} active days</value></data>
+  <data name="wrapped.total.delta" xml:space="preserve"><value>{0} vs last month</value></data>
+  <data name="wrapped.top.lead" xml:space="preserve"><value>Your number one habit</value></data>
+  <data name="wrapped.top.count" xml:space="preserve"><value>{0} times this month</value></data>
+  <data name="wrapped.streak.lead" xml:space="preserve"><value>Longest streak</value></data>
+  <data name="wrapped.streak.days" xml:space="preserve"><value>{0} days in a row</value></data>
+  <data name="wrapped.hour.lead" xml:space="preserve"><value>Your golden hour</value></data>
+  <data name="wrapped.hour.note" xml:space="preserve"><value>You check in most often around this time</value></data>
+  <data name="wrapped.perfect.lead" xml:space="preserve"><value>Perfect days</value></data>
+  <data name="wrapped.perfect.unit" xml:space="preserve"><value>days with every habit done</value></data>
+  <data name="wrapped.moment.lead" xml:space="preserve"><value>Moment of the month</value></data>
+  <data name="wrapped.buddy.lead" xml:space="preserve"><value>Your companion</value></data>
+  <data name="wrapped.nodata.TopHabit" xml:space="preserve"><value>No standout habit yet.</value></data>
+  <data name="wrapped.nodata.Streak" xml:space="preserve"><value>No 2-day streak yet. Try next month!</value></data>
+  <data name="wrapped.nodata.GoldenHour" xml:space="preserve"><value>Not enough check-in time data.</value></data>
+  <data name="wrapped.locked" xml:space="preserve"><value>The other slides and image export are for Plus.</value></data>
+  <data name="wrapped.unlock" xml:space="preserve"><value>Unlock with Plus</value></data>
+  <data name="plus.benefit.wrapped" xml:space="preserve"><value>Monthly Wrapped: 6 story slides, save 1080x1920 images (Free: first slide)</value></data>
 </root>

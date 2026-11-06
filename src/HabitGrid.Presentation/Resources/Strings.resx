@@ -635,4 +635,31 @@
   <data name="wardrobe.worn" xml:space="preserve"><value>Đang đeo</value></data>
   <data name="wardrobe.locked" xml:space="preserve"><value>Chưa mở</value></data>
   <data name="plus.benefit.accessories" xml:space="preserve"><value>Phụ kiện riêng cho Buddy (mũ, kính, nơ, kim cương…)</value></data>
+  <data name="wrapped.title" xml:space="preserve"><value>Wrapped tháng</value></data>
+  <data name="wrapped.button" xml:space="preserve"><value>Wrapped</value></data>
+  <data name="wrapped.lastMonth" xml:space="preserve"><value>Tháng trước</value></data>
+  <data name="wrapped.thisMonth" xml:space="preserve"><value>Tháng này</value></data>
+  <data name="wrapped.prev" xml:space="preserve"><value>Slide trước</value></data>
+  <data name="wrapped.next" xml:space="preserve"><value>Slide sau</value></data>
+  <data name="wrapped.empty" xml:space="preserve"><value>Chưa có check-in nào trong tháng này.</value></data>
+  <data name="wrapped.total.lead" xml:space="preserve"><value>Tháng này bạn đã</value></data>
+  <data name="wrapped.total.unit" xml:space="preserve"><value>lần check-in</value></data>
+  <data name="wrapped.total.days" xml:space="preserve"><value>trong {0} ngày hoạt động</value></data>
+  <data name="wrapped.total.delta" xml:space="preserve"><value>{0} lần so với tháng trước</value></data>
+  <data name="wrapped.top.lead" xml:space="preserve"><value>Thói quen số 1</value></data>
+  <data name="wrapped.top.count" xml:space="preserve"><value>{0} lần trong tháng</value></data>
+  <data name="wrapped.streak.lead" xml:space="preserve"><value>Chuỗi dài nhất</value></data>
+  <data name="wrapped.streak.days" xml:space="preserve"><value>{0} ngày liền</value></data>
+  <data name="wrapped.hour.lead" xml:space="preserve"><value>Giờ vàng của bạn</value></data>
+  <data name="wrapped.hour.note" xml:space="preserve"><value>Bạn hay check-in nhất vào lúc này</value></data>
+  <data name="wrapped.perfect.lead" xml:space="preserve"><value>Ngày hoàn hảo</value></data>
+  <data name="wrapped.perfect.unit" xml:space="preserve"><value>ngày làm đủ mọi thói quen</value></data>
+  <data name="wrapped.moment.lead" xml:space="preserve"><value>Khoảnh khắc của tháng</value></data>
+  <data name="wrapped.buddy.lead" xml:space="preserve"><value>Người bạn đồng hành</value></data>
+  <data name="wrapped.nodata.TopHabit" xml:space="preserve"><value>Chưa có thói quen nổi bật.</value></data>
+  <data name="wrapped.nodata.Streak" xml:space="preserve"><value>Chưa có chuỗi 2 ngày liền. Tháng sau thử nhé!</value></data>
+  <data name="wrapped.nodata.GoldenHour" xml:space="preserve"><value>Chưa đủ dữ liệu giờ check-in.</value></data>
+  <data name="wrapped.locked" xml:space="preserve"><value>Các slide còn lại và xuất ảnh dành cho Plus.</value></data>
+  <data name="wrapped.unlock" xml:space="preserve"><value>Mở khóa với Plus</value></data>
+  <data name="plus.benefit.wrapped" xml:space="preserve"><value>Wrapped tháng: 6 slide kiểu story, lưu ảnh 1080×1920 (Free: xem slide đầu)</value></data>
 </root>
