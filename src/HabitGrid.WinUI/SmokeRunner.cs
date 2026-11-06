@@ -394,6 +394,14 @@ public static class SmokeRunner
         var strip = FindAll<RoutineStrip>(window.Content).FirstOrDefault() ?? throw new InvalidOperationException("Không thấy dải routine.");
         Require(strip.HasItems, "Dải routine trống dù đã có routine.");
 
+        // P4 Hẹn giờ: đang Plus tặng nên dựng được bộ chạy cho hai bước; chạy hết giờ thì cả hai bước hoàn thành.
+        var runner = await App.Host.Get<RoutineTimerService>().BuildRunnerAsync(created.Routine!.Id)
+            ?? throw new InvalidOperationException("Không dựng được bộ chạy routine hẹn giờ.");
+        Require(runner.Steps.Count == 2, "Bộ chạy routine phải có đúng hai bước chưa xong.");
+        var t0 = DateTime.UtcNow;
+        runner.Start(t0);
+        Require(runner.Tick(t0.AddHours(1)).Count == 2 && runner.IsFinished, "Hết giờ phải hoàn thành cả hai bước.");
+
         // F4 Cảm xúc: chọn một mức, kiểm tra đã lưu, rồi bỏ chọn.
         var mood = FindAll<MoodBar>(window.Content).FirstOrDefault() ?? throw new InvalidOperationException("Không thấy thanh cảm xúc.");
         await mood.PickForTestAsync(4);

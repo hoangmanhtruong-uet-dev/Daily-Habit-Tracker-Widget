@@ -194,6 +194,10 @@ public sealed class AppHost : IDisposable
             sp.GetRequiredService<IEntitlements>(),
             sp.GetRequiredService<IDayProvider>(),
             sp.GetRequiredService<ISettingsStore>()));
+        services.AddSingleton<RoutineTimerService>(sp => new RoutineTimerService(
+            sp.GetRequiredService<RoutineService>(),
+            sp.GetRequiredService<ISettingsStore>(),
+            sp.GetRequiredService<IEntitlements>()));
         services.AddSingleton<BackupManager>(sp =>
         {
             var manager = new BackupManager(

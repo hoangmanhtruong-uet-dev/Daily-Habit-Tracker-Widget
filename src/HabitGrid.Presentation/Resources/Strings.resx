@@ -596,4 +596,19 @@
   <data name="weekly.intent.title" xml:space="preserve"><value>Ý định tuần này</value></data>
   <data name="weekly.intent.progress" xml:space="preserve"><value>{0}: {1}/{2}</value></data>
   <data name="weekly.intent.clear" xml:space="preserve"><value>Bỏ ý định</value></data>
+  <data name="routine.run.title" xml:space="preserve"><value>Hẹn giờ</value></data>
+  <data name="routine.run.hint" xml:space="preserve"><value>Đặt số phút cho từng bước. Hết giờ hoặc bấm Xong thì bước được đánh dấu hoàn thành.</value></data>
+  <data name="routine.run.minutesFor" xml:space="preserve"><value>Số phút cho {0}</value></data>
+  <data name="routine.run.start" xml:space="preserve"><value>Bắt đầu</value></data>
+  <data name="routine.run.nothing" xml:space="preserve"><value>Hôm nay không còn bước nào cần làm.</value></data>
+  <data name="routine.run.done" xml:space="preserve"><value>Xong</value></data>
+  <data name="routine.run.skip" xml:space="preserve"><value>Bỏ qua</value></data>
+  <data name="routine.run.pause" xml:space="preserve"><value>Tạm dừng</value></data>
+  <data name="routine.run.resume" xml:space="preserve"><value>Tiếp tục</value></data>
+  <data name="routine.run.stop" xml:space="preserve"><value>Dừng</value></data>
+  <data name="routine.run.remaining" xml:space="preserve"><value>Thời gian còn lại của bước</value></data>
+  <data name="routine.run.step" xml:space="preserve"><value>Bước {0}/{1}</value></data>
+  <data name="routine.run.total" xml:space="preserve"><value>còn khoảng {0} phút</value></data>
+  <data name="routine.run.finished" xml:space="preserve"><value>Xong routine! Đã đánh dấu {0} bước.</value></data>
+  <data name="plus.benefit.routineTimer" xml:space="preserve"><value>Routine hẹn giờ từng bước, không giới hạn số routine (Free: 2)</value></data>
 </root>
